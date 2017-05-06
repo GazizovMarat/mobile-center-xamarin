@@ -7,13 +7,11 @@ namespace MobileCenterDemoApp.Interfaces
     {
         bool IsConnected { get; }
 
-        int[] StepsByPeriod(DateTime start, DateTime end);
-        float[] DistanceByPeriod(DateTime start, DateTime end);
-        float[] CaloriesByPeriod(DateTime start, DateTime end);
+        Task<int[]> StepsByPeriod(DateTime start, DateTime end);
+        Task<float[]> DistanceByPeriod(DateTime start, DateTime end);
+        Task<float[]> CaloriesByPeriod(DateTime start, DateTime end);
 
         void Connect();
         void Disconnect();
-
-        event Action<string> Error;
     }
 }

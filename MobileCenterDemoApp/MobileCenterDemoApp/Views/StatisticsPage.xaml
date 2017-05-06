@@ -8,6 +8,9 @@
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>
     <StackLayout>
+        <Picker ItemsSource="{Binding DataTypes}" SelectedItem="{Binding ChosenData}" />
+        <ListView ItemsSource="{Binding Collection}" />
+
         <Button VerticalOptions="End" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" />
         <Button VerticalOptions="End" HorizontalOptions="Center" Text="Back to main page" Command="{Binding BackToMainCommand}" />
     </StackLayout>

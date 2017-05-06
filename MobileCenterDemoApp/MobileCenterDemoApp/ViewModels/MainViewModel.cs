@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Mobile.Analytics;
@@ -46,32 +47,37 @@ namespace MobileCenterDemoApp.ViewModels
         
         public Command ViewStatisticsCommand { get; set; }
 
-        private readonly IFitnessTracker _ifTracker;
+        private static IFitnessTracker Tracker => DataStore.FitnessTracker;
 
         public MainViewModel()
         {
             ViewStatisticsCommand = new Command(async () => await Navigation.PushModalAsync(new StatisticsPage()));
 
-            _ifTracker = DependencyService.Get<IFitnessTracker>();
-            if (_ifTracker != null)
+            if (!Tracker.IsConnected)
             {
-                _ifTracker.Connect();
-                _ifTracker.Error += async s => await Navigation.PushModalAsync(new ErrorPage(s));
-                if (_ifTracker.IsConnected)
-                    Load();
+                Tracker.Connect();
             }
+            if (Tracker.IsConnected)
+                Task.Run(Load);
         }
 
-        private void Load()
+        private async Task Load()
         {
-            if (_ifTracker == null)
+            if (Tracker == null || !Tracker.IsConnected)
                 return;
 
-            DateTime end = DateTime.UtcNow.AddSeconds(70);
+            DateTime end = DateTime.UtcNow;
             DateTime start = end.AddDays(-1);
-            StepsCount = _ifTracker.StepsByPeriod(start, end).Sum();
-            Calories = _ifTracker.CaloriesByPeriod(start, end).Sum();
-            Distance = _ifTracker.DistanceByPeriod(start, end).Sum();
+            StepsCount = (await Tracker.StepsByPeriod(start, end) ?? new[] {0}).Sum();
+            Calories = (await Tracker.CaloriesByPeriod(start, end) ?? new[] {0F}).Sum();
+            Distance = (await Tracker.DistanceByPeriod(start, end) ?? new[] {0F}).Sum();
+
+            Analytics.TrackEvent("Retrieve results from Google fit", new Dictionary<string, string>
+            {
+                {nameof(StepsCount), StepsCount.ToString() },
+                {nameof(StepsCount), Calories.ToString(CultureInfo.InvariantCulture) },
+                {nameof(StepsCount), Distance.ToString(CultureInfo.InvariantCulture) },
+            });
         }
     }
 }
