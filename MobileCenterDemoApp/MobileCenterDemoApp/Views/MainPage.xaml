@@ -12,8 +12,7 @@
         <Label Text="Today you've taken:"/>
         <Label Text="{Binding StepsCount, StringFormat='{0}: steps'}" VerticalOptions="Center" />
         <Label Text="{Binding Calories, StringFormat='{0}: calories'}" VerticalOptions="Center" />
-        <Label Text="{Binding StepsCount, StringFormat='{0:D}: km'}" VerticalOptions="Center" />
+        <Label Text="{Binding Distance, StringFormat='{0}: km'}" VerticalOptions="Center" />
         <Button Text="View Statistics" Command="{Binding ViewStatisticsCommand}" VerticalOptions="End" />
-        <ListView ItemsSource="{Binding Collection}" />
     </StackLayout>
 </ContentPage>

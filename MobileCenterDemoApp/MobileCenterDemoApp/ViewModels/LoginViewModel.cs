@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Mobile.Analytics;
+﻿using System;
+using Microsoft.Azure.Mobile.Analytics;
 using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Services;
@@ -28,14 +29,18 @@ namespace MobileCenterDemoApp.ViewModels
 
         public Command LoginViaFacebookCommand { get; set; }
         public Command LoginViaTwitterCommand { get; set; }
-        public Command JustEnter { get; set; }
 
         public LoginViewModel()
         {
-            Title = "Count my steps";            
-
+            Title = "Count my steps";
+#if DEBUG
+            Action act = () => Login(new Account("Lord"));
+            LoginViaFacebookCommand = new Command(act);
+            LoginViaTwitterCommand = new Command(act);
+#else
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
+#endif
 
         }
 
@@ -66,7 +71,7 @@ namespace MobileCenterDemoApp.ViewModels
             }
 
             DataStore.Account = account;
-            Analytics.TrackEvent($"Success login ({DataStore.Account.Username})");
+            //Analytics.TrackEvent($"Success login ({DataStore.Account.Username})");
             Application.Current.MainPage = new NavigationPage(new MainPage());
         }
     }

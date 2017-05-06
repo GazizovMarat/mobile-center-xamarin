@@ -74,6 +74,7 @@ namespace MobileCenterDemoApp.Droid
             MClient = new GoogleApiClient.Builder(this)
                 .AddApi(FitnessClass.HISTORY_API)
                 .AddScope(FitnessClass.ScopeActivityRead)
+                .AddScope(FitnessClass.ScopeLocationRead)
                 .AddOnConnectionFailedListener(ConnectionFailed)
                 .Build();
         }

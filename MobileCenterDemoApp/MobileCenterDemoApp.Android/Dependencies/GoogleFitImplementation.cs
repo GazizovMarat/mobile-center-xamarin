@@ -13,6 +13,8 @@ using Java.Util.Concurrent;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using Xamarin.Forms;
+using Java.Text;
+using Newtonsoft.Json;
 
 [assembly: Dependency(typeof(GoogleFitImplementation))]
 namespace MobileCenterDemoApp.Droid.Dependencies
@@ -23,25 +25,43 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task<int[]> StepsByPeriod(DateTime start, DateTime end)
-        {            
-            DataReadRequest stepRequest = CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end);
-            IResult stepResult = await FitnessClass.HistoryApi.ReadData(Client, stepRequest);
-            return GetIntFromResult(stepResult);
+        public int[] StepsByPeriod(DateTime start, DateTime end)
+        {
+            using (DataReadRequest stepRequest = CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end, TimeUnit.Days))
+            using (IResult stepResult = ReadData(stepRequest))
+                return GetIntFromResult(stepResult);
         }
 
-        public async Task<float[]> DistanceByPeriod(DateTime start, DateTime end)
+        public float[] DistanceByPeriod(DateTime start, DateTime end)
         {
-            DataReadRequest distanceRequest = CreateRequest(DataType.TypeDistanceDelta, DataType.AggregateDistanceDelta, start, end);
-            IResult distanceResult = await FitnessClass.HistoryApi.ReadData(Client, distanceRequest);
-            return GetFloatFromResult(distanceResult);
+            using (DataReadRequest distanceRequest = CreateRequest(DataType.TypeDistanceDelta, DataType.AggregateDistanceDelta, start, end, TimeUnit.Minutes))
+            using (IResult distanceResult = ReadData(distanceRequest))
+                return GetFloatFromResult(distanceResult);
         }
 
-        public async Task<int[]> CaloriesByPeriod(DateTime start, DateTime end)
+
+        public float[] CaloriesByPeriod(DateTime start, DateTime end)
         {
-            DataReadRequest caloriesRequest = CreateRequest(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended, start, end);
-            IResult caloriesResult = await FitnessClass.HistoryApi.ReadData(Client, caloriesRequest);
-            return GetIntFromResult(caloriesResult);
+            using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
+                .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
+                .BucketByActivityType(1, TimeUnit.Seconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .Build())
+            using (DataReadResult caloriesResult = (DataReadResult) ReadData(caloriesRequest))
+                return GetFloatFromResult(caloriesResult);
+        }
+
+        private IResult ReadData(DataReadRequest request)
+        {
+            try
+            {
+                return (IResult)FitnessClass.HistoryApi.ReadData(Client, request).Await(1, TimeUnit.Minutes);
+            }
+            catch (Exception e)
+            {
+                Error?.Invoke(e.Message);
+                return null;
+            }
         }
 
         public void Connect()
@@ -66,19 +86,24 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             Client.Disconnect();
         }
 
+        public event Action<string> Error;
+
         public void Dispose() => Client?.Dispose();
 
         #region Implements the Google Fit data access        
 
-        DataReadRequest CreateRequest(DataType input, DataType output, DateTime start, DateTime end)
+        DataReadRequest CreateRequest(DataType input, DataType output, DateTime start, DateTime end, TimeUnit unit)
             => new DataReadRequest.Builder()
                 .Aggregate(input, output)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)                
                 .Build();
 
         int[] GetIntFromResult(IResult result)
         {
+            if (result == null)
+                return null;
+
             IList<Bucket> buckets = ((DataReadResult)result).Buckets;
             if (!buckets.Any())
                 return null;
@@ -87,9 +112,13 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         float[] GetFloatFromResult(IResult result)
         {
+            if (result == null)
+                return null;
+
             IList<Bucket> buckets = ((DataReadResult)result).Buckets;
             if (!buckets.Any())
                 return null;
+
             return buckets.Select(ExtractFloat).ToArray();
         }
 
@@ -104,7 +133,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 from p in ds.DataPoints
                 from f in p.DataType.Fields
                 select p.GetValue(f).AsFloat()).Sum();
-
 
         #endregion
     }

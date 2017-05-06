@@ -57,7 +57,7 @@ namespace Google.XamarinSamples.XamFit
 	        return (long) (DateTime.SpecifyKind(date, DateTimeKind.Utc) - UnixEpoch).TotalMilliseconds + 1;
 	    }
 
-        // Converts POSIX time to DateTime
+        // Converts  time to DateTime
         public static DateTime FromMillis(long millis)
 		{
 			return UnixEpoch.AddMilliseconds(millis);

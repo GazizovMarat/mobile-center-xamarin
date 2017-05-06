@@ -31,8 +31,8 @@ namespace MobileCenterDemoApp.ViewModels
             set => SetProperty(ref _stepsCount, value);
         }
 
-        private int _calories;
-        public int Calories
+        private float _calories;
+        public float Calories
         {
             get => _calories;
             set => SetProperty(ref _calories, value);
@@ -43,57 +43,35 @@ namespace MobileCenterDemoApp.ViewModels
             get => _distance;
             set => SetProperty(ref _distance, value);
         }
-
-        private ObservableCollection<string> _messages;
-        public ObservableCollection<string> Collection
-        {
-            get => _messages;
-            set => SetProperty(ref _messages, value);
-        }
-
+        
         public Command ViewStatisticsCommand { get; set; }
 
-        private IFitnessTracker _ifTracker;
+        private readonly IFitnessTracker _ifTracker;
 
         public MainViewModel()
         {
-            try
-            {
-                ViewStatisticsCommand = new Command(Statistics);
+            ViewStatisticsCommand = new Command(async () => await Navigation.PushModalAsync(new StatisticsPage()));
 
-                _ifTracker = DependencyService.Get<IFitnessTracker>();
-                if (_ifTracker != null )
-                {
-                    _ifTracker.Connect();
-
-                    if(_ifTracker.IsConnected)
-                        Task.Run(Load);
-                }
-            }
-            catch (Exception e)
+            _ifTracker = DependencyService.Get<IFitnessTracker>();
+            if (_ifTracker != null)
             {
-                Analytics.TrackEvent(e.Message);
+                _ifTracker.Connect();
+                _ifTracker.Error += async s => await Navigation.PushModalAsync(new ErrorPage(s));
+                if (_ifTracker.IsConnected)
+                    Load();
             }
         }
 
-        private async Task Load()
+        private void Load()
         {
-            StepsCount = (await _ifTracker.StepsByPeriod(DateTime.Now.AddDays(-1), DateTime.Now)).First();
-            Distance = (await _ifTracker.DistanceByPeriod(DateTime.Now.AddDays(-1), DateTime.Now)).First();
-            Calories = (await _ifTracker.CaloriesByPeriod(DateTime.Now.AddDays(-1), DateTime.Now)).First();
-        }
+            if (_ifTracker == null)
+                return;
 
-        private async void Statistics()
-        {
-            try
-            {
-                var statisticsPage = new StatisticsPage();
-                await Navigation.PushModalAsync(statisticsPage);
-            }
-            catch (Exception)
-            {
-                
-            }
+            DateTime end = DateTime.UtcNow.AddSeconds(70);
+            DateTime start = end.AddDays(-1);
+            StepsCount = _ifTracker.StepsByPeriod(start, end).Sum();
+            Calories = _ifTracker.CaloriesByPeriod(start, end).Sum();
+            Distance = _ifTracker.DistanceByPeriod(start, end).Sum();
         }
     }
 }

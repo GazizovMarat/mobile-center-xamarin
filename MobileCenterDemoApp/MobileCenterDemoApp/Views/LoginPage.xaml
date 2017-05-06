@@ -12,6 +12,5 @@
         <Label TextColor="Red" Text="{Binding ErrorMessage}" IsVisible="{Binding ErrorNotExists}" HorizontalOptions="Center"/>
         <Button Command="{Binding LoginViaFacebookCommand}" Text="Login via Facebook" HorizontalOptions="EndAndExpand"/>
         <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter" HorizontalOptions="EndAndExpand"/>
-        <Button Command="{Binding JustEnter}" Text="Just enter" HorizontalOptions="EndAndExpand"/>
     </StackLayout>
 </ContentPage>
