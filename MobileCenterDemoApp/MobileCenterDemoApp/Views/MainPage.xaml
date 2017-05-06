@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels;assembly=MobileCenterDemoApp.Android"
+             x:Class="MobileCenterDemoApp.Views.MainPage"
+             Navigation="{Binding Navigation}">
+    <ContentPage.BindingContext>
+        <viewModels:MainViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout HorizontalOptions="Center" VerticalOptions="FillAndExpand">
+        <Label FontFamily="TAHOMA" FontSize="18" Text="{Binding Username, StringFormat='Hi, {0}!'}" VerticalOptions="Start" />
+        <Label Text="Today you've taken:"/>
+        <Label Text="{Binding StepsCount, StringFormat='{0}: steps'}" VerticalOptions="Center" />
+        <Label Text="{Binding Calories, StringFormat='{0}: calories'}" VerticalOptions="Center" />
+        <Label Text="{Binding StepsCount, StringFormat='{0:D}: km'}" VerticalOptions="Center" />
+        <Button Text="View Statistics" Command="{Binding ViewStatisticsCommand}" VerticalOptions="End" />
+        <ListView ItemsSource="{Binding Collection}" />
+    </StackLayout>
+</ContentPage>

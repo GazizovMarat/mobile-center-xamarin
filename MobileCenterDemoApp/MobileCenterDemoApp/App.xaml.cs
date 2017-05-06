@@ -1,34 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using Microsoft.Azure.Mobile;
+using Microsoft.Azure.Mobile.Analytics;
+using Microsoft.Azure.Mobile.Crashes;
+using MobileCenterDemoApp.Views;
 using Xamarin.Forms;
 
 namespace MobileCenterDemoApp
 {
-	public partial class App : Application
+	public partial class App
 	{
 		public App ()
 		{
 			InitializeComponent();
+            MainPage = new NavigationPage(new LoginPage());
 
-			MainPage = new MobileCenterDemoApp.MainPage();
-		}
-
-		protected override void OnStart ()
-		{
-			// Handle when your app starts
-		}
-
-		protected override void OnSleep ()
-		{
-			// Handle when your app sleeps
-		}
-
-		protected override void OnResume ()
-		{
-			// Handle when your app resumes
-		}
+		    MobileCenter.Start("ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8", typeof(Analytics), typeof(Crashes));
+        }
 	}
+
 }

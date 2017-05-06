@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Foundation;
+﻿using Foundation;
 using UIKit;
 
 namespace MobileCenterDemoApp.iOS
@@ -20,10 +16,15 @@ namespace MobileCenterDemoApp.iOS
 		//
 		// You have 17 seconds to return from this method, or iOS will terminate your application.
 		//
+
+        public static UIWindow UiWindow { get; private set; }
+
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init ();
-			LoadApplication (new MobileCenterDemoApp.App ());
+			LoadApplication (new App ());
+
+		    UiWindow = this.Window;
 
 			return base.FinishedLaunching (app, options);
 		}

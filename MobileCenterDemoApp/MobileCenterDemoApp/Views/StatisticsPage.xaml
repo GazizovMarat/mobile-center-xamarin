@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels;assembly=MobileCenterDemoApp.Android"
+             x:Class="MobileCenterDemoApp.Views.StatisticsPage"
+             Navigation="{Binding Navigation}">
+    <ContentPage.BindingContext>
+        <viewModels:StatisticsViewModel />
+    </ContentPage.BindingContext>
+    <StackLayout>
+        <Button VerticalOptions="End" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" />
+        <Button VerticalOptions="End" HorizontalOptions="Center" Text="Back to main page" Command="{Binding BackToMainCommand}" />
+    </StackLayout>
+</ContentPage>
