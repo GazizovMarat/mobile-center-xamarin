@@ -16,6 +16,7 @@ namespace MobileCenterDemoApp
             MainPage = new NavigationPage(new LoginPage());
 
 		    MobileCenter.Start("ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8", typeof(Analytics), typeof(Crashes));
+		    
         }
 
 	    protected override void OnStart()
@@ -23,9 +24,8 @@ namespace MobileCenterDemoApp
 	        if (DataStore.FitnessTracker == null)
 	        {
 	            DataStore.FitnessTracker = DependencyService.Get<IFitnessTracker>();
-                DataStore.FitnessTracker.Connect();
+	            DataStore.FitnessTracker.Connect();
 	        }
-
             base.OnStart();
 	    }
 

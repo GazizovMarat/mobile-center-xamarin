@@ -2,16 +2,64 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels;assembly=MobileCenterDemoApp.Android"
+             xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
+             xmlns:views="clr-namespace:MobileCenterDemoApp.Views;assembly=MobileCenterDemoApp.Android"
+             xmlns:axes="clr-namespace:OxyPlot.Axes;assembly=OxyPlot"
              x:Class="MobileCenterDemoApp.Views.StatisticsPage"
-             Navigation="{Binding Navigation}">
+             Navigation="{Binding Navigation}"
+             Title="Statistics"
+             Icon="statisticsicon.png">
     <ContentPage.BindingContext>
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>
     <StackLayout>
-        <Picker ItemsSource="{Binding DataTypes}" SelectedItem="{Binding ChosenData}" />
-        <ListView ItemsSource="{Binding Collection}" />
+        <oxy:PlotView Model="{Binding Model}" VerticalOptions="StartAndExpand" HorizontalOptions="Center" IsVisible="True" />
+        
+        <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+            <Button Command="{Binding ShowStepsCommand}" 
+                    Grid.Row="0" Grid.Column="0" 
+                    HorizontalOptions="CenterAndExpand" 
+                    VerticalOptions="End" 
+                    ContentLayout="Top,0"
+                    BackgroundColor="White"
+                    HeightRequest="75"
+                    Image="steps.png" Text="STEPS" />
+            <Button Command="{Binding ShowCaloriesCommand}" 
+                    Grid.Row="0" Grid.Column="1" 
+                    HorizontalOptions="CenterAndExpand" 
+                    VerticalOptions="End" 
+                    ContentLayout="Top,0"
+                    BackgroundColor="White"
+                    HeightRequest="75"
+                    Image="burn.png" Text="STEPS" />
 
-        <Button VerticalOptions="End" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" />
-        <Button VerticalOptions="End" HorizontalOptions="Center" Text="Back to main page" Command="{Binding BackToMainCommand}" />
+            <Button Command="{Binding ShowDistanceCommand}" 
+                    Grid.Row="0" Grid.Column="2" 
+                    HorizontalOptions="CenterAndExpand" 
+                    VerticalOptions="End" 
+                    ContentLayout="Top,0"
+                    BackgroundColor="White"
+                    HeightRequest="75"
+                    Image="distance.png" Text="DISTANCE" />
+
+            <Button Command="{Binding ShowActiveTimeCommand}" 
+                    Grid.Row="0" Grid.Column="3" 
+                    HorizontalOptions="CenterAndExpand" 
+                    VerticalOptions="End" 
+                    ContentLayout="Top,0"
+                    BackgroundColor="White"
+                    HeightRequest="75"
+                    Image="clocks.png" Text="ACTIVE TIME" />
+        </Grid>
+        <Button VerticalOptions="End" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" BackgroundColor="Red" TextColor="White" Margin="0,30,0,0" />
     </StackLayout>
 </ContentPage>

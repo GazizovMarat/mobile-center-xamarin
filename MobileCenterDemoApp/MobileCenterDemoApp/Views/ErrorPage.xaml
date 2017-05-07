@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MobileCenterDemoApp.Views.ErrorPage">
     <StackLayout>
-        <Label x:Name="ErrorLabel" TextColor="Red" FontSize="20" />
+        <Image Source="error.png" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="300" Aspect="AspectFit" />
+        <Label x:Name="ErrorLabel" TextColor="Red" FontSize="30" />
         <Button x:Name="BackButton" Text="Go back"/>
     </StackLayout>
 </ContentPage>

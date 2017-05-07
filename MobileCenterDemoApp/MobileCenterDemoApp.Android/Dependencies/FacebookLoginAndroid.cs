@@ -1,51 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
-using MobileCenterDemoApp.Views;
+using MobileCenterDemoApp.Models;
+using MobileCenterDemoApp.Services;
+using Newtonsoft.Json;
 using Xamarin.Auth;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android;
-using Xamarin.Social;
-using Xamarin.Social.Services;
 
 [assembly:Dependency(typeof(FacebookLoginAndroid))]
 namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class FacebookLoginAndroid : IFacebook
     {
-        public event Action<Account> OnConnect;
 
-        public FacebookService Service { get; }
+        private readonly OAuth2Authenticator _oAuth2;
 
         private readonly Intent _authUi;
-        private bool _isLogin;
-        private Account _account;
+        private bool _isComplite;
+        private SocialAccount _account;
 
         public FacebookLoginAndroid()
         {
-            Service = Helpers.SocialNetworServices.FacebookService;
-            _authUi = Service.GetAuthenticateUI(MainActivity.Activity, AuthSuccess);            
+            _oAuth2 = Helpers.SocialNetworServices.FacebookAuth;
+            _authUi = _oAuth2.GetUI(MainActivity.Activity);            
         }
 
-        private void AuthSuccess(Account account)
-        {
-            _isLogin = true;
-            _account = account;
-            OnConnect?.Invoke(account);            
-        }
 
-        public async Task<Account> Login()
+        public async Task<SocialAccount> Login()
         {
-            MainActivity.Activity.StartActivityForResult(_authUi, 42);
-            return await Task.Run(() =>
+            MainActivity.Activity.StartActivity(_authUi);
+            _oAuth2.Completed += async (sender, args) =>
             {
-                while (!_isLogin)
-                    Task.Delay(100);
+                if (!args.IsAuthenticated)
+                {
+                    _isComplite = true;
+                    return;
+                }
 
-                return _account;
-            });
+                var request = new OAuth2Request("GET", new Uri("https://graph.facebook.com/me"), null, args.Account);
+                var response = await request.GetResponseAsync();
+                var text = response.GetResponseText();
+                var deserializeObject = JsonConvert.DeserializeObject<Dictionary<string,string>>(text);
+                
+                _account = new SocialAccount();
+
+                if (deserializeObject.TryGetValue("name", out string name))
+                    _account.UserName = name;
+
+                if (deserializeObject.TryGetValue("id", out string id))
+                    _account.UserId = id;
+
+                // 
+                request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{_account.UserId}/picture"), 
+                    new Dictionary<string, string>
+                    {
+                        {"height", 100.ToString() },
+                        {"width", 100.ToString() }
+                    }, args.Account);
+                response = await request.GetResponseAsync();
+
+                _account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
+                
+
+                _isComplite = true;
+
+                DataStore.OAuth2 = _oAuth2;
+            };
+
+            await Task.Run(() => { while (!_isComplite) Task.Delay(100); });
+            return _account;
         }
     }
 }

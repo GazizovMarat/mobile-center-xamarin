@@ -1,42 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using Android.Security.Keystore;
-using Microsoft.Azure.Mobile.Analytics;
-using MobileCenterDemoApp.Services;
-using Xamarin.Social;
+using Xamarin.Auth;
 using Xamarin.Social.Services;
 
 namespace MobileCenterDemoApp.Helpers
 {
-    public class SocialNetworServices
+    public static class SocialNetworServices
     {
         public static TwitterService TwitterService
             => new TwitterService
             {
-                ConsumerKey = "S2b5nyV5G1GzLxaNsyiRATTfX",
-                ConsumerSecret = "Wao0SjuBmi8gJ203nvsU5rhSYGtdv80nO5pOysSeF0OWpJVCK8",
-                CallbackUrl = new Uri("http://a2r5es95w1.org/")
+                ConsumerKey = "RpQDj4XFdHRvHp4l3uOKkyDJq",
+                ConsumerSecret = "qqOILC0EPMvOFdsYXbE5zkgccU5Dsuo8P7PwcDR3cGoRLRm21c",
+                CallbackUrl = new Uri("")
             };
 
         public static FacebookService FacebookService
             => new FacebookService
             {
-                ClientId = "120712398481198",
-                ClientSecret = "4d28516d4fe6f9b50c03c8bed20d5d91",
-                RedirectUrl = new Uri("http://a2r5es95w1.org/"),
-                Scope = "publish_actions"
+                ClientId = "1945815635652325",
+                ClientSecret = "f5638047a74faae2250f6436a065f26c",
+                RedirectUrl = new Uri("http://localhost/facebook"),
+                Scope = "public_profile"
             };
+        
 
-        public static async void Share(Item item)
-        {
-            if (DataStore.FacebookService != null)
-                await DataStore.FacebookService.ShareItemAsync(item, DataStore.Account);
-            else if (DataStore.TwitterService != null)
-                await DataStore.TwitterService.ShareItemAsync(item, DataStore.Account);
-            else
-                throw new UserNotAuthenticatedException();
+        public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
+            clientId: "1945815635652325",
+            scope: "public_profile",
+            authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
+        redirectUrl: new Uri("http://localhost/facebook"));
 
-            Analytics.TrackEvent("Share", new Dictionary<string, string> {{"Text", item.Text}});
-        }
+        public static OAuth1Authenticator TwitterAuth => new OAuth1Authenticator(
+            consumerKey: "RpQDj4XFdHRvHp4l3uOKkyDJq",
+            consumerSecret: "qqOILC0EPMvOFdsYXbE5zkgccU5Dsuo8P7PwcDR3cGoRLRm21c",
+            requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
+            authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
+            accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
+            callbackUrl: new Uri("https://www.visualstudio.com/vs/mobile-center/")
+        );
+
+
     }
 }

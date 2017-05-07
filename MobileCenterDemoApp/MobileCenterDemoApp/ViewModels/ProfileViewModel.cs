@@ -12,7 +12,7 @@ using Xamarin.Forms;
 
 namespace MobileCenterDemoApp.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class ProfileViewModel : ViewModelBase
     {
         public string Username => DataStore.UserName;
 
@@ -32,8 +32,8 @@ namespace MobileCenterDemoApp.ViewModels
             set => SetProperty(ref _stepsCount, value);
         }
 
-        private float _calories;
-        public float Calories
+        private double _calories;
+        public double Calories
         {
             get => _calories;
             set => SetProperty(ref _calories, value);
@@ -44,19 +44,28 @@ namespace MobileCenterDemoApp.ViewModels
             get => _distance;
             set => SetProperty(ref _distance, value);
         }
-        
+
+        private string _time;
+        public string Time
+        {
+            get => _time;
+            set => SetProperty(ref _time, value);
+        }
+
+        public ImageSource AccountImageSource => DataStore.Account.ImageSource;
+
         public Command ViewStatisticsCommand { get; set; }
 
         private static IFitnessTracker Tracker => DataStore.FitnessTracker;
 
-        public MainViewModel()
+        public ProfileViewModel()
         {
             ViewStatisticsCommand = new Command(async () => await Navigation.PushModalAsync(new StatisticsPage()));
 
+            if (Tracker == null)
+                return;
             if (!Tracker.IsConnected)
-            {
                 Tracker.Connect();
-            }
             if (Tracker.IsConnected)
                 Task.Run(Load);
         }
@@ -66,12 +75,14 @@ namespace MobileCenterDemoApp.ViewModels
             if (Tracker == null || !Tracker.IsConnected)
                 return;
 
-            DateTime end = DateTime.UtcNow;
-            DateTime start = end.AddDays(-1);
+            DateTime end = DateTime.UtcNow.AddSeconds(5);
+            DateTime start = end.AddDays(-1).AddMinutes(-5);
             StepsCount = (await Tracker.StepsByPeriod(start, end) ?? new[] {0}).Sum();
-            Calories = (await Tracker.CaloriesByPeriod(start, end) ?? new[] {0F}).Sum();
-            Distance = (await Tracker.DistanceByPeriod(start, end) ?? new[] {0F}).Sum();
-
+            Calories = (await Tracker.CaloriesByPeriod(start, end) ?? new[] {0D}).Sum();
+            Distance = (await Tracker.DistanceByPeriod(start, end) ?? new[] {0D}).Sum() / 1000D;
+            var milliseconds = (await Tracker.ActiveTimeByPeriod(start, end)).Max(x => x.TotalMilliseconds);
+            var timeSpan = TimeSpan.FromMilliseconds(milliseconds);
+            Time = $"{timeSpan.Hours}h {timeSpan.Minutes}m";
             Analytics.TrackEvent("Retrieve results from Google fit", new Dictionary<string, string>
             {
                 {nameof(StepsCount), StepsCount.ToString() },

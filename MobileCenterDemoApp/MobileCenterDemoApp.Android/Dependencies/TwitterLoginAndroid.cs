@@ -3,45 +3,65 @@ using System.Threading.Tasks;
 using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
+using MobileCenterDemoApp.Models;
+using MobileCenterDemoApp.Services;
 using Xamarin.Auth;
 using Xamarin.Forms;
-using Xamarin.Social.Services;
 
 [assembly: Dependency(typeof(TwitterLoginAndroid))]
 namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class TwitterLoginAndroid : ITwitter
     {
-        public event Action<Account> OnConnect;
 
-        public TwitterService Service { get; }
+        private readonly OAuth1Authenticator _oAuth1;
         private readonly Intent _authUi;
-        private bool _isLogin;
-        private Account _account;
+        private bool _isComplite;
 
         public TwitterLoginAndroid()
         {
-            Service = Helpers.SocialNetworServices.TwitterService;
-            _authUi = Service.GetAuthenticateUI(MainActivity.Activity, AuthSuccess);
+            _oAuth1 = Helpers.SocialNetworServices.TwitterAuth;
+            _authUi = _oAuth1.GetUI(MainActivity.Activity);
             
         }
-
-        private void AuthSuccess(Account account)
+        
+        public async Task<SocialAccount> Login()
         {
-            _isLogin = true;
-            _account = account;
-            OnConnect?.Invoke(account);
-        }
+            MainActivity.Activity.StartActivity(_authUi);
+            SocialAccount account = null;
+            _oAuth1.Completed += async (sender, args) =>
+            {
+                if (!args.IsAuthenticated)
+                {
+                    _isComplite = true;
+                    return;
+                }
 
-        public async Task<Account> Login()
-        {
-            MainActivity.Activity.StartActivityForResult(_authUi, 42);
+                account = new SocialAccount
+                {
+                    UserId = args.Account.Properties["user_id"],
+                    UserName = args.Account.Properties["screen_name"]
+                };
+
+                var request = new OAuth1Request("GET",
+                    new Uri("https://api.twitter.com/1.1/account/verify_credentials.json"),
+                    null, args.Account);
+                var response = await request.GetResponseAsync();
+                
+                var jo = Newtonsoft.Json.Linq.JObject.Parse(response.GetResponseText());
+                var uri = (string) jo["profile_image_url"];
+                account.ImageSource = ImageSource.FromUri(new Uri(uri));
+
+                _isComplite = true;
+                DataStore.OAuth1 = _oAuth1;
+            };
+
             return await Task.Run(() =>
             {
-                while (!_isLogin)
+                while (!_isComplite)
                     Task.Delay(100);
 
-                return _account;
+                return account;
             });
         }
     }

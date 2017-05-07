@@ -23,8 +23,9 @@ namespace MobileCenterDemoApp.iOS
 		{
 			global::Xamarin.Forms.Forms.Init ();
 			LoadApplication (new App ());
+		    OxyPlot.Xamarin.Forms.Platform.iOS.PlotViewRenderer.Init();
 
-		    UiWindow = this.Window;
+            UiWindow = this.Window;
 
 			return base.FinishedLaunching (app, options);
 		}

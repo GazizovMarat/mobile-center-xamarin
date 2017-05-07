@@ -30,6 +30,7 @@ namespace MobileCenterDemoApp.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
+            OxyPlot.Xamarin.Forms.Platform.Android.PlotViewRenderer.Init();
 
             Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());

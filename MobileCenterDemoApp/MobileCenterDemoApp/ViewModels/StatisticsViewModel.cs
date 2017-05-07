@@ -9,6 +9,9 @@ using Microsoft.Azure.Mobile.Crashes;
 using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Services;
 using MobileCenterDemoApp.Views;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using Xamarin.Forms;
 
 namespace MobileCenterDemoApp.ViewModels
@@ -16,82 +19,125 @@ namespace MobileCenterDemoApp.ViewModels
     public class StatisticsViewModel : ViewModelBase
     {
         public Command CrashCommand { get; set; }
-        public Command BackToMainCommand { get; set; }
 
-        private string _chosen = "Steps";
-        public string ChosenData
+        private PlotModel _model;
+        public PlotModel Model
         {
-            get => _chosen;
-            set
-            {
-                SetProperty(ref _chosen, value);
-                UpdateData();
-            }
-            
+            get => _model;
+            set => SetProperty(ref _model, value);
         }
 
-        private ObservableCollection<string> _collection;
+        public int StartDate { get; } = DateTime.Now.AddDays(-5).Day;
+        public int EndDate { get; } = DateTime.Now.Day;
 
-        public ObservableCollection<string> DataTypes
+        private int _minValue;
+        public int MinValue
         {
-            get => _collection;
-            set => SetProperty(ref _collection, value);
+            get => _minValue;
+            set => SetProperty(ref _minValue, value);
         }
 
-        private ObservableCollection<string> _data;
-        public ObservableCollection<string> Collection
+        private double _maxValue;
+        public double MaxValue
         {
-            get => _data;
-            set => SetProperty(ref _data, value);
+            get => _maxValue;
+            set => SetProperty(ref _maxValue, value);
         }
 
-        private async void UpdateData()
-        {
+        private async void UpdateData(string data)
+        {            
             if(!(DataStore.FitnessTracker?.IsConnected ?? false))
                 return;
 
+            Model.Axes.Clear();
+            Model.Series.Clear();
 
-            switch (ChosenData)
+            
+            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) => func(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow);
+            var startDate = DateTime.UtcNow.AddDays(-5);
+            var lineSeries = new LineSeries();
+            switch (data)
             {
                 case "Steps":
-                    Collection.Clear();
-
-                    foreach (var x in (await DataStore.FitnessTracker.StepsByPeriod(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow))
-                        .Select((x, i) => $"{DateTime.UtcNow.AddDays(-4 + i).ToShortDateString()} {x}"))
+                    IEnumerable<int> steps = (await Get(DataStore.FitnessTracker.StepsByPeriod)).ToArray();
+                    MaxValue = steps.Max();
+                    foreach (var x in steps)
                     {
-                        Collection.Add(x);
+                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
+                        startDate = startDate.AddDays(1);
                     }
                     break;
                 case "Calories":
-                    Collection.Clear();
-
-                    foreach (var x in (await DataStore.FitnessTracker.CaloriesByPeriod(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow))
-                        .Select((x, i) => $"{DateTime.UtcNow.AddDays(-4 + i).ToShortDateString()} {x}"))
+                    IEnumerable<double> calories = (await Get(DataStore.FitnessTracker.CaloriesByPeriod)).ToArray();
+                    MaxValue = calories.Max();
+                    foreach (var x in await Get(DataStore.FitnessTracker.CaloriesByPeriod))
                     {
-                        Collection.Add(x);
+                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
+                        startDate = startDate.AddDays(1);
                     }
                     break;
                 case "Distance":
-                    Collection.Clear();
-
-                    foreach (var x in (await DataStore.FitnessTracker.DistanceByPeriod(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow))
-                        .Select((x, i) => $"{DateTime.UtcNow.AddDays(-4 + i).ToShortDateString()} {x}"))
+                    IEnumerable<double> distance = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).ToArray();
+                    MaxValue = distance.Max();
+                    foreach (var x in distance)
                     {
-                        Collection.Add(x);
+                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
+                        startDate = startDate.AddDays(1);
+                    }
+                    break;
+                case "time":
+                    IEnumerable<double> times = (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes).ToArray();
+                    MaxValue = times.Max();
+                    foreach (var x in times)
+                    {
+                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
+                        startDate = startDate.AddDays(1);
                     }
                     break;
             }
+            Model.Axes.Add(new LinearAxis
+            {
+                Minimum = DateTime.Now.AddDays(-5).Day,
+                Maximum = DateTime.Now.Day,
+                Position = AxisPosition.Bottom
+            });
+            Model.Axes.Add(new LinearAxis
+            {
+                Minimum = 0,
+                Maximum = MaxValue,
+                Position = AxisPosition.Left
+            });
 
-            Analytics.TrackEvent($"Google fit, {ChosenData} retrieve success");
+            Model.Series.Add(lineSeries);
+
+            _currentData = data;
+            RaisCanExecute();
+            Analytics.TrackEvent("Google fit, retrieve success");
         }
+
+        public Command ShowStepsCommand { get; }
+        public Command ShowCaloriesCommand { get; }
+        public Command ShowDistanceCommand { get; }
+        public Command ShowActiveTimeCommand { get; }
+
+        private string _currentData;
 
         public StatisticsViewModel()
         {
-            Collection = new ObservableCollection<string>();
-            DataTypes = new ObservableCollection<string>(new[] {"Steps", "Calories", "Distance"});
+            Model = new PlotModel{Title = "TEST"};
             CrashCommand = new Command(CrashApp);
-            BackToMainCommand = new Command(async () => await Navigation.PopModalAsync());
-            UpdateData();
+            ShowStepsCommand = new Command(() => UpdateData("Steps"), () => _currentData != "Steps");
+            ShowCaloriesCommand = new Command(() => UpdateData("Calories"), () => _currentData != "Calories");
+            ShowDistanceCommand = new Command(() => UpdateData("Distance"), () => _currentData != "Distance");
+            ShowActiveTimeCommand = new Command(() => UpdateData("time"), () => _currentData != "time");
+        }
+
+        private void RaisCanExecute()
+        {
+            ShowStepsCommand.ChangeCanExecute();
+            ShowCaloriesCommand.ChangeCanExecute();
+            ShowDistanceCommand.ChangeCanExecute();
+            ShowActiveTimeCommand.ChangeCanExecute();
         }
 
         private static void CrashApp()
