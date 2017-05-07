@@ -27,7 +27,6 @@
                         BackgroundColor="Blue" Image="facebook.png" TextColor="White" HeightRequest="60" />
                 <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter"
                         BackgroundColor="DeepSkyBlue" Image="twitter.png" TextColor="White" HeightRequest="60"/>
-                <Button Command="{Binding LoginCommand}" Text="Login" HeightRequest="60"/>
             </StackLayout>
         </StackLayout>
     </ContentPage.Content>
