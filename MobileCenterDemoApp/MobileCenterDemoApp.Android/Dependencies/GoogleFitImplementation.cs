@@ -42,7 +42,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
         {
             using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
-                .BucketByActivityType(1, TimeUnit.Seconds)
+                .BucketByTime(1, TimeUnit.Days)
                 .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(caloriesRequest))

@@ -5,6 +5,6 @@
              xmlns:views="clr-namespace:MobileCenterDemoApp.Views;assembly=MobileCenterDemoApp.Android"
             Title="Mobile Center">
   
-    <views:ProfilePage/>
+    <views:ProfilePage />
     <views:StatisticsPage/>
 </TabbedPage>

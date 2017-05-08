@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Android.App;
 using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
@@ -18,19 +19,18 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         private readonly OAuth2Authenticator _oAuth2;
 
-        private readonly Intent _authUi;
+        private Intent _authUi;
         private bool _isComplite;
         private SocialAccount _account;
 
         public FacebookLoginAndroid()
         {
             _oAuth2 = Helpers.SocialNetworServices.FacebookAuth;
-            _authUi = _oAuth2.GetUI(MainActivity.Activity);            
+                        
         }
-
-
         public async Task<SocialAccount> Login()
         {
+            _authUi = _oAuth2.GetUI(MainActivity.Activity);
             MainActivity.Activity.StartActivity(_authUi);
             _oAuth2.Completed += async (sender, args) =>
             {
@@ -53,7 +53,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 if (deserializeObject.TryGetValue("id", out string id))
                     _account.UserId = id;
 
-                // 
                 request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{_account.UserId}/picture"), 
                     new Dictionary<string, string>
                     {
@@ -64,7 +63,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
                 _account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
                 
-
                 _isComplite = true;
 
                 DataStore.OAuth2 = _oAuth2;

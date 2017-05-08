@@ -4,7 +4,9 @@
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels;assembly=MobileCenterDemoApp.Android"
              x:Class="MobileCenterDemoApp.Views.LoginPage"
              Navigation="{Binding Navigation}"
-             BackgroundImage="loginbackground.png">
+             BackgroundImage="loginbackground.png"
+             
+             >
     <ContentPage.BindingContext>
         <viewModels:LoginViewModel />
     </ContentPage.BindingContext>
@@ -18,11 +20,7 @@
                 <Image Source="error.png" WidthRequest="150" Aspect="AspectFit" />
                 <Label TextColor="Red" Text="{Binding ErrorMessage}" HorizontalOptions="Center" FontSize="20" />
             </StackLayout>
-            <StackLayout VerticalOptions="CenterAndExpand" Margin="0,60,0,0" IsVisible="{Binding ShowWait}">
-                <Image Source="waitimage.gif" WidthRequest="200" Aspect="AspectFit" />
-                <Label TextColor="LightBlue" Text="Please, wait..." HorizontalOptions="Center" FontSize="20" Margin="0,20,0,0" />
-            </StackLayout>
-            <StackLayout VerticalOptions="EndAndExpand" Margin="0,20,0,80" HorizontalOptions="Center">
+            <StackLayout VerticalOptions="EndAndExpand" Margin="0,20,0,40" HorizontalOptions="Center">
                 <Button Command="{Binding LoginViaFacebookCommand}" Text="Login via Facebook" 
                         BackgroundColor="Blue" Image="facebook.png" TextColor="White" HeightRequest="60" />
                 <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter"

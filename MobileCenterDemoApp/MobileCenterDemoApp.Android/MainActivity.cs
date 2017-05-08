@@ -5,6 +5,7 @@ using Android.Gms.Common;
 using Android.Gms.Common.Apis;
 using Android.Gms.Fitness;
 using Android.OS;
+using Android.Views;
 using Microsoft.Azure.Mobile.Analytics;
 
 namespace MobileCenterDemoApp.Droid
@@ -28,11 +29,11 @@ namespace MobileCenterDemoApp.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
-
+            
             base.OnCreate(bundle);
-            OxyPlot.Xamarin.Forms.Platform.Android.PlotViewRenderer.Init();
 
             Xamarin.Forms.Forms.Init(this, bundle);
+            OxyPlot.Xamarin.Forms.Platform.Android.PlotViewRenderer.Init();
             LoadApplication(new App());
 
             if (bundle != null && bundle.ContainsKey("authInProgress"))

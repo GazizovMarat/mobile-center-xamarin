@@ -243,9 +243,6 @@
     <AndroidResource Include="Resources\Drawable\twitter.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\Drawable\waitimage.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\Drawable\statisticsicon.png" />
   </ItemGroup>
   <ItemGroup>

@@ -45,70 +45,78 @@ namespace MobileCenterDemoApp.ViewModels
         }
 
         private async void UpdateData(string data)
-        {            
-            if(!(DataStore.FitnessTracker?.IsConnected ?? false))
+        {
+            if (!(DataStore.FitnessTracker?.IsConnected ?? false))
                 return;
-
-            Model.Axes.Clear();
-            Model.Series.Clear();
-
-            
-            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) => func(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow);
-            var startDate = DateTime.UtcNow.AddDays(-5);
-            var lineSeries = new LineSeries();
+            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) => func(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddHours(1));
+            OxyColor lineColor;
+            IEnumerable<double> enumerable;
             switch (data)
             {
                 case "Steps":
-                    IEnumerable<int> steps = (await Get(DataStore.FitnessTracker.StepsByPeriod)).ToArray();
-                    MaxValue = steps.Max();
-                    foreach (var x in steps)
-                    {
-                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
-                        startDate = startDate.AddDays(1);
-                    }
+                    enumerable = (await Get(DataStore.FitnessTracker.StepsByPeriod)).Select(x => (double) x);
+                    lineColor= OxyColors.Blue;
                     break;
                 case "Calories":
-                    IEnumerable<double> calories = (await Get(DataStore.FitnessTracker.CaloriesByPeriod)).ToArray();
-                    MaxValue = calories.Max();
-                    foreach (var x in await Get(DataStore.FitnessTracker.CaloriesByPeriod))
-                    {
-                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
-                        startDate = startDate.AddDays(1);
-                    }
+                    enumerable = (await Get(DataStore.FitnessTracker.CaloriesByPeriod));
+                    lineColor = OxyColors.Orange;
                     break;
                 case "Distance":
-                    IEnumerable<double> distance = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).ToArray();
-                    MaxValue = distance.Max();
-                    foreach (var x in distance)
-                    {
-                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
-                        startDate = startDate.AddDays(1);
-                    }
+                    enumerable = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).Select(x => x/1000);
+                    lineColor = OxyColors.Violet;
                     break;
-                case "time":
-                    IEnumerable<double> times = (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes).ToArray();
-                    MaxValue = times.Max();
-                    foreach (var x in times)
-                    {
-                        lineSeries.Points.Add(new DataPoint(startDate.Day, x));
-                        startDate = startDate.AddDays(1);
-                    }
+                case "Active time":
+                    enumerable = (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes);
+                    lineColor = OxyColors.Green;
                     break;
+                default:
+                    return;                   
             }
-            Model.Axes.Add(new LinearAxis
+
+            double[] dataArray = enumerable.ToArray();
+
+            PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
+
+            double minValue = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4));
+            double maxValue = DateTimeAxis.ToDouble(DateTime.UtcNow.Date);
+
+            var bottomAxis = new DateTimeAxis
             {
-                Minimum = DateTime.Now.AddDays(-5).Day,
-                Maximum = DateTime.Now.Day,
-                Position = AxisPosition.Bottom
-            });
+                Position = AxisPosition.Bottom,
+                StringFormat= "MMM/dd",
+                Minimum = minValue,
+                Maximum = maxValue,
+            };
+            Model.Axes.Add(bottomAxis);
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
-                Maximum = MaxValue,
-                Position = AxisPosition.Left
+                Maximum = data.Max(),
+                Position = AxisPosition.Left,
             });
 
-            Model.Series.Add(lineSeries);
+            var startDate = DateTime.UtcNow.Date.AddDays(-4);
+            var lineSeries = new AreaSeries
+            {
+                MarkerType = MarkerType.None,
+                MarkerSize = 4,
+                LineStyle = LineStyle.Solid,
+                Color = lineColor,
+                TextColor = OxyColors.Gray,
+                TrackerFormatString = "{4}"
+            };
+
+            if (dataArray.Length < 5)
+                dataArray = Enumerable.Range(0, 5 - dataArray.Length).Select(x => 0D).Concat(dataArray).ToArray();
+
+            foreach (double d in dataArray)
+            {
+                lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate.Day), d));
+                startDate = startDate.AddDays(1);
+            }
+
+            model.Series.Add(lineSeries);
+            Model = model;
 
             _currentData = data;
             RaisCanExecute();
@@ -129,7 +137,8 @@ namespace MobileCenterDemoApp.ViewModels
             ShowStepsCommand = new Command(() => UpdateData("Steps"), () => _currentData != "Steps");
             ShowCaloriesCommand = new Command(() => UpdateData("Calories"), () => _currentData != "Calories");
             ShowDistanceCommand = new Command(() => UpdateData("Distance"), () => _currentData != "Distance");
-            ShowActiveTimeCommand = new Command(() => UpdateData("time"), () => _currentData != "time");
+            ShowActiveTimeCommand = new Command(() => UpdateData("Active time"), () => _currentData != "Active time");
+            UpdateData("Steps");
         }
 
         private void RaisCanExecute()
