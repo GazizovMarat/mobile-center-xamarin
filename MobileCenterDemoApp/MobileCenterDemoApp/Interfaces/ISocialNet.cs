@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MobileCenterDemoApp.Models;
-using Xamarin.Auth;
-using Xamarin.Social.Services;
 
 namespace MobileCenterDemoApp.Interfaces
 {

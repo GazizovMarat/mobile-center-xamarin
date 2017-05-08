@@ -1,15 +1,13 @@
 ﻿using System;
-using ImageCircle.Forms.Plugin.Abstractions;
+using System.Collections.Generic;
 using Microsoft.Azure.Mobile.Analytics;
 using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
 using MobileCenterDemoApp.Services;
-using MobileCenterDemoApp.ViewHelpers;
 using MobileCenterDemoApp.Views;
-using Xamarin.Auth;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
+// ReSharper disable ExplicitCallerInfoArgument
 
 namespace MobileCenterDemoApp.ViewModels
 {
@@ -63,16 +61,22 @@ namespace MobileCenterDemoApp.ViewModels
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
             LoginCommand = new Command(() => Login(new SocialAccount
             {
-                UserName = "Larry Gardner", ImageSource = ImageSource.FromUri(new Uri("http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"))
-                , UserId = "859674503487606784"
-            }));
+                UserName = "Larry Gardner",
+                ImageSource = ImageSource.FromUri(new Uri("http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png")),
+                UserId = "859674503487606784"
+            }, "DEBUG"));
         }
 
         #region Auth
 
         private async void LoginViaFacebook()
         {
-            Analytics.TrackEvent("Try login via facebook");
+            Analytics.TrackEvent("Facebook login button clicked", 
+                new Dictionary<string, string>
+            {
+                {"Page", "Login" },
+                {"Page", "Clicks" }
+            });
 
             if (DataStore.FacebookService == null)
             {
@@ -86,12 +90,18 @@ namespace MobileCenterDemoApp.ViewModels
                 DataStore.FacebookService = facebookService;
             }
             ShowWait = true;
-            Login(await DataStore.FacebookService.Login());
+            Login(await DataStore.FacebookService.Login(), "Facebook");
         }
 
         private async void LoginViaTwitter()
         {
-            Analytics.TrackEvent("Try login via twitter");
+            Analytics.TrackEvent("Twitter login button clicked", 
+                new Dictionary<string, string>
+            {
+                {"Page", "Login" },
+                {"Page", "Clicks" }
+            });
+
             if (DataStore.TwitterService == null)
             {
                 ITwitter twitterService = DependencyService.Get<ITwitter>();
@@ -102,14 +112,24 @@ namespace MobileCenterDemoApp.ViewModels
                 }
                 DataStore.TwitterService = twitterService;
             }
-            ShowWait = true;
-            Login(await DataStore.TwitterService.Login());
+            Login(await DataStore.TwitterService.Login(), "Twitter");
         }
 
-        private void Login(SocialAccount account)
+        private void Login(SocialAccount account, string socialNet)
         {
-            ShowWait = false;
-            if (account == null)
+            Analytics.TrackEvent("Trying to login in Facebook/Twitter", 
+                new Dictionary<string, string>
+                {
+                    {"Page", "Login"},
+                    {"Category", "Request"},
+                    {"API", "Social network" },
+                    {"Social network", socialNet},
+                    {"Result", account == null ? "failure" : "success" },
+                    {"Error message", "" }
+                }
+        );
+
+        if (account == null)
             {
                 ErrorMessage = "Login failed, please try again";
                 return;

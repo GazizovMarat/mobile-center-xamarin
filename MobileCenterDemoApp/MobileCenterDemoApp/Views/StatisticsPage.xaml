@@ -15,13 +15,13 @@
         
         <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
             <Grid.RowDefinitions>
-                <RowDefinition Height="150" />
+                <RowDefinition Height="200" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="95" />
+                <ColumnDefinition Width="95" />
+                <ColumnDefinition Width="95" />
+                <ColumnDefinition Width="95" />
             </Grid.ColumnDefinitions>
             <Button Command="{Binding ShowStepsCommand}" 
                     Grid.Row="0" Grid.Column="0" 
@@ -29,7 +29,7 @@
                     VerticalOptions="End" 
                     ContentLayout="Top,0"
                     BackgroundColor="White"
-                    HeightRequest="75"
+                    HeightRequest="125"
                     Image="steps.png" Text="STEPS" />
             <Button Command="{Binding ShowCaloriesCommand}" 
                     Grid.Row="0" Grid.Column="1" 
@@ -37,7 +37,7 @@
                     VerticalOptions="End" 
                     ContentLayout="Top,0"
                     BackgroundColor="White"
-                    HeightRequest="75"
+                    HeightRequest="125"
                     Image="burn.png" Text="STEPS" />
 
             <Button Command="{Binding ShowDistanceCommand}" 
@@ -46,7 +46,7 @@
                     VerticalOptions="End" 
                     ContentLayout="Top,0"
                     BackgroundColor="White"
-                    HeightRequest="75"
+                    HeightRequest="125"
                     Image="distance.png" Text="DISTANCE" />
 
             <Button Command="{Binding ShowActiveTimeCommand}" 
@@ -55,7 +55,7 @@
                     VerticalOptions="End" 
                     ContentLayout="Top,0"
                     BackgroundColor="White"
-                    HeightRequest="75"
+                    HeightRequest="125"
                     Image="clocks.png" Text="ACTIVE TIME" />
         </Grid>
         <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 

@@ -14,7 +14,7 @@ namespace MobileCenterDemoApp.ViewModels
 {
     public class ProfileViewModel : ViewModelBase
     {
-        public string Username => DataStore.UserName;
+        public string Username => DataStore.Account?.UserName;
 
         private bool _infoLoad;
 
@@ -23,7 +23,6 @@ namespace MobileCenterDemoApp.ViewModels
             get => _infoLoad;
             set => SetProperty(ref _infoLoad, value);
         }
-
 
         private int _stepsCount;
         public int StepsCount
@@ -64,10 +63,14 @@ namespace MobileCenterDemoApp.ViewModels
 
             if (Tracker == null)
                 return;
+
             if (!Tracker.IsConnected)
                 Tracker.Connect();
+
             if (Tracker.IsConnected)
                 Task.Run(Load);
+            else
+                Task.Run(() => Navigation.PushModalAsync(new ErrorPage("Connection to google fit failed")));
         }
 
         private async Task Load()
@@ -75,14 +78,15 @@ namespace MobileCenterDemoApp.ViewModels
             if (Tracker == null || !Tracker.IsConnected)
                 return;
 
-            DateTime end = DateTime.UtcNow.AddSeconds(5);
-            DateTime start = end.AddDays(-1).AddMinutes(-5);
+            DateTime end = DateTime.UtcNow.Date.AddDays(1);
+            DateTime start = DateTime.UtcNow.Date;
             StepsCount = (await Tracker.StepsByPeriod(start, end) ?? new[] {0}).Sum();
             Calories = (await Tracker.CaloriesByPeriod(start, end) ?? new[] {0D}).Sum();
             Distance = (await Tracker.DistanceByPeriod(start, end) ?? new[] {0D}).Sum() / 1000D;
-            var milliseconds = (await Tracker.ActiveTimeByPeriod(start, end)).Max(x => x.TotalMilliseconds);
-            var timeSpan = TimeSpan.FromMilliseconds(milliseconds);
+            double milliseconds = (await Tracker.ActiveTimeByPeriod(start, end)).Max(x => x.TotalMilliseconds);
+            TimeSpan timeSpan = TimeSpan.FromMilliseconds(milliseconds);
             Time = $"{timeSpan.Hours}h {timeSpan.Minutes}m";
+
             Analytics.TrackEvent("Retrieve results from Google fit", new Dictionary<string, string>
             {
                 {nameof(StepsCount), StepsCount.ToString() },

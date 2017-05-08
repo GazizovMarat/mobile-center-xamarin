@@ -1,29 +1,10 @@
 ﻿using System;
 using Xamarin.Auth;
-using Xamarin.Social.Services;
 
 namespace MobileCenterDemoApp.Helpers
 {
     public static class SocialNetworServices
     {
-        public static TwitterService TwitterService
-            => new TwitterService
-            {
-                ConsumerKey = "RpQDj4XFdHRvHp4l3uOKkyDJq",
-                ConsumerSecret = "qqOILC0EPMvOFdsYXbE5zkgccU5Dsuo8P7PwcDR3cGoRLRm21c",
-                CallbackUrl = new Uri("")
-            };
-
-        public static FacebookService FacebookService
-            => new FacebookService
-            {
-                ClientId = "1945815635652325",
-                ClientSecret = "f5638047a74faae2250f6436a065f26c",
-                RedirectUrl = new Uri("http://localhost/facebook"),
-                Scope = "public_profile"
-            };
-        
-
         public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
             clientId: "1945815635652325",
             scope: "public_profile",

@@ -4,7 +4,6 @@ using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
-using MobileCenterDemoApp.Services;
 using Xamarin.Auth;
 using Xamarin.Forms;
 
@@ -15,18 +14,16 @@ namespace MobileCenterDemoApp.Droid.Dependencies
     {
 
         private readonly OAuth1Authenticator _oAuth1;
-        private readonly Intent _authUi;
+        private Intent _authUi;
         private bool _isComplite;
 
         public TwitterLoginAndroid()
         {
             _oAuth1 = Helpers.SocialNetworServices.TwitterAuth;
-            _authUi = _oAuth1.GetUI(MainActivity.Activity);
-            
         }
-        
         public async Task<SocialAccount> Login()
         {
+            _authUi = _oAuth1.GetUI(MainActivity.Activity);
             MainActivity.Activity.StartActivity(_authUi);
             SocialAccount account = null;
             _oAuth1.Completed += async (sender, args) =>
@@ -53,7 +50,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 account.ImageSource = ImageSource.FromUri(new Uri(uri));
 
                 _isComplite = true;
-                DataStore.OAuth1 = _oAuth1;
             };
 
             return await Task.Run(() =>

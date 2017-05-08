@@ -8,15 +8,14 @@ using Xamarin.Forms;
 
 namespace MobileCenterDemoApp
 {
-	public partial class App : Application
+	public partial class App
 	{
 		public App ()
 		{
 			InitializeComponent();
             MainPage = new NavigationPage(new LoginPage());
 
-		    MobileCenter.Start("ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8", typeof(Analytics), typeof(Crashes));
-		    
+		    MobileCenter.Start("ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8", typeof(Analytics), typeof(Crashes));		    
         }
 
 	    protected override void OnStart()

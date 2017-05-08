@@ -48,7 +48,10 @@ namespace MobileCenterDemoApp.ViewModels
         {
             if (!(DataStore.FitnessTracker?.IsConnected ?? false))
                 return;
-            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) => func(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddHours(1));
+
+            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) 
+                => func(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddHours(1));
+
             OxyColor lineColor;
             IEnumerable<double> enumerable;
             switch (data)
@@ -77,38 +80,33 @@ namespace MobileCenterDemoApp.ViewModels
 
             PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
 
-            double minValue = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4));
-            double maxValue = DateTimeAxis.ToDouble(DateTime.UtcNow.Date);
-
-            var bottomAxis = new DateTimeAxis
+            Model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
-                StringFormat= "MMM/dd",
-                Minimum = minValue,
-                Maximum = maxValue,
-            };
-            Model.Axes.Add(bottomAxis);
+                StringFormat = "MMM/dd",
+                Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4)),
+                Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date),
+            });
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
                 Maximum = data.Max(),
                 Position = AxisPosition.Left,
             });
-
-            var startDate = DateTime.UtcNow.Date.AddDays(-4);
+            
             var lineSeries = new AreaSeries
             {
                 MarkerType = MarkerType.None,
                 MarkerSize = 4,
                 LineStyle = LineStyle.Solid,
                 Color = lineColor,
-                TextColor = OxyColors.Gray,
                 TrackerFormatString = "{4}"
             };
 
             if (dataArray.Length < 5)
                 dataArray = Enumerable.Range(0, 5 - dataArray.Length).Select(x => 0D).Concat(dataArray).ToArray();
 
+            var startDate = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
                 lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate.Day), d));

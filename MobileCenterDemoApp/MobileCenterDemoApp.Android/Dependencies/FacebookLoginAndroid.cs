@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Android.App;
 using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
-using MobileCenterDemoApp.Services;
 using Newtonsoft.Json;
 using Xamarin.Auth;
 using Xamarin.Forms;
@@ -65,7 +63,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 
                 _isComplite = true;
 
-                DataStore.OAuth2 = _oAuth2;
             };
 
             await Task.Run(() => { while (!_isComplite) Task.Delay(100); });
