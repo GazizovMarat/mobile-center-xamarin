@@ -51,7 +51,7 @@ namespace MobileCenterDemoApp.ViewModels
 
         public Command LoginViaFacebookCommand { get; set; }
         public Command LoginViaTwitterCommand { get; set; }
-        public Command LoginCommand { get; set; }
+        
 
         public LoginViewModel()
         {
@@ -59,12 +59,6 @@ namespace MobileCenterDemoApp.ViewModels
             
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
-            LoginCommand = new Command(() => Login(new SocialAccount
-            {
-                UserName = "Larry Gardner",
-                ImageSource = ImageSource.FromUri(new Uri("http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png")),
-                UserId = "859674503487606784"
-            }, "DEBUG"));
         }
 
         #region Auth
