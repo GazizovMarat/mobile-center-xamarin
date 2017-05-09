@@ -12,7 +12,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class TwitterLoginAndroid : ITwitter
     {
-
+        public event Action<string> OnError;
         private readonly OAuth1Authenticator _oAuth1;
         private Intent _authUi;
         private bool _isComplite;
@@ -21,6 +21,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
         {
             _oAuth1 = Helpers.SocialNetworServices.TwitterAuth;
         }
+
         public async Task<SocialAccount> Login()
         {
             _authUi = _oAuth1.GetUI(MainActivity.Activity);
@@ -51,6 +52,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
                 _isComplite = true;
             };
+            _oAuth1.Error += (sender, args) => OnError?.Invoke(args.Message);
 
             return await Task.Run(() =>
             {
@@ -60,5 +62,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 return account;
             });
         }
+
     }
 }

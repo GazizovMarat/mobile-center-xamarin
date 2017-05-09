@@ -4,9 +4,8 @@
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels;assembly=MobileCenterDemoApp.Android"
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="MobileCenterDemoApp.Views.StatisticsPage"
-             Navigation="{Binding Navigation}"
-             Title="Statistics"
-             Icon="statisticsicon.png">
+             Icon="statisticsicon1.png" Title="Statistics"
+             Navigation="{Binding Navigation}">
     <ContentPage.BindingContext>
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>

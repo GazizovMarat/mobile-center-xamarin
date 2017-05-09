@@ -19,13 +19,19 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class GoogleFitImplementation : IFitnessTracker
     {
+        public string ApiName { get; } = "Google fit";
+
+        public event Action<string> OnError;
+        public event Action OnConnect;
+
         private static GoogleApiClient Client => MainActivity.Activity.MClient;
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
         public async Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
         {
-            using (DataReadRequest stepRequest = CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end))
+            using (DataReadRequest stepRequest =
+                CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end))
             using (IResult stepResult = await ReadData(stepRequest))
                 return GetIntFromResult(stepResult);
         }
@@ -36,7 +42,6 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             using (IResult distanceResult = await ReadData(distanceRequest))
                 return GetFloatFromResult(distanceResult).Select(x => (double)x);
         }
-
 
         public async Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
         {
@@ -70,8 +75,16 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
             if(!Client.IsConnecting && !Client.IsConnected)
                 return;
-
-            Client.Connect();
+            try
+            {
+                Client.Connect();
+                if (Client.IsConnected)
+                    OnConnect?.Invoke();
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e.Message);
+            }
         }
 
         public void Disconnect()
@@ -81,22 +94,28 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
             if (!Client.IsConnected)
                 return;
-
-            Client.Disconnect();
+            try
+            {
+                Client.Disconnect();
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e.Message);
+            }
         }
 
         public void Dispose() => Client?.Dispose();
 
         #region Implements the Google Fit data access        
 
-        DataReadRequest CreateRequest(DataType input, DataType output, DateTime start, DateTime end)
+        private DataReadRequest CreateRequest(DataType input, DataType output, DateTime start, DateTime end)
             => new DataReadRequest.Builder()
                 .Aggregate(input, output)
                 .BucketByTime(1, TimeUnit.Days)
                 .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)                
                 .Build();
 
-        int[] GetIntFromResult(IResult result)
+        private IEnumerable<int> GetIntFromResult(IResult result)
         {
             if (result == null)
                 return null;
@@ -107,7 +126,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             return buckets.Select(ExtractInt).ToArray();
         }
 
-        float[] GetFloatFromResult(IResult result)
+        private IEnumerable<float> GetFloatFromResult(IResult result)
         {
             if (result == null)
                 return null;

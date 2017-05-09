@@ -80,16 +80,10 @@ namespace MobileCenterDemoApp.ViewModels
 
             if (DataStore.FacebookService == null)
             {
-                IFacebook facebookService = DependencyService.Get<IFacebook>();
-                if (facebookService == null)
-                {
-                    ErrorMessage = "Facebook auth does not implement for current platform";
-                    return;
-                }
-
-                DataStore.FacebookService = facebookService;
+                DataStore.FacebookService = DependencyService.Get<IFacebook>(); 
             }
-            ShowWait = true;
+
+            DataStore.FacebookService.OnError += error => AuthError("Facebook", error);
             Login(await DataStore.FacebookService.Login(), "Facebook");
         }
 
@@ -104,32 +98,27 @@ namespace MobileCenterDemoApp.ViewModels
 
             if (DataStore.TwitterService == null)
             {
-                ITwitter twitterService = DependencyService.Get<ITwitter>();
-                if (twitterService == null)
-                {
-                    ErrorMessage = "Twitter auth does not implement for current platform";
-                    return;
-                }
-                DataStore.TwitterService = twitterService;
+                DataStore.TwitterService = DependencyService.Get<ITwitter>();
             }
+
+            DataStore.TwitterService.OnError += error => AuthError("Twitter", error);
             Login(await DataStore.TwitterService.Login(), "Twitter");
         }
 
         private void Login(SocialAccount account, string socialNet)
         {
-            Analytics.TrackEvent("Trying to login in Facebook/Twitter", 
+            Analytics.TrackEvent("Trying to login in Facebook/Twitter",
                 new Dictionary<string, string>
                 {
                     {"Page", "Login"},
                     {"Category", "Request"},
-                    {"API", "Social network" },
+                    {"API", "Social network"},
                     {"Social network", socialNet},
-                    {"Result", account == null ? "failure" : "success" },
-                    {"Error message", "" }
-                }
-        );
+                    {"Result", (account != null).ToString()},
+                    {"Error message", account == null ? "Cancel by user" : ""}
+                });
 
-        if (account == null)
+            if (account == null)
             {
                 ErrorMessage = "Login failed, please try again";
                 return;
@@ -137,8 +126,24 @@ namespace MobileCenterDemoApp.ViewModels
 
             DataStore.Account = account;
 
-            Analytics.TrackEvent($"Success login ({DataStore.Account.UserName})");
-            Application.Current.MainPage = new NavigationPage(new MainPage());
+            DataStore.FitnessTracker = DependencyService.Get<IFitnessTracker>();
+
+            Application.Current.MainPage = new MainPage();
+        }
+
+        private void AuthError(string socialNet, string message)
+        {
+            Analytics.TrackEvent("Trying to login in Facebook/Twitter",
+                new Dictionary<string, string>
+                {
+                    {"Page", "Login"},
+                    {"Category", "Request"},
+                    {"API", "Social network" },
+                    {"Social network", socialNet},
+                    {"Result", false.ToString() },
+                    {"Error message", message }
+                }
+            );
         }
 
         #endregion

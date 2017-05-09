@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
@@ -44,36 +42,112 @@ namespace MobileCenterDemoApp.ViewModels
             set => SetProperty(ref _maxValue, value);
         }
 
+        public Command ShowStepsCommand { get; }
+        public Command ShowCaloriesCommand { get; }
+        public Command ShowDistanceCommand { get; }
+        public Command ShowActiveTimeCommand { get; }
+
+        private string _currentData;
+
+        public StatisticsViewModel()
+        {
+            Model = new PlotModel{Title = "TEST"};
+            CrashCommand = new Command(CrashApp);
+            ShowStepsCommand = new Command(() => UpdateData("Steps"), () => _currentData != "Steps");
+            ShowCaloriesCommand = new Command(() => UpdateData("Calories"), () => _currentData != "Calories");
+            ShowDistanceCommand = new Command(() => UpdateData("Distance"), () => _currentData != "Distance");
+            ShowActiveTimeCommand = new Command(() => UpdateData("Active time"), () => _currentData != "Active time");
+            UpdateData("Steps");
+
+        }
+
+        private void RaisCanExecute()
+        {
+            ShowStepsCommand.ChangeCanExecute();
+            ShowCaloriesCommand.ChangeCanExecute();
+            ShowDistanceCommand.ChangeCanExecute();
+            ShowActiveTimeCommand.ChangeCanExecute();
+        }
+
+        private static void CrashApp()
+        {
+            Analytics.TrackEvent("Crash application button clicked", new Dictionary<string, string>
+            {
+                {"Page", "Profile"},
+                {"Category", "Clicks"}
+            });
+            Crashes.GenerateTestCrash();
+        }
+
+        private bool _isUpdating;
+
         private async void UpdateData(string data)
         {
             if (!(DataStore.FitnessTracker?.IsConnected ?? false))
                 return;
 
-            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func) 
+            if(_isUpdating)
+                return;
+
+            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func)
                 => func(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddHours(1));
 
-            OxyColor lineColor;
-            IEnumerable<double> enumerable;
-            switch (data)
+            _isUpdating = true;
+
+            OxyColor lineColor = OxyColors.Gray;
+            IEnumerable<double> enumerable = null;
+            string errorMessage = null;
+            try
             {
-                case "Steps":
-                    enumerable = (await Get(DataStore.FitnessTracker.StepsByPeriod)).Select(x => (double) x);
-                    lineColor= OxyColors.Blue;
-                    break;
-                case "Calories":
-                    enumerable = (await Get(DataStore.FitnessTracker.CaloriesByPeriod));
-                    lineColor = OxyColors.Orange;
-                    break;
-                case "Distance":
-                    enumerable = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).Select(x => x/1000);
-                    lineColor = OxyColors.Violet;
-                    break;
-                case "Active time":
-                    enumerable = (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes);
-                    lineColor = OxyColors.Green;
-                    break;
-                default:
-                    return;                   
+                switch (data)
+                {
+                    case "Steps":
+                        enumerable = (await Get(DataStore.FitnessTracker.StepsByPeriod)).Select(x => (double) x);
+                        lineColor = OxyColors.Blue;
+                        break;
+                    case "Calories":
+                        enumerable = (await Get(DataStore.FitnessTracker.CaloriesByPeriod));
+                        lineColor = OxyColors.Orange;
+                        break;
+                    case "Distance":
+                        enumerable = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).Select(x => x / 1000);
+                        lineColor = OxyColors.Violet;
+                        break;
+                    case "Active time":
+                        enumerable =
+                            (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes);
+                        lineColor = OxyColors.Green;
+                        break;
+                    default:
+                        return;
+                }
+            }
+            catch (Exception e)
+            {
+                errorMessage = e.Message;
+            }
+
+            Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
+                new Dictionary<string, string>
+                {
+                    {"Page", "Main"},
+                    {"Category", "Request"},
+                    {
+                        "API",
+                        DataStore.FitnessTracker?.ApiName ?? (Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit")
+                    },
+                    {"Result", (enumerable != null).ToString()},
+                    {"Error_message", errorMessage} 
+                });
+
+            if (enumerable == null)
+            {
+                await Navigation.PushModalAsync(new ErrorPage(errorMessage));
+                if(ErrorPage.ShowHomePage)
+                    MainPage.SwitchHome();
+               
+                _isUpdating = false;
+                return;
             }
 
             double[] dataArray = enumerable.ToArray();
@@ -93,7 +167,7 @@ namespace MobileCenterDemoApp.ViewModels
                 Maximum = data.Max(),
                 Position = AxisPosition.Left,
             });
-            
+
             var lineSeries = new AreaSeries
             {
                 MarkerType = MarkerType.None,
@@ -118,39 +192,7 @@ namespace MobileCenterDemoApp.ViewModels
 
             _currentData = data;
             RaisCanExecute();
-            Analytics.TrackEvent("Google fit, retrieve success");
-        }
-
-        public Command ShowStepsCommand { get; }
-        public Command ShowCaloriesCommand { get; }
-        public Command ShowDistanceCommand { get; }
-        public Command ShowActiveTimeCommand { get; }
-
-        private string _currentData;
-
-        public StatisticsViewModel()
-        {
-            Model = new PlotModel{Title = "TEST"};
-            CrashCommand = new Command(CrashApp);
-            ShowStepsCommand = new Command(() => UpdateData("Steps"), () => _currentData != "Steps");
-            ShowCaloriesCommand = new Command(() => UpdateData("Calories"), () => _currentData != "Calories");
-            ShowDistanceCommand = new Command(() => UpdateData("Distance"), () => _currentData != "Distance");
-            ShowActiveTimeCommand = new Command(() => UpdateData("Active time"), () => _currentData != "Active time");
-            UpdateData("Steps");
-        }
-
-        private void RaisCanExecute()
-        {
-            ShowStepsCommand.ChangeCanExecute();
-            ShowCaloriesCommand.ChangeCanExecute();
-            ShowDistanceCommand.ChangeCanExecute();
-            ShowActiveTimeCommand.ChangeCanExecute();
-        }
-
-        private static void CrashApp()
-        {
-            Analytics.TrackEvent("Click crash app");
-            Crashes.GenerateTestCrash();
+            _isUpdating = false;
         }
     }
 }

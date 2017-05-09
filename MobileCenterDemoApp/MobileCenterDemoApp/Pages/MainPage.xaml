@@ -4,8 +4,8 @@
              x:Class="MobileCenterDemoApp.Views.MainPage"
              xmlns:views="clr-namespace:MobileCenterDemoApp.Views;assembly=MobileCenterDemoApp.Android"
              xmlns:xamarinForms="clr-namespace:BottomBar.XamarinForms;assembly=BottomBar.XamarinForms"
-             Title="Mobile Center" >
-  
-    <views:ProfilePage />
-    <views:StatisticsPage/>
+             Title="Mobile center">
+
+    <views:ProfilePage Title="Home" />
+    <views:StatisticsPage Title="Statistics" />
 </xamarinForms:BottomBarPage>

@@ -16,12 +16,18 @@ namespace MobileCenterDemoApp.ViewModels
     {
         public string Username => DataStore.Account?.UserName;
 
-        private bool _infoLoad;
-
-        public bool InfoLoad
+        private bool _infoLoaded;
+        public bool InfoLoaded
         {
-            get => _infoLoad;
-            set => SetProperty(ref _infoLoad, value);
+            get => _infoLoaded;
+            set => SetProperty(ref _infoLoaded, value);
+        }
+
+        private bool _loadError;
+        public bool LoadError
+        {
+            get => _loadError;
+            set => SetProperty(ref _loadError, value);
         }
 
         private int _stepsCount;
@@ -61,9 +67,13 @@ namespace MobileCenterDemoApp.ViewModels
         {
             ViewStatisticsCommand = new Command(async () => await Navigation.PushModalAsync(new StatisticsPage()));
 
-            if (Tracker == null)
+            InfoLoaded = false;
+
+            if(Tracker == null)
                 return;
 
+            Tracker.OnError += Error;
+            Tracker.OnConnect += async () => await Load();
             if (!Tracker.IsConnected)
                 Tracker.Connect();
 
@@ -78,14 +88,16 @@ namespace MobileCenterDemoApp.ViewModels
             if (Tracker == null || !Tracker.IsConnected)
                 return;
 
-            DateTime end = DateTime.UtcNow.Date.AddDays(1);
-            DateTime start = DateTime.UtcNow.Date;
+            DateTime end = DateTime.UtcNow.AddHours(1);
+            DateTime start = DateTime.UtcNow.AddDays(-1);
             StepsCount = (await Tracker.StepsByPeriod(start, end) ?? new[] {0}).Sum();
             Calories = (await Tracker.CaloriesByPeriod(start, end) ?? new[] {0D}).Sum();
             Distance = (await Tracker.DistanceByPeriod(start, end) ?? new[] {0D}).Sum() / 1000D;
-            double milliseconds = (await Tracker.ActiveTimeByPeriod(start, end)).Max(x => x.TotalMilliseconds);
+            double milliseconds = (await Tracker.ActiveTimeByPeriod(start, end)).Sum(x => x.TotalMilliseconds);
             TimeSpan timeSpan = TimeSpan.FromMilliseconds(milliseconds);
             Time = $"{timeSpan.Hours}h {timeSpan.Minutes}m";
+
+            InfoLoaded = true;
 
             Analytics.TrackEvent("Retrieve results from Google fit", new Dictionary<string, string>
             {
@@ -93,6 +105,26 @@ namespace MobileCenterDemoApp.ViewModels
                 {nameof(StepsCount), Calories.ToString(CultureInfo.InvariantCulture) },
                 {nameof(StepsCount), Distance.ToString(CultureInfo.InvariantCulture) },
             });
+
+        }
+
+        private async void Error(string error)
+        {
+            Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
+                new Dictionary<string, string>
+                {
+                    {"Page", "Main"},
+                    {"Category", "Request"},
+                    {
+                        "API",
+                        Tracker?.ApiName ?? (Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit")
+                    },
+                    {"Result", false.ToString()},
+                    {"Error_message", error}
+                });
+            await Navigation.PushModalAsync(new ErrorPage(error));
+            if(!ErrorPage.ShowHomePage)
+                MainPage.SwitchStatistics();
         }
     }
 }

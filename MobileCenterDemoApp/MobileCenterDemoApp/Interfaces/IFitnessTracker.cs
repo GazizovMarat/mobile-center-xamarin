@@ -6,6 +6,8 @@ namespace MobileCenterDemoApp.Interfaces
 {
     public interface IFitnessTracker : IDisposable
     {
+        string ApiName { get; }
+
         bool IsConnected { get; }
 
         Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end);
@@ -15,5 +17,8 @@ namespace MobileCenterDemoApp.Interfaces
 
         void Connect();
         void Disconnect();
+
+        event Action<string> OnError;
+        event Action OnConnect;
     }
 }

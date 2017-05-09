@@ -9,6 +9,7 @@ namespace MobileCenterDemoApp.Views
 		public LoginPage ()
 		{
 			InitializeComponent ();
-		}
+		    
+        }
 	}
 }

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xamarinForms:BottomBarPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xamarinForms="clr-namespace:BottomBar.XamarinForms;assembly=BottomBar.XamarinForms"
+             x:Class="MobileCenterDemoApp.Views.ErrorPage">
+    <ContentPage Title="Home" Icon="mainicon1.png">
+        <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+            <Image Source="error.png" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="300" Aspect="AspectFit" />
+            <Label x:Name="ErrorLabel" TextColor="Red" FontSize="25" HorizontalOptions="Center" />
+        </StackLayout>
+    </ContentPage>
+    <ContentPage Icon="statisticsicon1.png" Title="Statistics"/>
+</xamarinForms:BottomBarPage>
