@@ -5,7 +5,6 @@ using Android.Gms.Common;
 using Android.Gms.Common.Apis;
 using Android.Gms.Fitness;
 using Android.OS;
-using Android.Views;
 using Microsoft.Azure.Mobile.Analytics;
 
 namespace MobileCenterDemoApp.Droid

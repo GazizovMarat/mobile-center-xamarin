@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Azure.Mobile.Analytics;
 using MobileCenterDemoApp.Helpers;
-using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
 using MobileCenterDemoApp.Services;
 using MobileCenterDemoApp.Views;
@@ -13,8 +12,12 @@ namespace MobileCenterDemoApp.ViewModels
 {
     public class LoginViewModel : ViewModelBase
     {
-        public bool ShowHeader => string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
-        public bool ShowError => !string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
+        #region Properties
+
+        public bool ShowHeader
+            => string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
+        public bool ShowError
+            => !string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
 
         private bool _showWait;
         public bool ShowWait
@@ -34,29 +37,23 @@ namespace MobileCenterDemoApp.ViewModels
             get => _errorMessage;
             set
             {
-                SetProperty(ref _errorMessage, value); 
+                SetProperty(ref _errorMessage, value);
                 OnPropertyChanged(nameof(ShowHeader));
                 OnPropertyChanged(nameof(ShowError));
             }
 
-        }        
-
-        private IValueConverter _reverseConverter;
-
-        public IValueConverter ReverseConverter
-        {
-            get => _reverseConverter;
-            set => SetProperty(ref _reverseConverter, value);
         }
+
+        #endregion
+
 
         public Command LoginViaFacebookCommand { get; set; }
         public Command LoginViaTwitterCommand { get; set; }
-        
-
+    
         public LoginViewModel()
         {
             Title = "Count my steps";
-            
+
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
         }
@@ -65,41 +62,37 @@ namespace MobileCenterDemoApp.ViewModels
 
         private async void LoginViaFacebook()
         {
-            Analytics.TrackEvent("Facebook login button clicked", 
+            Analytics.TrackEvent("Facebook login button clicked",
                 new Dictionary<string, string>
-            {
-                {"Page", "Login" },
-                {"Page", "Clicks" }
-            });
-
-            if (DataStore.FacebookService == null)
-            {
-                DataStore.FacebookService = DependencyService.Get<IFacebook>(); 
-            }
+                {
+                    {"Page", "Login"},
+                    {"Category", "Clicks"}
+                });
 
             DataStore.FacebookService.OnError += error => AuthError("Facebook", error);
-            Login(await DataStore.FacebookService.Login(), "Facebook");
+
+            SocialAccount account = await DataStore.FacebookService.Login();
+
+            Login(account, "Facebook");
         }
 
         private async void LoginViaTwitter()
         {
-            Analytics.TrackEvent("Twitter login button clicked", 
+            Analytics.TrackEvent("Twitter login button clicked",
                 new Dictionary<string, string>
-            {
-                {"Page", "Login" },
-                {"Page", "Clicks" }
-            });
-
-            if (DataStore.TwitterService == null)
-            {
-                DataStore.TwitterService = DependencyService.Get<ITwitter>();
-            }
+                {
+                    {"Page", "Login"},
+                    {"Category", "Clicks"}
+                });
 
             DataStore.TwitterService.OnError += error => AuthError("Twitter", error);
-            Login(await DataStore.TwitterService.Login(), "Twitter");
+
+            SocialAccount account = await DataStore.TwitterService.Login();
+
+            Login(account, "Twitter");
         }
 
-        private void Login(SocialAccount account, string socialNet)
+        private async void Login(SocialAccount account, string socialNet)
         {
             Analytics.TrackEvent("Trying to login in Facebook/Twitter",
                 new Dictionary<string, string>
@@ -120,9 +113,46 @@ namespace MobileCenterDemoApp.ViewModels
 
             DataStore.Account = account;
 
-            DataStore.FitnessTracker = DependencyService.Get<IFitnessTracker>();
+            #region Init and retrive data from Google Fit/ HealthKit
 
-            Application.Current.MainPage = new MainPage();
+            string error = "";
+            bool success;
+
+            void ErrorHandle(string errorMessage)
+            {
+                success = false;
+                error = errorMessage;
+            }
+
+            try
+            {
+                DataStore.FitnessTracker.OnError += ErrorHandle;
+                DataStore.FitnessTracker.Connect();
+                await DataStore.ReadTodayInformation();                
+                DataStore.FitnessTracker.OnError -= ErrorHandle;
+                success = true;
+            }
+            catch (Exception e)
+            {
+                success = false;
+                error = e.Message;
+            }
+
+            string fitnessApi =  Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit";
+
+            Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
+                new Dictionary<string, string>
+                {
+                    {"Page", "Login"},
+                    {"Category", "Request"},
+                    { "API", DataStore.FitnessTracker?.ApiName ?? fitnessApi },
+                    {"Result", success.ToString()},
+                    {"Error_message", error}
+                });
+
+            #endregion
+
+            App.SwitchMainPage(new MainPage());
         }
 
         private void AuthError(string socialNet, string message)
@@ -132,10 +162,10 @@ namespace MobileCenterDemoApp.ViewModels
                 {
                     {"Page", "Login"},
                     {"Category", "Request"},
-                    {"API", "Social network" },
+                    {"API", "Social network"},
                     {"Social network", socialNet},
-                    {"Result", false.ToString() },
-                    {"Error message", message }
+                    {"Result", false.ToString()},
+                    {"Error message", message}
                 }
             );
         }

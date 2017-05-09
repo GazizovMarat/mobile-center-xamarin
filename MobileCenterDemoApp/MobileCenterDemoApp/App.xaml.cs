@@ -13,11 +13,17 @@ namespace MobileCenterDemoApp
 		public App ()
 		{
 			InitializeComponent();
-            
-		    MainPage = new LoginPage(); ;
+		    MobileCenter.Start("ios=3a5b14df-1962-41e0-968a-22ecd75d9927;" +
+		                       "android=ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8",
+		        typeof(Analytics), typeof(Crashes));
 
-            MobileCenter.Start("ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8", typeof(Analytics), typeof(Crashes));		    
+            MainPage = new LoginPage(); ;
         }
+
+	    public static void SwitchMainPage(Page page)
+	    {
+	        Current.MainPage = page;
+	    }
 
 	    protected override void OnResume()
 	    {

@@ -12,15 +12,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SocialNetworServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\BaseContentPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SocialNetworAuthenticators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFitnessTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISocialNet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SocialAccount.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\StepsModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\DataStore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewHelpers\ReverseBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\LoginViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProfileViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\StatisticsViewModel.cs" />

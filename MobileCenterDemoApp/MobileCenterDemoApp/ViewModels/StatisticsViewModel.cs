@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Services;
-using MobileCenterDemoApp.Views;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -16,7 +15,8 @@ namespace MobileCenterDemoApp.ViewModels
 {
     public class StatisticsViewModel : ViewModelBase
     {
-        public Command CrashCommand { get; set; }
+
+        #region Properties
 
         private PlotModel _model;
         public PlotModel Model
@@ -24,9 +24,6 @@ namespace MobileCenterDemoApp.ViewModels
             get => _model;
             set => SetProperty(ref _model, value);
         }
-
-        public int StartDate { get; } = DateTime.Now.AddDays(-5).Day;
-        public int EndDate { get; } = DateTime.Now.Day;
 
         private int _minValue;
         public int MinValue
@@ -42,26 +39,39 @@ namespace MobileCenterDemoApp.ViewModels
             set => SetProperty(ref _maxValue, value);
         }
 
+        #endregion
+
+        #region Commands
+
         public Command ShowStepsCommand { get; }
+
         public Command ShowCaloriesCommand { get; }
+
         public Command ShowDistanceCommand { get; }
+
         public Command ShowActiveTimeCommand { get; }
 
-        private string _currentData;
+        public Command CrashCommand { get; set; }
+
+        #endregion
+        
+        private ChartType _currentChartType;
 
         public StatisticsViewModel()
         {
             Model = new PlotModel{Title = "TEST"};
             CrashCommand = new Command(CrashApp);
-            ShowStepsCommand = new Command(() => UpdateData("Steps"), () => _currentData != "Steps");
-            ShowCaloriesCommand = new Command(() => UpdateData("Calories"), () => _currentData != "Calories");
-            ShowDistanceCommand = new Command(() => UpdateData("Distance"), () => _currentData != "Distance");
-            ShowActiveTimeCommand = new Command(() => UpdateData("Active time"), () => _currentData != "Active time");
-            UpdateData("Steps");
+            ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType !=  ChartType.Steps );
+            ShowCaloriesCommand = new Command(() => UpdateData(ChartType.Calories), () => _currentChartType != ChartType.Calories);
+            ShowDistanceCommand = new Command(() => UpdateData(ChartType.Distance), () => _currentChartType != ChartType.Distance);
+            ShowActiveTimeCommand = new Command(() => UpdateData(ChartType.ActiveTime), () => _currentChartType != ChartType.ActiveTime);
+            UpdateData(ChartType.Steps);
 
         }
 
-        private void RaisCanExecute()
+        #region Private methods
+
+        private void RaiseCanExecute()
         {
             ShowStepsCommand.ChangeCanExecute();
             ShowCaloriesCommand.ChangeCanExecute();
@@ -79,76 +89,35 @@ namespace MobileCenterDemoApp.ViewModels
             Crashes.GenerateTestCrash();
         }
 
-        private bool _isUpdating;
-
-        private async void UpdateData(string data)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void UpdateData(ChartType chartType)
         {
-            if (!(DataStore.FitnessTracker?.IsConnected ?? false))
-                return;
+            OxyColor lineColor;
+            IEnumerable<double> enumerable;
 
-            if(_isUpdating)
-                return;
-
-            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func)
-                => func(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddHours(1));
-
-            _isUpdating = true;
-
-            OxyColor lineColor = OxyColors.Gray;
-            IEnumerable<double> enumerable = null;
-            string errorMessage = null;
-            try
+            switch (chartType)
             {
-                switch (data)
-                {
-                    case "Steps":
-                        enumerable = (await Get(DataStore.FitnessTracker.StepsByPeriod)).Select(x => (double) x);
-                        lineColor = OxyColors.Blue;
-                        break;
-                    case "Calories":
-                        enumerable = (await Get(DataStore.FitnessTracker.CaloriesByPeriod));
-                        lineColor = OxyColors.Orange;
-                        break;
-                    case "Distance":
-                        enumerable = (await Get(DataStore.FitnessTracker.DistanceByPeriod)).Select(x => x / 1000);
-                        lineColor = OxyColors.Violet;
-                        break;
-                    case "Active time":
-                        enumerable =
-                            (await Get(DataStore.FitnessTracker.ActiveTimeByPeriod)).Select(x => x.TotalMinutes);
-                        lineColor = OxyColors.Green;
-                        break;
-                    default:
-                        return;
-                }
-            }
-            catch (Exception e)
-            {
-                errorMessage = e.Message;
+                case ChartType.Steps:
+                    enumerable = DataStore.FiveDaysSteps;
+                    lineColor = OxyColors.Blue;
+                    break;
+                case ChartType.Calories:
+                    enumerable = DataStore.FiveDaysCalories;
+                    lineColor = OxyColors.Orange;
+                    break;
+                case ChartType.Distance:
+                    enumerable = DataStore.FiveDaysDistance;
+                    lineColor = OxyColors.Violet;
+                    break;
+                case ChartType.ActiveTime:
+                    enumerable = DataStore.FiveDaysActiveTime.Select(x => x.TotalMinutes);
+                    lineColor = OxyColors.Green;
+                    break;
+                default:
+                    return;
             }
 
-            Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
-                new Dictionary<string, string>
-                {
-                    {"Page", "Main"},
-                    {"Category", "Request"},
-                    {
-                        "API",
-                        DataStore.FitnessTracker?.ApiName ?? (Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit")
-                    },
-                    {"Result", (enumerable != null).ToString()},
-                    {"Error_message", errorMessage} 
-                });
-
-            if (enumerable == null)
-            {
-                await Navigation.PushModalAsync(new ErrorPage(errorMessage));
-                if(ErrorPage.ShowHomePage)
-                    MainPage.SwitchHome();
-               
-                _isUpdating = false;
-                return;
-            }
+            #region Make chart
 
             double[] dataArray = enumerable.ToArray();
 
@@ -164,7 +133,7 @@ namespace MobileCenterDemoApp.ViewModels
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
-                Maximum = data.Max(),
+                Maximum = dataArray.Max(),
                 Position = AxisPosition.Left,
             });
 
@@ -177,9 +146,6 @@ namespace MobileCenterDemoApp.ViewModels
                 TrackerFormatString = "{4}"
             };
 
-            if (dataArray.Length < 5)
-                dataArray = Enumerable.Range(0, 5 - dataArray.Length).Select(x => 0D).Concat(dataArray).ToArray();
-
             var startDate = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
@@ -190,9 +156,18 @@ namespace MobileCenterDemoApp.ViewModels
             model.Series.Add(lineSeries);
             Model = model;
 
-            _currentData = data;
-            RaisCanExecute();
-            _isUpdating = false;
+            #endregion
+
+            _currentChartType = chartType;
+            RaiseCanExecute();
+        }
+
+
+        #endregion
+
+        private enum ChartType
+        {
+            Steps, Calories, Distance, ActiveTime
         }
     }
 }

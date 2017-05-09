@@ -3,9 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MobileCenterDemoApp.Views.MainPage"
              xmlns:views="clr-namespace:MobileCenterDemoApp.Views;assembly=MobileCenterDemoApp.Android"
-             xmlns:xamarinForms="clr-namespace:BottomBar.XamarinForms;assembly=BottomBar.XamarinForms"
-             Title="Mobile center">
+             xmlns:xamarinForms="clr-namespace:BottomBar.XamarinForms;assembly=BottomBar.XamarinForms">
 
-    <views:ProfilePage Title="Home" />
-    <views:StatisticsPage Title="Statistics" />
+    <views:ProfilePage />
+    <views:StatisticsPage />
 </xamarinForms:BottomBarPage>

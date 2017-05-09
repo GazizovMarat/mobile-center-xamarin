@@ -3,13 +3,13 @@ using Xamarin.Auth;
 
 namespace MobileCenterDemoApp.Helpers
 {
-    public static class SocialNetworServices
+    public static class SocialNetworAuthenticators
     {
         public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
             clientId: "1945815635652325",
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-        redirectUrl: new Uri("http://localhost/facebook"));
+            redirectUrl: new Uri("http://localhost/facebook"));
 
         public static OAuth1Authenticator TwitterAuth => new OAuth1Authenticator(
             consumerKey: "RpQDj4XFdHRvHp4l3uOKkyDJq",
@@ -19,7 +19,5 @@ namespace MobileCenterDemoApp.Helpers
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
             callbackUrl: new Uri("https://www.visualstudio.com/vs/mobile-center/")
         );
-
-
     }
 }

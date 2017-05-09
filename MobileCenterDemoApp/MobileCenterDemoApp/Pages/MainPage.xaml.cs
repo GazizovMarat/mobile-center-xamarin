@@ -15,17 +15,13 @@ namespace MobileCenterDemoApp.Views
         public static void SwitchStatistics()
             => _instance.CurrentPage = _instance.Children[1];
 
-        public MainPage ()
+        public MainPage()
         {
             InitializeComponent();
 
             _instance = this;
 
-            if (DataStore.FitnessTracker == null)
-            {
-                DataStore.FitnessTracker = DependencyService.Get<IFitnessTracker>();
-                DataStore.FitnessTracker.Connect();
-            }
+            DataStore.FitnessTracker.Connect();
         }
     }
 }

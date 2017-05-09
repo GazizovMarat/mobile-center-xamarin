@@ -19,7 +19,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public TwitterLoginAndroid()
         {
-            _oAuth1 = Helpers.SocialNetworServices.TwitterAuth;
+            _oAuth1 = Helpers.SocialNetworAuthenticators.TwitterAuth;
         }
 
         public async Task<SocialAccount> Login()

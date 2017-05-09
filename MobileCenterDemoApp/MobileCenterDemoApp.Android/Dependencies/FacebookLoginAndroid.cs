@@ -23,7 +23,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public FacebookLoginAndroid()
         {
-            _oAuth2 = Helpers.SocialNetworServices.FacebookAuth;
+            _oAuth2 = Helpers.SocialNetworAuthenticators.FacebookAuth;
                         
         }
         public async Task<SocialAccount> Login()
