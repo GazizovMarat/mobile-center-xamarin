@@ -13,8 +13,7 @@ namespace MobileCenterDemoApp
 		public App ()
 		{
 			InitializeComponent();
-		    MobileCenter.Start("ios=3a5b14df-1962-41e0-968a-22ecd75d9927;" +
-		                       "android=ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8",
+		    MobileCenter.Start("ios=3a5b14df-1962-41e0-968a-22ecd75d9927;android=ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8",
 		        typeof(Analytics), typeof(Crashes));
 
             MainPage = new LoginPage(); ;
@@ -27,17 +26,11 @@ namespace MobileCenterDemoApp
 
 	    protected override void OnResume()
 	    {
-	        if (!DataStore.FitnessTracker?.IsConnected ?? true)
-	            DataStore.FitnessTracker?.Connect();
-
             base.OnResume();
 	    }
 
 	    protected override void OnSleep()
-	    {
-	        if (DataStore.FitnessTracker?.IsConnected ?? false)
-	            DataStore.FitnessTracker?.Disconnect();
-
+	    {	       
 	        base.OnSleep();
 	    }
 	}

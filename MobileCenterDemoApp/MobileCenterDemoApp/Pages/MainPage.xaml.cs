@@ -18,10 +18,7 @@ namespace MobileCenterDemoApp.Views
         public MainPage()
         {
             InitializeComponent();
-
             _instance = this;
-
-            DataStore.FitnessTracker.Connect();
         }
     }
 }

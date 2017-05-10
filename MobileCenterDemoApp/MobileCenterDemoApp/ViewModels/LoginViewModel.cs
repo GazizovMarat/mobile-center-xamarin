@@ -49,7 +49,7 @@ namespace MobileCenterDemoApp.ViewModels
 
         public Command LoginViaFacebookCommand { get; set; }
         public Command LoginViaTwitterCommand { get; set; }
-    
+
         public LoginViewModel()
         {
             Title = "Count my steps";
@@ -127,10 +127,18 @@ namespace MobileCenterDemoApp.ViewModels
             try
             {
                 DataStore.FitnessTracker.OnError += ErrorHandle;
-                DataStore.FitnessTracker.Connect();
-                await DataStore.ReadTodayInformation();                
+                await DataStore.FitnessTracker.Connect();
+                if (!DataStore.FitnessTracker.IsConnected)
+                {
+                    success = false;
+                    error = "Connection failed";
+                }
+                else
+                {
+                    await DataStore.ReadTodayInformation();
+                    success = true;
+                }
                 DataStore.FitnessTracker.OnError -= ErrorHandle;
-                success = true;
             }
             catch (Exception e)
             {
@@ -152,7 +160,10 @@ namespace MobileCenterDemoApp.ViewModels
 
             #endregion
 
-            App.SwitchMainPage(new MainPage());
+            if (success)
+                App.SwitchMainPage(new MainPage());
+            else
+                App.SwitchMainPage(new ErrorPage(error));
         }
 
         private void AuthError(string socialNet, string message)

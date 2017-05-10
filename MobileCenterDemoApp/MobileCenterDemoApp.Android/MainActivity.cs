@@ -44,13 +44,10 @@ namespace MobileCenterDemoApp.Droid
         protected override void OnStart()
         {
             base.OnStart();
-            MClient.Connect();
         }
 
         protected override void OnStop()
         {
-            if (MClient.IsConnected)
-                MClient.Disconnect();
             base.OnStop();
         }
 
@@ -101,6 +98,12 @@ namespace MobileCenterDemoApp.Droid
             {
                 Analytics.TrackEvent("GoogleFit SendIntentException");
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            MClient?.Dispose();
+            base.Dispose(disposing);
         }
 
         #endregion

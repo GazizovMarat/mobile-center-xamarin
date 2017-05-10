@@ -15,7 +15,7 @@ namespace MobileCenterDemoApp.Interfaces
         Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end);
         Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end);
 
-        void Connect();
+        Task Connect();
         void Disconnect();
 
         event Action<string> OnError;

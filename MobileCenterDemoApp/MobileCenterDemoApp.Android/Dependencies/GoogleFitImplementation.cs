@@ -68,16 +68,25 @@ namespace MobileCenterDemoApp.Droid.Dependencies
         private async Task<IResult> ReadData(DataReadRequest request) 
             => await FitnessClass.HistoryApi.ReadData(Client, request);
 
-        public void Connect()
+        public async Task Connect()
         {
             if(Client == null)
                 throw new NotActiveException();
 
-            if(!Client.IsConnecting && !Client.IsConnected)
+            if(Client.IsConnecting || Client.IsConnected)
                 return;
+
             try
             {
                 Client.Connect();
+
+                await Task.Run(() =>
+                {
+                    // Await connectiong
+                    while (Client.IsConnecting)
+                        Task.Delay(50);
+                });
+
                 if (Client.IsConnected)
                     OnConnect?.Invoke();
             }
