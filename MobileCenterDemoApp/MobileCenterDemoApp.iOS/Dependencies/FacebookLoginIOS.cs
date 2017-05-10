@@ -1,32 +1,80 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using MobileCenterDemoApp.iOS.Dependencies;
 using MobileCenterDemoApp.Interfaces;
+using MobileCenterDemoApp.Models;
+using Newtonsoft.Json;
 using UIKit;
 using Xamarin.Auth;
-using Xamarin.Social.Services;
-using System.Threading.Tasks;
+using Xamarin.Forms;
 
-[assembly: Xamarin.Forms.Dependency(typeof(FacebookLoginIOS))]
+
+[assembly: Dependency(typeof(FacebookLoginIOS))]
 namespace MobileCenterDemoApp.iOS.Dependencies
 {
     // ReSharper disable once InconsistentNaming
     public class FacebookLoginIOS : IFacebook
     {
-        public event Action<Account> OnConnect;
-        public FacebookService Service { get; }
+        private readonly OAuth2Authenticator _oAuth2;
+
+        private bool _isComplite;
+        private SocialAccount _account;
+        private UIViewController _uiViewController;
 
         public FacebookLoginIOS()
         {
-            Service = Helpers.SocialNetworServices.FacebookService;
-            UIViewController uiViewController = Service.GetAuthenticateUI(a => OnConnect?.Invoke(a));
-            UIWindow windows = AppDelegate.UiWindow;
-            windows.RootViewController = uiViewController;
-            windows.MakeKeyAndVisible();
+            _oAuth2 = Helpers.SocialNetworAuthenticators.FacebookAuth;         
         }
 
-        public Task<Account> Login()
+
+        public async Task<SocialAccount> Login()
         {
-            throw new NotImplementedException();
+            _uiViewController = _oAuth2.GetUI();
+            _oAuth2.Completed += async (sender, args) =>
+            {
+                if (!args.IsAuthenticated)
+                {
+                    _isComplite = true;
+                    return;
+                }
+
+                var request = new OAuth2Request("GET", new Uri("https://graph.facebook.com/me"), null, args.Account);
+                var response = await request.GetResponseAsync();
+                var text = response.GetResponseText();
+                var deserializeObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
+
+                _account = new SocialAccount();
+
+                if (deserializeObject.TryGetValue("name", out string name))
+                    _account.UserName = name;
+
+                if (deserializeObject.TryGetValue("id", out string id))
+                    _account.UserId = id;
+
+                request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{_account.UserId}/picture"),
+                    new Dictionary<string, string>
+                    {
+                        {"height", 100.ToString() },
+                        {"width", 100.ToString() }
+                    }, args.Account);
+
+                response = await request.GetResponseAsync();
+
+                _account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
+
+                _isComplite = true;
+
+            };
+            _oAuth2.Error += (sender, args) => OnError?.Invoke(args.Message);
+
+            UIWindow windows = AppDelegate.UiWindow;
+            windows.RootViewController = _uiViewController;
+            windows.MakeKeyAndVisible();
+            await Task.Run(() => { while (!_isComplite) Task.Delay(100); });
+            return _account;
         }
+
+        public event Action<string> OnError;
     }
 }

@@ -16,7 +16,7 @@ namespace MobileCenterDemoApp
 		    MobileCenter.Start("ios=3a5b14df-1962-41e0-968a-22ecd75d9927;android=ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8",
 		        typeof(Analytics), typeof(Crashes));
 
-            MainPage = new LoginPage(); ;
+            MainPage = new LoginPage();
         }
 
 	    public static void SwitchMainPage(Page page)
@@ -24,14 +24,10 @@ namespace MobileCenterDemoApp
 	        Current.MainPage = page;
 	    }
 
-	    protected override void OnResume()
+	    protected override async void OnStart()
 	    {
-            base.OnResume();
-	    }
-
-	    protected override void OnSleep()
-	    {	       
-	        base.OnSleep();
+	        await DataStore.FitnessTracker.Connect();
+            base.OnStart();
 	    }
 	}
 

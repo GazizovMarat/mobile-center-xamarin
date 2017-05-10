@@ -58,6 +58,9 @@
                     Image="clocks.png" Text="ACTIVE TIME" />
         </Grid>
         <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 
-                BackgroundColor="Red" TextColor="White" Margin="0,0,0,10" />
+                BackgroundColor="Red" TextColor="White" Margin="0,0,0,10"               
+                WidthRequest="250"
+                BorderRadius = "100"
+                BorderWidth = "2" />
     </StackLayout>
 </ContentPage>

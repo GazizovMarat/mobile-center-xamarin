@@ -46,7 +46,6 @@ namespace MobileCenterDemoApp.ViewModels
 
         #endregion
 
-
         public Command LoginViaFacebookCommand { get; set; }
         public Command LoginViaTwitterCommand { get; set; }
 
@@ -126,8 +125,7 @@ namespace MobileCenterDemoApp.ViewModels
 
             try
             {
-                DataStore.FitnessTracker.OnError += ErrorHandle;
-                await DataStore.FitnessTracker.Connect();
+                DataStore.FitnessTracker.OnError += ErrorHandle;                
                 if (!DataStore.FitnessTracker.IsConnected)
                 {
                     success = false;
@@ -160,10 +158,7 @@ namespace MobileCenterDemoApp.ViewModels
 
             #endregion
 
-            if (success)
-                App.SwitchMainPage(new MainPage());
-            else
-                App.SwitchMainPage(new ErrorPage(error));
+            App.SwitchMainPage(new MainPage(error));
         }
 
         private void AuthError(string socialNet, string message)

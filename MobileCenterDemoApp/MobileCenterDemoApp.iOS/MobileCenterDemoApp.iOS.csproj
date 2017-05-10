@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Dependencies\FacebookLoginIOS.cs" />
+    <Compile Include="Dependencies\HealthKitImplementation.cs" />
     <Compile Include="Dependencies\TwitterLoginIOS.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
@@ -143,7 +144,7 @@
       <HintPath>..\..\packages\Microsoft.Azure.Mobile.0.10.0\lib\Xamarin.iOS10\Microsoft.Azure.Mobile.iOS.Bindings.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\Libs\IOS\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\..\Users\akvelon\Desktop\Libs\IOS\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
       <HintPath>..\..\packages\OxyPlot.Core.1.0.0\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1+Xamarin.iOS10\OxyPlot.dll</HintPath>
@@ -161,7 +162,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Auth.iOS">
-      <HintPath>..\..\..\..\Libs\IOS\Xamarin.Auth.iOS.dll</HintPath>
+      <HintPath>..\..\..\..\Users\akvelon\Desktop\Libs\IOS\Xamarin.Auth.iOS.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.231\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
@@ -176,15 +177,12 @@
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.231\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="Xamarin.Mobile">
-      <HintPath>..\..\..\..\Libs\IOS\Xamarin.Mobile.dll</HintPath>
-    </Reference>
-    <Reference Include="Xamarin.Social.iOS">
-      <HintPath>..\..\..\..\Libs\IOS\Xamarin.Social.iOS.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\loginbackground.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\vector-smart-object%403x.png" />
   </ItemGroup>
   <Import Project="..\MobileCenterDemoApp\MobileCenterDemoApp.projitems" Label="Shared" Condition="Exists('..\MobileCenterDemoApp\MobileCenterDemoApp.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

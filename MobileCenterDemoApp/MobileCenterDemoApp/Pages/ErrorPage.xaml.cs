@@ -1,48 +1,29 @@
-﻿using System.Collections.Specialized;
-using BottomBar.XamarinForms;
-using Xamarin.Forms;
+﻿using System;
 using Xamarin.Forms.Xaml;
 
 namespace MobileCenterDemoApp.Views
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ErrorPage : BottomBarPage
+	public partial class ErrorPage 
 	{
-	    public static bool ShowHomePage;
-	    private bool _isInit;
-	    private bool _alreadyPop;
+	    public bool ShowHomePage;
 
 	    public ErrorPage(string message)
 	    {
-	        _isInit = true;
             InitializeComponent();
-	        _isInit = false;
 	        ErrorLabel.Text = message;
-	        if (Application.Current.MainPage == this)
-	        {
-	            Children[0].Title = "";
-	            Children[0].Icon = null;
-	            Children[1].Title = "Exit";
-	            Children[1].Icon = null;
-            }
 	    }
 
-        protected override async void OnCurrentPageChanged()
-        {
-            if (_isInit || _alreadyPop)
-                return;
+	    private async void HomeClicked(object sender, EventArgs e)
+	    {
+	        ShowHomePage = true;
+	        await Navigation.PopModalAsync();
+	    }
 
-            if (Application.Current.MainPage == this)
-            {
-                
-            }
-
-            _alreadyPop = true;
-
-            ShowHomePage = this.CurrentPage.Title == "Home";
-            await this.Navigation.PopModalAsync();
-            base.OnCurrentPageChanged();
+	    private async void StatisticsClicked(object sender, EventArgs e)
+	    {
+	        ShowHomePage = false;
+	        await Navigation.PopModalAsync();
         }
-
-    }
+	}
 }

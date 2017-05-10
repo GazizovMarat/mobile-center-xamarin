@@ -28,7 +28,9 @@ namespace MobileCenterDemoApp.Droid.Dependencies
         }
         public async Task<SocialAccount> Login()
         {
-            _authUi = _oAuth2.GetUI(MainActivity.Activity);
+            if(_authUi == null)
+                _authUi = _oAuth2.GetUI(MainActivity.Activity);
+
             MainActivity.Activity.StartActivity(_authUi);
             _oAuth2.Completed += async (sender, args) =>
             {
