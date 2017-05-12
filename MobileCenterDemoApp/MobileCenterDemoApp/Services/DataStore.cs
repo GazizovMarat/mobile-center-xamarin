@@ -80,29 +80,26 @@ namespace MobileCenterDemoApp.Services
             if (StatisticsInit && !reload)
                 return;
 
-            Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func)
-                => func(DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddMinutes(1));
+            DateTime startDate = DateTime.UtcNow.AddDays(-5);
+            DateTime endDate = DateTime.UtcNow.AddMinutes(1);
 
-            IEnumerable<T> SkipLast<T>(IEnumerable<T> t) => t.Reverse().Skip(1).Reverse();
-
-            FiveDaysSteps = SkipLast(await Get(FitnessTracker.StepsByPeriod)).Select(x => (double) x).ToArray();
-            FiveDaysCalories = SkipLast(await Get(FitnessTracker.CaloriesByPeriod)).ToArray();
-            FiveDaysDistance = SkipLast(await Get(FitnessTracker.DistanceByPeriod)).Select(x => x / 1000).ToArray();
-            FiveDaysActiveTime = SkipLast(await Get(FitnessTracker.ActiveTimeByPeriod)).ToArray();
+            FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double) x).ToArray();
+            FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
+            FiveDaysDistance = (await FitnessTracker.DistanceByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => x / 1000).ToArray();
+            FiveDaysActiveTime = (await FitnessTracker.ActiveTimeByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
 
             #region If statistics less than 5 days
 
-            IEnumerable<int> Range(int i)
-                => Enumerable.Range(0, 5 - i);
+            Func<int, IEnumerable<int>> range = i => Enumerable.Range(0, 5 - i);
 
             if (FiveDaysSteps.Length < 5)
-                FiveDaysSteps = Range(FiveDaysSteps.Length).Select(x => 0D).Concat(FiveDaysSteps).ToArray();
+                FiveDaysSteps = range(FiveDaysSteps.Length).Select(x => 0D).Concat(FiveDaysSteps).ToArray();
             if (FiveDaysCalories.Length < 5)
-                FiveDaysCalories = Range(FiveDaysCalories.Length).Select(x => 0D).Concat(FiveDaysCalories).ToArray();
+                FiveDaysCalories = range(FiveDaysCalories.Length).Select(x => 0D).Concat(FiveDaysCalories).ToArray();
             if (FiveDaysDistance.Length < 5)
-                FiveDaysDistance = Range(FiveDaysDistance.Length).Select(x => 0D).Concat(FiveDaysDistance).ToArray();
+                FiveDaysDistance = range(FiveDaysDistance.Length).Select(x => 0D).Concat(FiveDaysDistance).ToArray();
             if (FiveDaysActiveTime.Length < 5)
-                FiveDaysActiveTime = Range(FiveDaysActiveTime.Length)
+                FiveDaysActiveTime = range(FiveDaysActiveTime.Length)
                     .Select(x => TimeSpan.FromTicks(0))
                     .Concat(FiveDaysActiveTime)
                     .ToArray();

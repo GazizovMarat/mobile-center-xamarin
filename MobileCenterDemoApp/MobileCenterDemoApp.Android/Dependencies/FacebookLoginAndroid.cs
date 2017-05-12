@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Android.Content;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
-using Newtonsoft.Json;
 using Xamarin.Auth;
 using Xamarin.Forms;
 using MobileCenterDemoApp.Helpers;
 
-[assembly:Dependency(typeof(FacebookLoginAndroid))]
+[assembly: Dependency(typeof(FacebookLoginAndroid))]
 namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class FacebookLoginAndroid : IFacebook
@@ -24,7 +22,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public FacebookLoginAndroid()
         {
-            _oAuth2 = Helpers.SocialNetworkAuthenticators.FacebookAuth;
+            _oAuth2 = SocialNetworkAuthenticators.FacebookAuth;
                         
         }
         public async Task<SocialAccount> Login()

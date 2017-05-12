@@ -21,22 +21,22 @@ namespace MobileCenterDemoApp.ViewModels
         private PlotModel _model;
         public PlotModel Model
         {
-            get => _model;
-            set => SetProperty(ref _model, value);
+            get { return _model; }
+            set { SetProperty(ref _model, value); }
         }
 
         private int _minValue;
         public int MinValue
         {
-            get => _minValue;
-            set => SetProperty(ref _minValue, value);
+            get { return _minValue; }
+            set { SetProperty(ref _minValue, value); }
         }
 
         private double _maxValue;
         public double MaxValue
         {
-            get => _maxValue;
-            set => SetProperty(ref _maxValue, value);
+            get { return _maxValue; }
+            set { SetProperty(ref _maxValue, value); }
         }
 
         #endregion

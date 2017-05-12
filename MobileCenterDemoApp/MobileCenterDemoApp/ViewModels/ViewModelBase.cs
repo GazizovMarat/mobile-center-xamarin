@@ -14,15 +14,15 @@ namespace MobileCenterDemoApp.Helpers
         private INavigation _navigation;
         public INavigation Navigation
         {
-            get => _navigation;
-            set => SetProperty(ref _navigation, value);
+            get { return _navigation; }
+            set { SetProperty(ref _navigation, value); }
         }
 
         private string _title;
         public string Title
         {
-            get => _title;
-            set => SetProperty(ref _title, value);
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
         }
 
         /// <summary>
