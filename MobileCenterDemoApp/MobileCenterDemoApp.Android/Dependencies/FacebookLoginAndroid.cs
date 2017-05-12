@@ -29,8 +29,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
         }
         public async Task<SocialAccount> Login()
         {
-            if(_authUi == null)
-                _authUi = _oAuth2.GetUI(MainActivity.Activity);
+            _authUi = (Intent)_oAuth2.GetUI(MainActivity.Activity);
 
             MainActivity.Activity.StartActivity(_authUi);
             _oAuth2.Completed += async (sender, args) =>
@@ -41,9 +40,8 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             _oAuth2.Error += (sender, args) => OnError?.Invoke(args.Message);
 
             await Task.Run(() => { while (!_isComplite) Task.Delay(100); });
+            _authUi.Dispose();
             return _account;
         }
-
-        
     }
 }

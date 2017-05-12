@@ -24,8 +24,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public async Task<SocialAccount> Login()
         {
-            if(_authUi == null)
-                _authUi = _oAuth1.GetUI(MainActivity.Activity);
+            _authUi = (Intent)_oAuth1.GetUI(MainActivity.Activity);
             MainActivity.Activity.StartActivity(_authUi);
             SocialAccount account = null;
             _oAuth1.Completed += async (sender, args) =>
@@ -39,6 +38,8 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             {
                 while (!_isComplite)
                     Task.Delay(100);
+
+                _authUi.Dispose();
 
                 return account;
             });

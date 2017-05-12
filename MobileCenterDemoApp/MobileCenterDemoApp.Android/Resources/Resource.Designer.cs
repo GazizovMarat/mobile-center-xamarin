@@ -3420,8 +3420,12 @@ namespace MobileCenterDemoApp.Droid
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_id = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_inflatedId = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_layout = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_layout;
+			global::PCLCrypto.Resource.String.ApplicationName = global::MobileCenterDemoApp.Droid.Resource.String.ApplicationName;
+			global::PCLCrypto.Resource.String.Hello = global::MobileCenterDemoApp.Droid.Resource.String.Hello;
 			global::Xamarin.Auth.Resource.Id.webview = global::MobileCenterDemoApp.Droid.Resource.Id.webview;
 			global::Xamarin.Auth.Resource.Layout.activity_webview = global::MobileCenterDemoApp.Droid.Resource.Layout.activity_webview;
+			global::Xamarin.Auth.Resource.String.ApplicationName = global::MobileCenterDemoApp.Droid.Resource.String.ApplicationName;
+			global::Xamarin.Auth.Resource.String.Hello = global::MobileCenterDemoApp.Droid.Resource.String.Hello;
 			global::Xamarin.Auth.Resource.String.library_name = global::MobileCenterDemoApp.Droid.Resource.String.library_name;
 			global::Xamarin.Auth.Resource.String.title_activity_webview = global::MobileCenterDemoApp.Droid.Resource.String.title_activity_webview;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::MobileCenterDemoApp.Droid.Resource.Attribute.actionBarSize;
@@ -7320,6 +7324,12 @@ namespace MobileCenterDemoApp.Droid
 		public partial class String
 		{
 			
+			// aapt resource value: 0x7f080052
+			public const int ApplicationName = 2131230802;
+			
+			// aapt resource value: 0x7f080051
+			public const int Hello = 2131230801;
+			
 			// aapt resource value: 0x7f080028
 			public const int abc_action_bar_home_description = 2131230760;
 			
@@ -7476,8 +7486,8 @@ namespace MobileCenterDemoApp.Droid
 			// aapt resource value: 0x7f080010
 			public const int common_signin_button_text_long = 2131230736;
 			
-			// aapt resource value: 0x7f080051
-			public const int library_name = 2131230801;
+			// aapt resource value: 0x7f080053
+			public const int library_name = 2131230803;
 			
 			// aapt resource value: 0x7f080013
 			public const int mr_button_content_description = 2131230739;
