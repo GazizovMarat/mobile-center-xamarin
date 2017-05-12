@@ -19,7 +19,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 {
     public class GoogleFitImplementation : IFitnessTracker
     {
-        public string ApiName { get; } = "Google fit";
+        public string ApiName => "Google fit";
 
         public event Action<string> OnError;
         public event Action OnConnect;

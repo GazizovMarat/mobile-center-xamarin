@@ -22,7 +22,7 @@ namespace MobileCenterDemoApp.ViewModels
         private bool _showWait;
         public bool ShowWait
         {
-            get => _showWait;
+            get { return _showWait; }
             set
             {
                 SetProperty(ref _showWait, value);
@@ -34,7 +34,7 @@ namespace MobileCenterDemoApp.ViewModels
         private string _errorMessage;
         public string ErrorMessage
         {
-            get => _errorMessage;
+            get { return _errorMessage; }
             set
             {
                 SetProperty(ref _errorMessage, value);
