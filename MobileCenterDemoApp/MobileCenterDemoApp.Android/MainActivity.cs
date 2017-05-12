@@ -20,7 +20,9 @@ namespace MobileCenterDemoApp.Droid
         public static MainActivity Activity { get; private set; }
 
         public MainActivity()
-            => Activity = this;
+        {
+            Activity = this;
+        }
 
         #region Implements activity and Google Fit permissions request
 

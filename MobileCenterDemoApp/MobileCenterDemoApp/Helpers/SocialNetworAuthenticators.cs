@@ -39,11 +39,12 @@ namespace MobileCenterDemoApp.Helpers
             Dictionary<string, string> deserializeObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(text);
 
             SocialAccount account = new SocialAccount();
-
-            if (deserializeObject.TryGetValue("name", out string name))
+            string name;
+            if (deserializeObject.TryGetValue("name", out name))
                 account.UserName = name;
 
-            if (deserializeObject.TryGetValue("id", out string id))
+            string id;
+            if (deserializeObject.TryGetValue("id", out id))
                 account.UserId = id;
 
             request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{account.UserId}/picture"),
