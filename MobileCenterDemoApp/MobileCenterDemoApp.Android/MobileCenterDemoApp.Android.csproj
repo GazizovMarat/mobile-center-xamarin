@@ -232,6 +232,9 @@
     <Compile Include="MainActivity.cs" />
     <None Include="app.config" />
     <None Include="proguard.cfg" />
+    <Compile Include="Renderers\BottomTabRenderer.cs" />
+    <Compile Include="Renderers\MeasureSpecFactory.cs" />
+    <Compile Include="Renderers\ResourceManagerEx.cs" />
     <Compile Include="Renderers\RoundButtonRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -306,7 +309,12 @@
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\error3.png" />
   </ItemGroup>
-  <Import Project="..\MobileCenterDemoApp\MobileCenterDemoApp.projitems" Label="Shared" Condition="Exists('..\MobileCenterDemoApp\MobileCenterDemoApp.projitems')" />
+  <ItemGroup>
+    <ProjectReference Include="..\MobileCenterDemoApp\MobileCenterDemoApp.csproj">
+      <Project>{b810d0f0-4efc-42f0-a74f-eeee98d2a3f2}</Project>
+      <Name>MobileCenterDemoApp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

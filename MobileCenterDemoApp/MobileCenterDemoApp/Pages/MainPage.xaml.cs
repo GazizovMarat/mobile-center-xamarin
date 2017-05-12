@@ -1,19 +1,11 @@
-﻿using Xamarin.Forms;
+﻿using MobileCenterDemoApp.Helpers;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MobileCenterDemoApp.Views
+namespace MobileCenterDemoApp.Pages
 {
-#if __ANDROID__
-    using BottomBar.XamarinForms;
-#endif
-
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public class MainPage
-#if __ANDROID__
-        : BottomBarPage
-#else
-        : TabbedPage
-#endif
+    public class MainPage : BottomTabbedPage
     {
         private static MainPage _instance;
 

@@ -5,10 +5,9 @@ using MobileCenterDemoApp.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MobileCenterDemoApp.Views
+namespace MobileCenterDemoApp.Pages
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class StatisticsPage
+	public partial class StatisticsPage : ContentPage
 	{
 		public StatisticsPage ()
 		{

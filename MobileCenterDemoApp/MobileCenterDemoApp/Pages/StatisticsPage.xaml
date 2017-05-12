@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels"
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
-             x:Class="MobileCenterDemoApp.Views.StatisticsPage"
+             x:Class="MobileCenterDemoApp.Pages.StatisticsPage"
              Icon="statisticsicon1.png" Title="Statistics"
-             Navigation="{Binding Navigation}">
+             Navigation="{Binding Navigation}"
+             BackgroundColor="White">
     <ContentPage.BindingContext>
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>
@@ -29,7 +30,8 @@
                     ContentLayout="Top,0"
                     BackgroundColor="White"
                     HeightRequest="125"
-                    Image="steps.png" Text="STEPS" />
+                    Image="steps.png" Text="STEPS" 
+                    BorderWidth="0" />
             <Button Command="{Binding ShowCaloriesCommand}" 
                     Grid.Row="0" Grid.Column="1" 
                     HorizontalOptions="CenterAndExpand" 
@@ -37,7 +39,8 @@
                     ContentLayout="Top,0"
                     BackgroundColor="White"
                     HeightRequest="125"
-                    Image="burn.png" Text="STEPS" />
+                    Image="burn.png" Text="STEPS" 
+                    BorderWidth="0" />
 
             <Button Command="{Binding ShowDistanceCommand}" 
                     Grid.Row="0" Grid.Column="2" 
@@ -46,7 +49,8 @@
                     ContentLayout="Top,0"
                     BackgroundColor="White"
                     HeightRequest="125"
-                    Image="distance.png" Text="DISTANCE" />
+                    Image="distance.png" Text="DISTANCE"
+                    BorderWidth="0" />
 
             <Button Command="{Binding ShowActiveTimeCommand}" 
                     Grid.Row="0" Grid.Column="3" 
@@ -55,7 +59,8 @@
                     ContentLayout="Top,0"
                     BackgroundColor="White"
                     HeightRequest="125"
-                    Image="clocks.png" Text="ACTIVE TIME" />
+                    Image="clocks.png" Text="ACTIVE TIME" 
+                    BorderWidth="0" />
         </Grid>
         <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 
                 BackgroundColor="Red" TextColor="White" Margin="0,0,0,10"               

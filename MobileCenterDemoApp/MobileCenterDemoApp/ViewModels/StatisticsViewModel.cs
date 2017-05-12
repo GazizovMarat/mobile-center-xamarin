@@ -59,7 +59,7 @@ namespace MobileCenterDemoApp.ViewModels
 
         public StatisticsViewModel()
         {
-            Model = new PlotModel{Title = "TEST"};
+            Model = new PlotModel{Title = "Mobile center"};
             CrashCommand = new Command(CrashApp);
             ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType !=  ChartType.Steps );
             ShowCaloriesCommand = new Command(() => UpdateData(ChartType.Calories), () => _currentChartType != ChartType.Calories);
@@ -89,9 +89,15 @@ namespace MobileCenterDemoApp.ViewModels
             Crashes.GenerateTestCrash();
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        private bool _isUpdate = false;
+
         private void UpdateData(ChartType chartType)
         {
+            if (_isUpdate)
+                return;
+
+            _isUpdate = true;
+
             if(!DataStore.StatisticsInit)
                 return;
 
@@ -160,6 +166,8 @@ namespace MobileCenterDemoApp.ViewModels
             Model = model;
 
             #endregion
+
+            _isUpdate = false;
 
             _currentChartType = chartType;
             RaiseCanExecute();
