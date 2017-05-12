@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCenterDemoApp.Android
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCenterDemoApp.iOS", "MobileCenterDemoApp\MobileCenterDemoApp.iOS\MobileCenterDemoApp.iOS.csproj", "{C9437263-E6F4-44EE-A72E-266C6C7BC886}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCenterDemoApp", "..\MobileCenterDemoApp\MobileCenterDemoApp\MobileCenterDemoApp\MobileCenterDemoApp.csproj", "{B810D0F0-4EFC-42F0-A74F-EEEE98D2A3F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCenterDemoApp", "MobileCenterDemoApp\MobileCenterDemoApp\MobileCenterDemoApp.csproj", "{B810D0F0-4EFC-42F0-A74F-EEEE98D2A3F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

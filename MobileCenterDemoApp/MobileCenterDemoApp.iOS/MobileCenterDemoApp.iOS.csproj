@@ -191,7 +191,7 @@
     <BundleResource Include="Resources\vector-smart-object%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MobileCenterDemoApp\MobileCenterDemoApp\MobileCenterDemoApp\MobileCenterDemoApp.csproj">
+    <ProjectReference Include="..\MobileCenterDemoApp\MobileCenterDemoApp.csproj">
       <Project>{b810d0f0-4efc-42f0-a74f-eeee98d2a3f2}</Project>
       <Name>MobileCenterDemoApp</Name>
     </ProjectReference>

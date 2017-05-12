@@ -4,8 +4,8 @@ using Microsoft.Azure.Mobile.Analytics;
 using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Models;
 using MobileCenterDemoApp.Services;
-using MobileCenterDemoApp.Views;
 using Xamarin.Forms;
+using MobileCenterDemoApp.Pages;
 // ReSharper disable ExplicitCallerInfoArgument
 
 namespace MobileCenterDemoApp.ViewModels
