@@ -117,11 +117,11 @@ namespace MobileCenterDemoApp.ViewModels
             string error = "";
             bool success;
 
-            void ErrorHandle(string errorMessage)
+            Action<string> ErrorHandle = (errorMessage) =>
             {
                 success = false;
                 error = errorMessage;
-            }
+            };
 
             try
             {
