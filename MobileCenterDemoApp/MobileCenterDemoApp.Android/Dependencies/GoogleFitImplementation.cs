@@ -30,8 +30,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public async Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
         {
-            using (DataReadRequest stepRequest =
-                CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end))
+            using (DataReadRequest stepRequest =CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end))
             using (IResult stepResult = await ReadData(stepRequest))
                 return GetIntFromResult(stepResult);
         }
@@ -151,6 +150,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             => (from ds in bucket.DataSets
                 from p in ds.DataPoints
                 from f in p.DataType.Fields
+                where f.Name != "still"
                 select p.GetValue(f).AsInt()).Sum();
 
         private float ExtractFloat(Bucket bucket)

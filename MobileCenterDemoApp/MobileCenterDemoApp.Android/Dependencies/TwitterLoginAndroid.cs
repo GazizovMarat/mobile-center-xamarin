@@ -19,7 +19,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public TwitterLoginAndroid()
         {
-            _oAuth1 = Helpers.SocialNetworAuthenticators.TwitterAuth;
+            _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
         }
 
         public async Task<SocialAccount> Login()
@@ -30,27 +30,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             SocialAccount account = null;
             _oAuth1.Completed += async (sender, args) =>
             {
-                if (!args.IsAuthenticated)
-                {
-                    _isComplite = true;
-                    return;
-                }
-
-                account = new SocialAccount
-                {
-                    UserId = args.Account.Properties["user_id"],
-                    UserName = args.Account.Properties["screen_name"]
-                };
-
-                var request = new OAuth1Request("GET",
-                    new Uri("https://api.twitter.com/1.1/account/verify_credentials.json"),
-                    null, args.Account);
-                var response = await request.GetResponseAsync();
-                
-                var jo = Newtonsoft.Json.Linq.JObject.Parse(response.GetResponseText());
-                var uri = (string) jo["profile_image_url"];
-                account.ImageSource = ImageSource.FromUri(new Uri(uri));
-
+                account = await Helpers.SocialNetworkAuthenticators.OnCompliteTwitterAuth(args);
                 _isComplite = true;
             };
             _oAuth1.Error += (sender, args) => OnError?.Invoke(args.Message);

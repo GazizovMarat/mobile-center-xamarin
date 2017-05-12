@@ -69,7 +69,7 @@ namespace MobileCenterDemoApp.Services
             DataFill?.Invoke();
         }
 
-        public static async Task ReadStatisticsInformation()
+        public static async Task ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)
                 throw new NullReferenceException(nameof(FitnessTracker));
@@ -77,7 +77,7 @@ namespace MobileCenterDemoApp.Services
             if (!FitnessTracker.IsConnected)
                 throw new Exception("Connection closed");
 
-            if (StatisticsInit)
+            if (StatisticsInit && !reload)
                 return;
 
             Task<IEnumerable<T>> Get<T>(Func<DateTime, DateTime, Task<IEnumerable<T>>> func)
