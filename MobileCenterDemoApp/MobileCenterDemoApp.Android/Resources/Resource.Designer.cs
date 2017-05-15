@@ -3420,6 +3420,9 @@ namespace MobileCenterDemoApp.Droid
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_id = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_inflatedId = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::BottomNavigationBar.Resource.Styleable.ViewStubCompat_android_layout = global::MobileCenterDemoApp.Droid.Resource.Styleable.ViewStubCompat_android_layout;
+			global::Microsoft.Azure.Mobile.Push.Android.Resource.Integer.google_play_services_version = global::MobileCenterDemoApp.Droid.Resource.Integer.google_play_services_version;
+			global::Microsoft.Azure.Mobile.Push.Android.Resource.String.common_google_play_services_unknown_issue = global::MobileCenterDemoApp.Droid.Resource.String.common_google_play_services_unknown_issue;
+			global::Microsoft.Azure.Mobile.Push.Android.Resource.String.library_name = global::MobileCenterDemoApp.Droid.Resource.String.library_name;
 			global::PCLCrypto.Resource.String.ApplicationName = global::MobileCenterDemoApp.Droid.Resource.String.ApplicationName;
 			global::PCLCrypto.Resource.String.Hello = global::MobileCenterDemoApp.Droid.Resource.String.Hello;
 			global::Xamarin.Auth.Resource.Id.webview = global::MobileCenterDemoApp.Droid.Resource.Id.webview;
