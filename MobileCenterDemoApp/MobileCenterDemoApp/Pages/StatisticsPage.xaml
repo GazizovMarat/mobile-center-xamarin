@@ -39,7 +39,7 @@
                     ContentLayout="Top,0"
                     BackgroundColor="White"
                     HeightRequest="125"
-                    Image="burn.png" Text="STEPS" 
+                    Image="burn.png" Text="Calories" 
                     BorderWidth="0" />
 
             <Button Command="{Binding ShowDistanceCommand}" 
