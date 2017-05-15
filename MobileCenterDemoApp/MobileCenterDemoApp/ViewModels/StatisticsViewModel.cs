@@ -96,10 +96,10 @@ namespace MobileCenterDemoApp.ViewModels
             if (_isUpdate)
                 return;
 
-            _isUpdate = true;
-
-            if(!DataStore.StatisticsInit)
+            if (!DataStore.StatisticsInit)
                 return;
+
+            _isUpdate = true;
 
             OxyColor lineColor;
             IEnumerable<double> enumerable;
@@ -123,6 +123,7 @@ namespace MobileCenterDemoApp.ViewModels
                     lineColor = OxyColors.Green;
                     break;
                 default:
+                    _isUpdate = false;
                     return;
             }
 
@@ -151,8 +152,7 @@ namespace MobileCenterDemoApp.ViewModels
                 MarkerType = MarkerType.None,
                 MarkerSize = 4,
                 LineStyle = LineStyle.Solid,
-                Color = lineColor,
-                TrackerFormatString = "{4}"
+                Color = lineColor
             };
 
             var startDate = DateTime.UtcNow.Date.AddDays(-4);

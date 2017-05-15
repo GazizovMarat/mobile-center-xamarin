@@ -69,7 +69,7 @@ namespace MobileCenterDemoApp.Droid
             base.OnSaveInstanceState(outState);
         }
 
-        private void BuildApiClient()
+        public void BuildApiClient()
         {
             MClient = new GoogleApiClient.Builder(this)
                 .AddApi(FitnessClass.HISTORY_API)

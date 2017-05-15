@@ -13,17 +13,13 @@ namespace MobileCenterDemoApp.Droid.Dependencies
     public class TwitterLoginAndroid : ITwitter
     {
         public event Action<string> OnError;
-        private readonly OAuth1Authenticator _oAuth1;
+        private OAuth1Authenticator _oAuth1;
         private Intent _authUi;
         private bool _isComplite;
 
-        public TwitterLoginAndroid()
-        {
-            _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
-        }
-
         public async Task<SocialAccount> Login()
         {
+            _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
             _authUi = (Intent)_oAuth1.GetUI(MainActivity.Activity);
             MainActivity.Activity.StartActivity(_authUi);
             SocialAccount account = null;

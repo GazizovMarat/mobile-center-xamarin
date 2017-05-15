@@ -1,4 +1,5 @@
 ﻿using MobileCenterDemoApp.Helpers;
+using MobileCenterDemoApp.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -20,6 +21,8 @@ namespace MobileCenterDemoApp.Pages
 
             _instance = this;
             _errorMessage = errorMessage;
+
+            
         }
         private void InitComponents()
         {
@@ -31,6 +34,19 @@ namespace MobileCenterDemoApp.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
+            if (!DataStore.FitnessTracker.IsConnected)
+            {
+                await DataStore.FitnessTracker.Connect();
+            }
+
+            if (DataStore.FitnessTracker.IsConnected)
+            {
+                _errorMessage = string.Empty;
+                await DataStore.ReadTodayInformation();
+                return;
+            }
+
             if (string.IsNullOrEmpty(_errorMessage))
                 return;
 

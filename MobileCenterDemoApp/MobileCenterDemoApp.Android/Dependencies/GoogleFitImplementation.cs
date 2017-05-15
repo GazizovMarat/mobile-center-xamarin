@@ -61,7 +61,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(time))
-                return GetIntFromResult(caloriesResult).Select(x => TimeSpan.FromMilliseconds(x));
+                return GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x));
         }
 
         private async Task<IResult> ReadData(DataReadRequest request) 
@@ -123,7 +123,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)                
                 .Build();
 
-        private IEnumerable<int> GetIntFromResult(IResult result)
+        private IEnumerable<int> GetIntFromResult(IResult result, string[] skip = null)
         {
             if (result == null)
                 return null;
@@ -131,7 +131,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             IList<Bucket> buckets = ((DataReadResult)result).Buckets;
             if (!buckets.Any())
                 return null;
-            return buckets.Select(ExtractInt).ToArray();
+            return buckets.Select(x => ExtractInt(x, skip)).ToArray();
         }
 
         private IEnumerable<float> GetFloatFromResult(IResult result)
@@ -146,12 +146,19 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             return buckets.Select(ExtractFloat).ToArray();
         }
 
-        private int ExtractInt(Bucket bucket)
-            => (from ds in bucket.DataSets
-                from p in ds.DataPoints
-                from f in p.DataType.Fields
-                where f.Name != "still"
-                select p.GetValue(f).AsInt()).Sum();
+        private int ExtractInt(Bucket bucket, string[] skipTypes = null)
+        {
+            var en = from ds in bucket.DataSets
+                     from p in ds.DataPoints
+                     from f in p.DataType.Fields
+                     select new { typeName = f.Name, value = p.GetValue(f).AsInt() };
+
+            if(skipTypes == null)
+                return en.Sum(x => x.value);
+
+            return en.Where(x => !skipTypes.Contains(x.typeName)).Sum(x => x.value);
+        }
+
 
         private float ExtractFloat(Bucket bucket)
             => (from ds in bucket.DataSets

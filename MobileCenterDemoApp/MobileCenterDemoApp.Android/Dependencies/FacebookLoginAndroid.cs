@@ -14,19 +14,15 @@ namespace MobileCenterDemoApp.Droid.Dependencies
     public class FacebookLoginAndroid : IFacebook
     {
         public event Action<string> OnError;
-        private readonly OAuth2Authenticator _oAuth2;
+        private OAuth2Authenticator _oAuth2;
 
         private Intent _authUi;
         private bool _isComplite;
         private SocialAccount _account;
 
-        public FacebookLoginAndroid()
-        {
-            _oAuth2 = SocialNetworkAuthenticators.FacebookAuth;
-                        
-        }
         public async Task<SocialAccount> Login()
         {
+            _oAuth2 = SocialNetworkAuthenticators.FacebookAuth;
             _authUi = (Intent)_oAuth2.GetUI(MainActivity.Activity);
 
             MainActivity.Activity.StartActivity(_authUi);
@@ -37,8 +33,15 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             };
             _oAuth2.Error += (sender, args) => OnError?.Invoke(args.Message);
 
-            await Task.Run(() => { while (!_isComplite) Task.Delay(100); });
-            _authUi.Dispose();
+            await Task.Run(() =>
+            {
+                while (!_isComplite)
+                    Task.Delay(100);
+
+                _authUi.Dispose();
+            });
+            
+            
             return _account;
         }
     }

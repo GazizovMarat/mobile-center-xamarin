@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MobileCenterDemoApp.Interfaces;
 using MobileCenterDemoApp.Models;
 using Xamarin.Forms;
+using Microsoft.Azure.Mobile.Analytics;
 // ReSharper disable FieldCanBeMadeReadOnly.Local
 
 namespace MobileCenterDemoApp.Services
@@ -46,7 +47,7 @@ namespace MobileCenterDemoApp.Services
         public static double[] FiveDaysDistance { get; private set; }
         public static TimeSpan[] FiveDaysActiveTime { get; private set; }
 
-        public static bool StatisticsInit => FiveDaysSteps != null;
+        public static bool StatisticsInit { get; private set; }
 
         #endregion
 
@@ -80,8 +81,8 @@ namespace MobileCenterDemoApp.Services
             if (StatisticsInit && !reload)
                 return;
 
-            DateTime startDate = DateTime.UtcNow.AddDays(-5);
-            DateTime endDate = DateTime.UtcNow.AddMinutes(1);
+            DateTime startDate = DateTime.UtcNow.Date.AddDays(-5);
+            DateTime endDate = DateTime.UtcNow.Date.AddDays(1.01);
 
             FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double) x).ToArray();
             FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
@@ -100,11 +101,23 @@ namespace MobileCenterDemoApp.Services
                 FiveDaysDistance = range(FiveDaysDistance.Length).Select(x => 0D).Concat(FiveDaysDistance).ToArray();
             if (FiveDaysActiveTime.Length < 5)
                 FiveDaysActiveTime = range(FiveDaysActiveTime.Length)
-                    .Select(x => TimeSpan.FromTicks(0))
+                    .Select(x => TimeSpan.FromMilliseconds(0))
                     .Concat(FiveDaysActiveTime)
                     .ToArray();
 
             #endregion
+
+            StatisticsInit = true;
+
+            Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
+                   new Dictionary<string, string>
+                   {
+                    {"Page", "Login"},
+                    {"Category", "Request"},
+                    {"API", FitnessTracker?.ApiName },
+                    {"Result", true.ToString()},
+                    {"Error_message", ""}
+                   });
 
         }
 
