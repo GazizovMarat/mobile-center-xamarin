@@ -86,7 +86,9 @@ namespace MobileCenterDemoApp.ViewModels
                 {"Page", "Profile"},
                 {"Category", "Clicks"}
             });
-            Crashes.GenerateTestCrash();
+            Crashes.GenerateTestCrash(); // Doesn't work in Release
+
+            throw new Exception("Crash App");
         }
 
         private bool _isUpdate = false;
