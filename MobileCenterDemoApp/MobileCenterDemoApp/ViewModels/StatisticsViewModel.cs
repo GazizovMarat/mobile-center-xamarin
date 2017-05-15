@@ -54,7 +54,9 @@ namespace MobileCenterDemoApp.ViewModels
         public Command CrashCommand { get; set; }
 
         #endregion
-        
+
+        public double BorderRadius { get; }
+
         private ChartType _currentChartType;
 
         public StatisticsViewModel()
@@ -65,8 +67,10 @@ namespace MobileCenterDemoApp.ViewModels
             ShowCaloriesCommand = new Command(() => UpdateData(ChartType.Calories), () => _currentChartType != ChartType.Calories);
             ShowDistanceCommand = new Command(() => UpdateData(ChartType.Distance), () => _currentChartType != ChartType.Distance);
             ShowActiveTimeCommand = new Command(() => UpdateData(ChartType.ActiveTime), () => _currentChartType != ChartType.ActiveTime);
-            
+
             UpdateData(ChartType.Steps);
+
+            BorderRadius = PlatformSizes.BorderRadius;
         }
 
         #region Private methods

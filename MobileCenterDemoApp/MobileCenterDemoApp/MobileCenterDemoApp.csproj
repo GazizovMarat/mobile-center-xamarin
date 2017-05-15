@@ -39,6 +39,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BottomTabbedPage.cs" />
+    <Compile Include="Helpers\PlatformSizes.cs" />
     <Compile Include="Helpers\SocialNetworAuthenticators.cs" />
     <Compile Include="Interfaces\IFitnessTracker.cs" />
     <Compile Include="Interfaces\ISocialNet.cs" />

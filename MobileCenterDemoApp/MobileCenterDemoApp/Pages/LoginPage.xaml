@@ -22,13 +22,13 @@
                 <Button Command="{Binding LoginViaFacebookCommand}" Text="Login via Facebook" 
                         BackgroundColor="Blue" Image="facebook.png" TextColor="White" HeightRequest="60"
                         WidthRequest="250"
-                        BorderRadius = "100"
-                        BorderWidth = "2"/>
+                        BorderWidth= "2"
+                        BorderRadius="{Binding BorderWidth}" />
                 <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter"
                         BackgroundColor="DeepSkyBlue" Image="twitter.png" TextColor="White" HeightRequest="60" 
                         WidthRequest="250"
-                        BorderRadius = "100"
-                        BorderWidth = "2"/>
+                        BorderWidth = "2"
+                        BorderRadius="{Binding BorderWidth}" />
 
             </StackLayout>
         </StackLayout>

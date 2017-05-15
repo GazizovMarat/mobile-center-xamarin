@@ -107,6 +107,13 @@ namespace MobileCenterDemoApp.Services
 
             #endregion
 
+            TodaySteps = Convert.ToInt32(Math.Round(FiveDaysSteps.Last()));
+            TodayCalories = Convert.ToInt32(Math.Round(FiveDaysCalories.Last()));
+            TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
+            TodayActiveTime = FiveDaysActiveTime.Last();
+
+            DataFill?.Invoke();
+
             StatisticsInit = true;
 
             Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",

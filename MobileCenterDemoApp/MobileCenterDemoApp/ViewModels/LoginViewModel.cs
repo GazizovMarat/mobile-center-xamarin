@@ -44,6 +44,8 @@ namespace MobileCenterDemoApp.ViewModels
 
         }
 
+        public double BorderWidth { get; }
+
         #endregion
 
         public Command LoginViaFacebookCommand { get; set; }
@@ -55,6 +57,8 @@ namespace MobileCenterDemoApp.ViewModels
 
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
+
+            BorderWidth = PlatformSizes.BorderRadius;
         }
 
         #region Auth

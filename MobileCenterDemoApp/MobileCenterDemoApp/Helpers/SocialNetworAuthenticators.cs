@@ -12,7 +12,7 @@ namespace MobileCenterDemoApp.Helpers
     public static class SocialNetworkAuthenticators
     {
         public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
-            clientId: "1945815635652325",
+            clientId: "120712398481198",
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
             redirectUrl: new Uri("http://localhost/facebook"));

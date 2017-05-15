@@ -4,7 +4,8 @@
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels"
              xmlns:oxy="clr-namespace:OxyPlot.Xamarin.Forms;assembly=OxyPlot.Xamarin.Forms"
              x:Class="MobileCenterDemoApp.Pages.StatisticsPage"
-             Icon="statisticsicon1.png" Title="Statistics"
+             Icon="statisticsicon1.png"
+             Title="Statistics"
              Navigation="{Binding Navigation}"
              BackgroundColor="White">
     <ContentPage.BindingContext>
@@ -15,30 +16,33 @@
         
         <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
             <Grid.RowDefinitions>
-                <RowDefinition Height="200" />
+                <RowDefinition Height="15*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="95" />
-                <ColumnDefinition Width="95" />
-                <ColumnDefinition Width="95" />
-                <ColumnDefinition Width="95" />
+                <ColumnDefinition Width="25*" />
+                <ColumnDefinition Width="25*" />
+                <ColumnDefinition Width="25*" />
+                <ColumnDefinition Width="25*" />
             </Grid.ColumnDefinitions>
             <Button Command="{Binding ShowStepsCommand}" 
                     Grid.Row="0" Grid.Column="0" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End" 
-                    ContentLayout="Top,0"
+                    ContentLayout="Top,5"
                     BackgroundColor="White"
-                    HeightRequest="125"
-                    Image="steps.png" Text="STEPS" 
+                    WidthRequest="Infinity"
+                    Image="steps.png" 
+                    FontSize="Micro"
+                    Text="Steps" 
                     BorderWidth="0" />
             <Button Command="{Binding ShowCaloriesCommand}" 
                     Grid.Row="0" Grid.Column="1" 
                     HorizontalOptions="CenterAndExpand" 
-                    VerticalOptions="End" 
-                    ContentLayout="Top,0"
-                    BackgroundColor="White"
-                    HeightRequest="125"
+                    VerticalOptions="End"
+                    WidthRequest="Infinity"
+                    ContentLayout="Top,5"
+                    BackgroundColor="White"      
+                    FontSize="Micro"
                     Image="burn.png" Text="Calories" 
                     BorderWidth="0" />
 
@@ -46,26 +50,30 @@
                     Grid.Row="0" Grid.Column="2" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End" 
-                    ContentLayout="Top,0"
+                    ContentLayout="Top,5"
+                    WidthRequest="Infinity"
                     BackgroundColor="White"
-                    HeightRequest="125"
-                    Image="distance.png" Text="DISTANCE"
+                    FontSize="Micro"
+                    Image="distance.png" Text="Distance"
                     BorderWidth="0" />
 
             <Button Command="{Binding ShowActiveTimeCommand}" 
                     Grid.Row="0" Grid.Column="3" 
-                    HorizontalOptions="CenterAndExpand" 
+                    HorizontalOptions="Center" 
                     VerticalOptions="End" 
-                    ContentLayout="Top,0"
+                    ContentLayout="Top,5"
+                    WidthRequest="Infinity"                    
                     BackgroundColor="White"
-                    HeightRequest="125"
-                    Image="clocks.png" Text="ACTIVE TIME" 
+                    FontSize="Micro"
+                    Image="clocks.png" 
+                    Text="Active time" 
                     BorderWidth="0" />
         </Grid>
         <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 
                 BackgroundColor="Red" TextColor="White" Margin="0,0,0,10"               
                 WidthRequest="250"
-                BorderRadius = "100"
-                BorderWidth = "2" />
+                BorderRadius = "{Binding BorderRadius}"
+                BorderWidth = "0" />
+
     </StackLayout>
 </ContentPage>
