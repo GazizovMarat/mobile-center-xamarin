@@ -19,22 +19,25 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public async Task<SocialAccount> Login()
         {
-            _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
-            _authUi = (Intent)_oAuth1.GetUI(MainActivity.Activity);
-            MainActivity.Activity.StartActivity(_authUi);
+            _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;            
+            
             SocialAccount account = null;
             _oAuth1.Completed += async (sender, args) =>
             {
-                account = await Helpers.SocialNetworkAuthenticators.OnCompliteTwitterAuth(args);
+                if(args.IsAuthenticated)
+                    account = await Helpers.SocialNetworkAuthenticators.OnCompliteTwitterAuth(args);
                 _isComplite = true;
             };
             _oAuth1.Error += (sender, args) => OnError?.Invoke(args.Message);
+     
+            _authUi = (Intent)_oAuth1.GetUI(MainActivity.Activity);
+            MainActivity.Activity.StartActivityForResult(_authUi, -1);
 
             return await Task.Run(() =>
             {
                 while (!_isComplite)
                     Task.Delay(100);
-
+                
                 _authUi.Dispose();
 
                 return account;

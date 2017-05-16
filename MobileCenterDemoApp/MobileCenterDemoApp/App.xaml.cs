@@ -14,7 +14,6 @@ namespace MobileCenterDemoApp
         private const string AppKeyForIos = "3a5b14df-1962-41e0-968a-22ecd75d9927";
         private static bool _alreadyInit = false;
 
-
         public App()
         {
             InitializeComponent();

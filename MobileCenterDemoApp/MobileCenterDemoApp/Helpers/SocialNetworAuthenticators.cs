@@ -15,6 +15,7 @@ namespace MobileCenterDemoApp.Helpers
             clientId: "120712398481198",
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
+            //redirectUrl: new Uri("fb120712398481198://authorize")); 
             redirectUrl: new Uri("http://localhost/facebook"));
 
         public static OAuth1Authenticator TwitterAuth => new OAuth1Authenticator(
@@ -24,6 +25,7 @@ namespace MobileCenterDemoApp.Helpers
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
             callbackUrl: new Uri("https://www.visualstudio.com/vs/mobile-center/")
+            //callbackUrl: new Uri("com.MobileCenterDemoApp://auth")            
         );
 
         public static async Task<SocialAccount> OnCompliteFacebookAuth(AuthenticatorCompletedEventArgs args)
@@ -54,7 +56,6 @@ namespace MobileCenterDemoApp.Helpers
                         {"width", 100.ToString() }
                 }, args.Account);
             response = await request.GetResponseAsync();
-
             account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
 
             return account;

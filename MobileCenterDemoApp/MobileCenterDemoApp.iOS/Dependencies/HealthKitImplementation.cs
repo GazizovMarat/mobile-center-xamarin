@@ -18,6 +18,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public HealthKitImplementation()
         {
+            return;
             _healthStore = new HKHealthStore();
             var types = new[]
             {
@@ -36,7 +37,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         }
 
         public string ApiName { get; } = "HealthKit";
-        public bool IsConnected { get; private set; }
+        public bool IsConnected { get; private set; } = true;
 
         public Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
         {
@@ -70,6 +71,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         private IEnumerable<double> GetDataFromQuery(DateTime start, DateTime end, HKQuantityTypeIdentifier identifier, HKUnit unit)
         {
+            return new[] { 0D, 0, 0, 1, 1 };
             List<double> st = new List<double>();
             HKStatisticsCollectionQuery query = new HKStatisticsCollectionQuery(
                 HKQuantityType.Create(identifier),
@@ -99,6 +101,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public async Task Connect()
         {
+            return;
             var types = new[]
             {
                 HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
