@@ -17,7 +17,6 @@ namespace MobileCenterDemoApp
         public App()
         {
             InitializeComponent();
-
             if (_alreadyInit)
             {
                 MainPage = DataStore.Account != null
