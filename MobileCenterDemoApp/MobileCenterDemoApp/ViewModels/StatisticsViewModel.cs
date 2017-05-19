@@ -167,7 +167,7 @@ namespace MobileCenterDemoApp.ViewModels
             var startDate = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
-                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(startDate.DayOfYear), d));
+                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(startDate.Day), d));
                 startDate = startDate.AddDays(1);
             }
 
