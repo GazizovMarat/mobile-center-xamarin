@@ -39,7 +39,8 @@ namespace MobileCenterDemoApp.Droid.Renderers
                 var sld = new StateListDrawable();
                 sld.AddState(new int[] { Android.Resource.Attribute.StatePressed }, _pressed);
                 sld.AddState(new int[] { }, _normal);
-                Control.SetBackgroundDrawable(sld);
+                
+                Control.Background = sld;
             }
         }
 

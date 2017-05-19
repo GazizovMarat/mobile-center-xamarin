@@ -142,15 +142,19 @@ namespace MobileCenterDemoApp.ViewModels
             Model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
-                StringFormat = "MMM/dd",
+                StringFormat = "M/d",
                 Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4)),
                 Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date),
+                IsPanEnabled = false,
+                IsZoomEnabled = false
             });
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
                 Maximum = dataArray.Max(),
                 Position = AxisPosition.Left,
+                IsPanEnabled = false,
+                IsZoomEnabled = false
             });
 
             var lineSeries = new AreaSeries
@@ -164,7 +168,7 @@ namespace MobileCenterDemoApp.ViewModels
             var startDate = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
-                lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate.Day), d));
+                lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate), d));
                 startDate = startDate.AddDays(1);
             }
 

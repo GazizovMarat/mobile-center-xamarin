@@ -15,7 +15,7 @@ namespace MobileCenterDemoApp.Helpers
             clientId: "120712398481198",
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),           
-            redirectUrl: new Uri("http://localhost/facebook"));
+            redirectUrl: new Uri("https://localhost/facebook"));
 
         public static OAuth1Authenticator TwitterAuth => new OAuth1Authenticator(
             consumerKey: "RpQDj4XFdHRvHp4l3uOKkyDJq",
@@ -23,7 +23,7 @@ namespace MobileCenterDemoApp.Helpers
             requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
-            callbackUrl: new Uri("https://www.visualstudio.com/vs/mobile-center/")            
+            callbackUrl: new Uri("com.MobileCenterDemoApp://auth")
         );
 
         public static async Task<SocialAccount> OnCompliteFacebookAuth(AuthenticatorCompletedEventArgs args)
