@@ -133,7 +133,7 @@ namespace MobileCenterDemoApp.ViewModels
                 if (!DataStore.FitnessTracker.IsConnected)
                 {
                     success = false;
-                    error = "Connection failed";
+                    error = $"Connection to {DataStore.FitnessTracker.ApiName} failed";
                 }
                 else
                 {

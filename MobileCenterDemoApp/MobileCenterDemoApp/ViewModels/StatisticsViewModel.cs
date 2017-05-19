@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
 using MobileCenterDemoApp.Helpers;
@@ -91,8 +90,6 @@ namespace MobileCenterDemoApp.ViewModels
                 {"Category", "Clicks"}
             });
             Crashes.GenerateTestCrash(); // Doesn't work in Release
-
-            throw new Exception("Crash App");
         }
 
         private bool _isUpdate = false;
@@ -138,13 +135,15 @@ namespace MobileCenterDemoApp.ViewModels
             double[] dataArray = enumerable.ToArray();
 
             PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
-
             Model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
-                StringFormat = "M/d",
-                Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4)),
-                Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date),
+                StringFormat = "MM/dd",
+                Selectable = false,
+                Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.AddDays(-4)),
+                Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow),
+                MinorIntervalType = DateTimeIntervalType.Days,
+                IntervalType = DateTimeIntervalType.Days,
                 IsPanEnabled = false,
                 IsZoomEnabled = false
             });
@@ -158,17 +157,17 @@ namespace MobileCenterDemoApp.ViewModels
             });
 
             var lineSeries = new AreaSeries
-            {
+            {                
                 MarkerType = MarkerType.None,
                 MarkerSize = 4,
                 LineStyle = LineStyle.Solid,
-                Color = lineColor
+                Color = lineColor               
             };
 
             var startDate = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
-                lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate), d));
+                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(startDate.DayOfYear), d));
                 startDate = startDate.AddDays(1);
             }
 
