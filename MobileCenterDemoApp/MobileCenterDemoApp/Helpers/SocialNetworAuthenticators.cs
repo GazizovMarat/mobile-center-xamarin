@@ -50,8 +50,8 @@ namespace MobileCenterDemoApp.Helpers
             request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{account.UserId}/picture"),
                 new Dictionary<string, string>
                 {
-                        {"height", 100.ToString() },
-                        {"width", 100.ToString() }
+                        {"height", 480.ToString() },
+                        {"width", 480.ToString() }
                 }, args.Account);
             response = await request.GetResponseAsync();
             account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
@@ -78,7 +78,7 @@ namespace MobileCenterDemoApp.Helpers
             Response response = await request.GetResponseAsync();
 
             JObject jo = JObject.Parse(response.GetResponseText());
-            string uri = (string)jo["profile_image_url"];
+            string uri = ((string)jo["profile_image_url"]).Replace("_normal", "_400x400");
             account.ImageSource = ImageSource.FromUri(new Uri(uri));
 
             return account;
