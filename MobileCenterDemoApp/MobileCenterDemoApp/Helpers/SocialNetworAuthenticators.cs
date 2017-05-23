@@ -14,8 +14,8 @@ namespace MobileCenterDemoApp.Helpers
         public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
             clientId: "120712398481198",
             scope: "public_profile",
-            authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-            redirectUrl: new Uri("http://localhost/facebook"));
+            authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),           
+            redirectUrl: new Uri("https://localhost/facebook"));
 
         public static OAuth1Authenticator TwitterAuth => new OAuth1Authenticator(
             consumerKey: "RpQDj4XFdHRvHp4l3uOKkyDJq",
@@ -23,7 +23,7 @@ namespace MobileCenterDemoApp.Helpers
             requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
-            callbackUrl: new Uri("https://www.visualstudio.com/vs/mobile-center/")
+            callbackUrl: new Uri("com.MobileCenterDemoApp://auth")
         );
 
         public static async Task<SocialAccount> OnCompliteFacebookAuth(AuthenticatorCompletedEventArgs args)
@@ -50,11 +50,10 @@ namespace MobileCenterDemoApp.Helpers
             request = new OAuth2Request("GET", new Uri($"https://graph.facebook.com/v2.9/{account.UserId}/picture"),
                 new Dictionary<string, string>
                 {
-                        {"height", 100.ToString() },
-                        {"width", 100.ToString() }
+                        {"height", 480.ToString() },
+                        {"width", 480.ToString() }
                 }, args.Account);
             response = await request.GetResponseAsync();
-
             account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
 
             return account;
@@ -79,7 +78,7 @@ namespace MobileCenterDemoApp.Helpers
             Response response = await request.GetResponseAsync();
 
             JObject jo = JObject.Parse(response.GetResponseText());
-            string uri = (string)jo["profile_image_url"];
+            string uri = ((string)jo["profile_image_url"]).Replace("_normal", "_400x400");
             account.ImageSource = ImageSource.FromUri(new Uri(uri));
 
             return account;

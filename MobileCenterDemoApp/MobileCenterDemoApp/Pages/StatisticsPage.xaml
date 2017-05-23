@@ -12,7 +12,7 @@
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>
     <StackLayout>
-        <oxy:PlotView Model="{Binding Model}" VerticalOptions="Start" HorizontalOptions="Fill" HeightRequest="250"/>
+        <oxy:PlotView Model="{Binding Model}" VerticalOptions="Start" HorizontalOptions="Fill" HeightRequest="250" />
         
         <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
             <Grid.RowDefinitions>

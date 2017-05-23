@@ -1,4 +1,7 @@
 ﻿using Foundation;
+using System;
+using System.Diagnostics;
+using System.Linq;
 using UIKit;
 
 namespace MobileCenterDemoApp.iOS
@@ -17,17 +20,17 @@ namespace MobileCenterDemoApp.iOS
 		// You have 17 seconds to return from this method, or iOS will terminate your application.
 		//
 
-        public static UIWindow UiWindow { get; private set; }
+        public static UIWindow UiXamarinWindow { get; private set; }
 
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init ();
-			LoadApplication (new App ());
-		    OxyPlot.Xamarin.Forms.Platform.iOS.PlotViewRenderer.Init();
 
-            UiWindow = this.Window;
+            OxyPlot.Xamarin.Forms.Platform.iOS.PlotViewRenderer.Init();
 
-			return base.FinishedLaunching (app, options);
+            LoadApplication(new App());
+
+            return base.FinishedLaunching (app, options);
 		}
 	}
 }

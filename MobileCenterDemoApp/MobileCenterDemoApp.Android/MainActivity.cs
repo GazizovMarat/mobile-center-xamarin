@@ -9,8 +9,20 @@ using Microsoft.Azure.Mobile.Analytics;
 
 namespace MobileCenterDemoApp.Droid
 {
-    [Activity(Label = "MobileCenterDemoApp", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true,
-        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(
+        Label = "MobileCenterDemoApp", 
+        Icon = "@drawable/icon", 
+        Theme = "@style/MainTheme", 
+        MainLauncher = true,
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
+        LaunchMode = LaunchMode.SingleTask        
+        )]
+    [IntentFilter(new[] { Intent.ActionView },
+        Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+        DataScheme = "com.MobileCenterDemoApp")]
+    [IntentFilter(new[] { Intent.ActionView },
+        Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+        DataScheme = "fb120712398481198")]
     public class MainActivity : Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         private bool _authInProgress;
