@@ -11,7 +11,6 @@ using MobileCenterDemoApp.Helpers;
 [assembly: Dependency(typeof(FacebookLoginIOS))]
 namespace MobileCenterDemoApp.iOS.Dependencies
 {
-    // ReSharper disable once InconsistentNaming
     public class FacebookLoginIOS : IFacebook
     {
         private bool _isComplite;
@@ -32,8 +31,10 @@ namespace MobileCenterDemoApp.iOS.Dependencies
             
             using (var window = new UIWindow(UIScreen.MainScreen.Bounds))
             {
-                window.RootViewController = (UIViewController)_oAuth2.GetUI();
+                window.RootViewController = _oAuth2.GetUI();
                 window.MakeKeyAndVisible();
+
+                // await user login 
                 await Task.Run(() =>
                 {
                     while (!_isComplite)

@@ -13,10 +13,6 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 {
     public class HealthKitImplementation : IFitnessTracker
     {
-        public event Action<string> OnError;
-
-        public event Action OnConnect;
-
         private readonly HKHealthStore _healthStore;
 
         public HealthKitImplementation()
@@ -24,10 +20,11 @@ namespace MobileCenterDemoApp.iOS.Dependencies
             _healthStore = new HKHealthStore();
         }
 
-        public void Dispose()
-        {
-            _healthStore.Dispose();
-        }
+        #region IFitnessTracker
+
+        public event Action<string> OnError;
+
+        public event Action OnConnect;
 
         public string ApiName => "HealthKit";
 
@@ -62,6 +59,70 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         public async Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
         {
             return (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.AppleExerciseTime, HKUnit.Minute)).Select(x => TimeSpan.FromMinutes(x));
+        }
+
+        public async Task Connect()
+        {
+            NSSet readTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
+            {
+                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime)
+            });
+            NSSet writeTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
+            {
+                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
+                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned)
+            });
+
+            if (HKHealthStore.IsHealthDataAvailable)
+            {
+                Tuple<bool, NSError> success = await _healthStore.RequestAuthorizationToShareAsync(writeTypes, readTypes);
+
+                IsConnected = success.Item1;
+
+                if (IsConnected)
+                {
+                    await StoreSteps();
+                    OnConnect?.Invoke();
+                }
+                else
+                {
+                    OnError?.Invoke(success.Item2.Description);
+                }
+            }
+            else
+            {
+                OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
+            }
+        }
+
+        public void Disconnect()
+        {
+            
+        }
+
+        #endregion IFitnessTracker
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _healthStore.Dispose();
+        }
+        
+        #endregion IDisposable
+
+        private async Task StoreSteps()
+        {
+            HKQuantity quan = HKQuantity.FromQuantity(HKUnit.Count, 500);
+            var heartRateQuantityType = HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount);
+            var heartRateSample = HKQuantitySample.FromType(heartRateQuantityType, quan, NSDate.Now, NSDate.Now, new HKMetadata());
+            await _healthStore.SaveObjectAsync(heartRateSample);                
         }
 
         private async Task<IEnumerable<double>> GetDataFromQuery(DateTime start, DateTime end, HKQuantityTypeIdentifier identifier, HKUnit unit)
@@ -99,70 +160,5 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
             }); ;
         }
-
-        public async Task Connect()
-        {
-            NSSet readTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
-            {
-                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime)
-            });
-            NSSet writeTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
-            {
-                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned)
-            });
-
-            if (HKHealthStore.IsHealthDataAvailable)
-            {
-
-                try
-                {
-                    Tuple<bool, NSError> success = await _healthStore.RequestAuthorizationToShareAsync(writeTypes, readTypes);
-
-                    IsConnected = success.Item1;
-
-                    if (IsConnected)
-                    {
-                        await StoreSteps();
-                        OnConnect?.Invoke();
-                    }
-                    else
-                    {
-                        OnError?.Invoke(success.Item2.Description);
-                    }
-            
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
-            else
-            {
-                OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
-            }
-        }
-
-        public void Disconnect()
-        {
-            
-        }
-
-        public async Task StoreSteps()
-        {
-            HKQuantity quan = HKQuantity.FromQuantity(HKUnit.Count, 500);
-            var heartRateQuantityType = HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount);
-            var heartRateSample = HKQuantitySample.FromType(heartRateQuantityType, quan, NSDate.Now, NSDate.Now, new HKMetadata());
-            await _healthStore.SaveObjectAsync(heartRateSample);                
-        }
-
-
-
     }
 }

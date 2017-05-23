@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MobileCenterDemoApp.Interfaces;
-using MobileCenterDemoApp.Models;
-using Xamarin.Forms;
-using Microsoft.Azure.Mobile.Analytics;
-// ReSharper disable FieldCanBeMadeReadOnly.Local
-
-namespace MobileCenterDemoApp.Services
+﻿namespace MobileCenterDemoApp.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using MobileCenterDemoApp.Interfaces;
+    using MobileCenterDemoApp.Models;
+    using Xamarin.Forms;
+    using Microsoft.Azure.Mobile.Analytics;
+
     public static class DataStore
     {        
+        /// <summary>
+        /// User account
+        /// </summary>
         public static SocialAccount Account { get; set; }
 
         #region Lazy instances
 
-        private static Lazy<IFacebook> _facebookServiceLazy =
-            new Lazy<IFacebook>(() => DependencyService.Get<IFacebook>(DependencyFetchTarget.NewInstance));
-        private static Lazy<ITwitter> _twitterServiceLazy =
-            new Lazy<ITwitter>(() => DependencyService.Get<ITwitter>(DependencyFetchTarget.NewInstance));
         private static Lazy<IFitnessTracker> _fitnessServiceLazy =
             new Lazy<IFitnessTracker>(() => DependencyService.Get<IFitnessTracker>(DependencyFetchTarget.NewInstance));
 
@@ -27,49 +25,81 @@ namespace MobileCenterDemoApp.Services
 
         #region Services
 
-        public static IFacebook FacebookService => _facebookServiceLazy.Value;
-        public static ITwitter TwitterService => _twitterServiceLazy.Value;
+        /// <summary>
+        /// Fitness service API
+        /// </summary>
         public static IFitnessTracker FitnessTracker => _fitnessServiceLazy.Value;
 
         #endregion
 
         #region Fitness data
 
+        /// <summary>
+        /// Raise when fitness data updated
+        /// </summary>
         public static event Action DataFill;
 
+        /// <summary>
+        /// Total today steps 
+        /// </summary>
         public static int TodaySteps { get; private set; }
+
+        /// <summary>
+        /// Total today calories 
+        /// </summary>
         public static int TodayCalories { get; private set; }
+
+        /// <summary>
+        /// Total today distance 
+        /// </summary>
         public static double TodayDistance { get; private set; }
+
+        /// <summary>
+        /// Total today activity time 
+        /// </summary>
         public static TimeSpan TodayActiveTime { get; private set; }
 
+        /// <summary>
+        /// Steps statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysSteps { get; private set; }
+
+        /// <summary>
+        /// Calories statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysCalories { get; private set; }
+
+        /// <summary>
+        /// Distance statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysDistance { get; private set; }
+
+        /// <summary>
+        /// Activity time statistics for last 5 days
+        /// </summary>
         public static TimeSpan[] FiveDaysActiveTime { get; private set; }
 
+        /// <summary>
+        /// Retrieving data from API
+        /// </summary>
         public static bool StatisticsInit { get; private set; }
 
         #endregion
 
         #region Retrieve fitness data
 
+        /// <summary>
+        /// Update data from Fitness API
+        /// </summary>
         public static async Task ReadTodayInformation()
         {
-            if (FitnessTracker == null)
-                throw new NullReferenceException(nameof(FitnessTracker));
-
-            if (!FitnessTracker.IsConnected)
-                throw new Exception("Connection closed");
-            
             await ReadStatisticsInformation();
-            TodaySteps = Convert.ToInt32(Math.Round(FiveDaysSteps.Last()));
-            TodayCalories = Convert.ToInt32(Math.Round(FiveDaysCalories.Last()));
-            TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
-            TodayActiveTime = FiveDaysActiveTime.Last();
-
-            DataFill?.Invoke();
         }
 
+        /// <summary>
+        /// Retrieving data from Fitness API
+        /// </summary>
+        /// <param name="reload">Reload information</param>
         public static async Task ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)

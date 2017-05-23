@@ -1,23 +1,64 @@
-﻿using MobileCenterDemoApp.Helpers;
-using MobileCenterDemoApp.Services;
-using Xamarin.Forms;
-
-namespace MobileCenterDemoApp.ViewModels
+﻿namespace MobileCenterDemoApp.ViewModels
 {
+    using MobileCenterDemoApp.Helpers;
+    using MobileCenterDemoApp.Services;
+    using Xamarin.Forms;
+
     public class ProfileViewModel : ViewModelBase
     {
+        /// <summary>
+        /// User name from Social net
+        /// </summary>
         public string Username { get; }
 
-        public int StepsCount => DataStore.TodaySteps;
+        /// <summary>
+        /// Today steps count
+        /// </summary>
+        public int StepsCount
+        {
+            get
+            {
+                return DataStore.TodaySteps;
+            }
+        }
 
-        public double Calories => DataStore.TodayCalories;
+        /// <summary>
+        /// Today calories count
+        /// </summary>
+        public double Calories
+        {
+            get
+            {
+                return DataStore.TodayCalories;
+            }
+        }
 
-        public double Distance => DataStore.TodayDistance;
+        /// <summary>
+        /// Today distance (km)
+        /// </summary>
+        public double Distance
+        {
+            get
+            {
+                return DataStore.TodayDistance;
+            }
+        }
 
-        public string Time => $"{DataStore.TodayActiveTime:%h}h {DataStore.TodayActiveTime:%m}m";
+        /// <summary>
+        /// Today activity time
+        /// </summary>
+        public string Time
+        {
+            get
+            {
+                return $"{DataStore.TodayActiveTime:%h}h {DataStore.TodayActiveTime:%m}m";
+            }
+        }
 
-
-        public ImageSource AccountImageSource { get; }            
+        /// <summary>
+        /// Account photo image source
+        /// </summary>
+        public ImageSource AccountImageSource { get; }
 
         public ProfileViewModel()
         {
@@ -26,6 +67,9 @@ namespace MobileCenterDemoApp.ViewModels
             DataStore.DataFill += SetProperties;
         }
 
+        /// <summary>
+        /// Update properties on view
+        /// </summary>
         private void SetProperties()
         {
             OnPropertyChanged(nameof(StepsCount));

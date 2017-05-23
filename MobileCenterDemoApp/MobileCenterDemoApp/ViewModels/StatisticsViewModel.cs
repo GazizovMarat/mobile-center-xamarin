@@ -1,61 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Azure.Mobile.Analytics;
-using Microsoft.Azure.Mobile.Crashes;
-using MobileCenterDemoApp.Helpers;
-using MobileCenterDemoApp.Services;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using Xamarin.Forms;
-
-namespace MobileCenterDemoApp.ViewModels
+﻿namespace MobileCenterDemoApp.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Azure.Mobile.Analytics;
+    using Microsoft.Azure.Mobile.Crashes;
+    using MobileCenterDemoApp.Helpers;
+    using MobileCenterDemoApp.Services;
+    using OxyPlot;
+    using OxyPlot.Axes;
+    using OxyPlot.Series;
+    using Xamarin.Forms;
+
     public class StatisticsViewModel : ViewModelBase
     {
-
         #region Properties
 
         private PlotModel _model;
+
+        /// <summary>
+        /// Model for line chart
+        /// </summary>
         public PlotModel Model
         {
-            get { return _model; }
-            set { SetProperty(ref _model, value); }
-        }
-
-        private int _minValue;
-        public int MinValue
-        {
-            get { return _minValue; }
-            set { SetProperty(ref _minValue, value); }
-        }
-
-        private double _maxValue;
-        public double MaxValue
-        {
-            get { return _maxValue; }
-            set { SetProperty(ref _maxValue, value); }
+            get
+            {
+                return _model;
+            }
+            set
+            {
+                SetProperty(ref _model, value);
+            }
         }
 
         #endregion
 
         #region Commands
 
+        /// <summary>
+        /// Switch to steps statistics command
+        /// </summary>
         public Command ShowStepsCommand { get; }
 
+        /// <summary>
+        /// Switch to calories statistics command
+        /// </summary>
         public Command ShowCaloriesCommand { get; }
 
+        /// <summary>
+        /// Switch to distance statistics command
+        /// </summary>
         public Command ShowDistanceCommand { get; }
 
+        /// <summary>
+        /// Switch to activity time statistics command
+        /// </summary>
         public Command ShowActiveTimeCommand { get; }
 
+        /// <summary>
+        /// Crash application command
+        /// </summary>
         public Command CrashCommand { get; set; }
 
         #endregion
 
+        /// <summary>
+        /// Button border radius
+        /// </summary>
         public double BorderRadius { get; }
 
+        /// <summary>
+        /// Current chart type
+        /// </summary>
         private ChartType _currentChartType;
 
         public StatisticsViewModel()
@@ -74,6 +90,9 @@ namespace MobileCenterDemoApp.ViewModels
 
         #region Private methods
 
+        /// <summary>
+        /// Update view
+        /// </summary>
         private void RaiseCanExecute()
         {
             ShowStepsCommand.ChangeCanExecute();
@@ -82,6 +101,9 @@ namespace MobileCenterDemoApp.ViewModels
             ShowActiveTimeCommand.ChangeCanExecute();
         }
 
+        /// <summary>
+        /// Crash application with Mobile Center
+        /// </summary>
         private static void CrashApp()
         {
             Analytics.TrackEvent("Crash application button clicked", new Dictionary<string, string>
@@ -94,6 +116,10 @@ namespace MobileCenterDemoApp.ViewModels
 
         private bool _isUpdate = false;
 
+        /// <summary>
+        /// Update chart model
+        /// </summary>
+        /// <param name="chartType">Chart information type</param>
         private void UpdateData(ChartType chartType)
         {
             if (_isUpdate)
@@ -185,9 +211,30 @@ namespace MobileCenterDemoApp.ViewModels
 
         #endregion
 
+        /// <summary>
+        /// Chart data types
+        /// </summary>
         private enum ChartType
         {
-            Steps, Calories, Distance, ActiveTime
+            /// <summary>
+            /// Steps count 
+            /// </summary>
+            Steps,
+
+            /// <summary>
+            /// Calories count
+            /// </summary>
+            Calories,
+
+            /// <summary>
+            /// Distance
+            /// </summary>
+            Distance,
+
+            /// <summary>
+            /// Activity time
+            /// </summary>
+            ActiveTime
         }
     }
 }
