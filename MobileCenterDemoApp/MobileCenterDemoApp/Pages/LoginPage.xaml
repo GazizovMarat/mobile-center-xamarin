@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels"
@@ -20,11 +20,11 @@
             </StackLayout>
             <StackLayout VerticalOptions="EndAndExpand" Margin="0,20,0,40" HorizontalOptions="Center">
                 <Button Command="{Binding LoginViaFacebookCommand}" Text="Login via Facebook" 
-                        BackgroundColor="Blue" Image="facebook.png" TextColor="White" HeightRequest="60"
+                        BackgroundColor="Blue" Image="facebook.png" TextColor="White"
                         WidthRequest="250"
                         BorderRadius="{Binding BorderWidth}" />
                 <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter"
-                        BackgroundColor="DeepSkyBlue" Image="twitter.png" TextColor="White" HeightRequest="60" 
+                        BackgroundColor="DeepSkyBlue" Image="twitter.png" TextColor="White" 
                         WidthRequest="250"
                         BorderRadius="{Binding BorderWidth}" />
 

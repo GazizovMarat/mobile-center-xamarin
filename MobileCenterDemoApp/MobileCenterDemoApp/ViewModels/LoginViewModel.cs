@@ -83,6 +83,11 @@
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
 
             BorderWidth = PlatformSizes.BorderRadius;
+
+            if(Device.RuntimePlatform == Device.iOS)
+            {
+                BorderWidth = 23;
+            }
         }
 
         #region Auth

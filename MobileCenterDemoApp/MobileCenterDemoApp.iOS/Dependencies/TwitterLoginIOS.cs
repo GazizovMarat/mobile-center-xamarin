@@ -21,6 +21,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         {
             _isComplite = false;
             OAuth1Authenticator _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
+    
             SocialAccount account = null;
             _oAuth1.Completed += async (sender, args) =>
             {
@@ -31,7 +32,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
             using (UIWindow window = new UIWindow(UIScreen.MainScreen.Bounds))
             {
-                window.RootViewController = _oAuth1.GetUI();
+                window.RootViewController = (UIViewController) _oAuth1.GetUI();
                 window.MakeKeyAndVisible();
 
                 // await user login 

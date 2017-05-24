@@ -24,10 +24,8 @@
 	<string>10.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>MobileCenterDemoApp</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.Akvelon.MobileCenterDemoApp</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>	
+	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>
 	<key>CFBundleShortVersionString</key>
@@ -35,9 +33,9 @@
 	<key>UIMainStoryboardFile~ipad</key>
 	<string>LaunchScreen</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>123</string>
+	<string>Update some data</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>12343</string>
+	<string>Share with some data</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -47,8 +45,10 @@
 			<string>com.MobileCenterDemoApp.ios</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.MobileCenterDemoApp</string>
+				<string>com.mobilecenter</string>
 			</array>
+			<key>CFBundleURLTypes</key>
+			<string>Viewer</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -59,7 +59,36 @@
 			<array>
 				<string>fb120712398481198</string>
 			</array>
+			<key>CFBundleURLTypes</key>
+			<string>Editor</string>
 		</dict>
 	</array>
+	<key>CFBundleName</key>
+	<string>MobileCenterDemoApp</string>
+	<key>UIMainStoryboardFile</key>
+	<string>LaunchScreen</string>
+	<key>com.apple.developer.healthkit</key>
+	<true/>
+	<key>CFBundleIdentifier</key>
+	<string>com.mobilecenterdemoapp.xamarin</string>
+	<key>UIRequiredDeviceCapabilities </key>
+	<string>healthkit</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string></string>
+	<key>Custom Property</key>
+	<string></string>
 </dict>
 </plist>

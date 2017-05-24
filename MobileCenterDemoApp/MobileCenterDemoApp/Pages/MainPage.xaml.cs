@@ -11,7 +11,7 @@
     ///     Android - bottom tabbed page
     /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public class MainPage : BottomTabbedPage
+    public class MainPage : TabbedPage
     {
         /// <summary>
         /// User profile page with username and today's statistics
@@ -36,6 +36,10 @@
         {
             InitComponents();
             _errorMessage = errorMessage;
+            DataStore.FitnessTracker.OnError += async (obj) => {
+                var errorPage = new ErrorPage(obj);
+                await Navigation.PushModalAsync(errorPage);
+            };
         }
         private void InitComponents()
         {
@@ -45,7 +49,7 @@
             Children.Add(_profilePage);
             Children.Add(_statisticsPage);
 
-            CurrentPage = _profilePage;
+            CurrentPage = _statisticsPage;
         }
 
         protected override async void OnAppearing()

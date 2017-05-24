@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MobileCenterDemoApp.ViewModels"
@@ -14,7 +14,7 @@
     <StackLayout>
         <oxy:PlotView Model="{Binding Model}" VerticalOptions="Start" HorizontalOptions="Fill" HeightRequest="250" />
         
-        <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
+         <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
             <Grid.RowDefinitions>
                 <RowDefinition Height="15*" />
             </Grid.RowDefinitions>
@@ -24,51 +24,41 @@
                 <ColumnDefinition Width="25*" />
                 <ColumnDefinition Width="25*" />
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding ShowStepsCommand}" 
+           <Button Command="{Binding ShowStepsCommand}" 
                     Grid.Row="0" Grid.Column="0" 
                     HorizontalOptions="CenterAndExpand" 
-                    VerticalOptions="End" 
-                    ContentLayout="Top,5"
+                    VerticalOptions="End"      
                     BackgroundColor="White"
-                    WidthRequest="Infinity"
-                    Image="steps.png" 
-                    FontSize="Micro"
-                    Text="Steps" 
+                  
+                    Image="stepswithtext.png" 
                     BorderWidth="0" />
             <Button Command="{Binding ShowCaloriesCommand}" 
                     Grid.Row="0" Grid.Column="1" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End"
-                    WidthRequest="Infinity"
-                    ContentLayout="Top,5"
+     
+                
                     BackgroundColor="White"      
-                    FontSize="Micro"
-                    Image="burn.png" Text="Calories" 
+                    Image="burnwithtext.png"
                     BorderWidth="0" />
-
             <Button Command="{Binding ShowDistanceCommand}" 
                     Grid.Row="0" Grid.Column="2" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End" 
-                    ContentLayout="Top,5"
-                    WidthRequest="Infinity"
+                                    
                     BackgroundColor="White"
-                    FontSize="Micro"
-                    Image="distance.png" Text="Distance"
+                    Image="distancewithtext.png" 
                     BorderWidth="0" />
-
             <Button Command="{Binding ShowActiveTimeCommand}" 
                     Grid.Row="0" Grid.Column="3" 
                     HorizontalOptions="Center" 
                     VerticalOptions="End" 
-                    ContentLayout="Top,5"
-                    WidthRequest="Infinity"                    
+               
                     BackgroundColor="White"
                     FontSize="Micro"
-                    Image="clocks.png" 
-                    Text="Active time" 
+                    Image="clockswithtext.png" 
                     BorderWidth="0" />
-        </Grid>
+        </Grid> 
         <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 
                 BackgroundColor="Red" TextColor="White" Margin="0,0,0,10"               
                 WidthRequest="250"

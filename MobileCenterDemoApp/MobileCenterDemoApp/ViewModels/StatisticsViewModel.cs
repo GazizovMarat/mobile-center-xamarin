@@ -5,8 +5,8 @@
     using System.Linq;
     using Microsoft.Azure.Mobile.Analytics;
     using Microsoft.Azure.Mobile.Crashes;
-    using MobileCenterDemoApp.Helpers;
-    using MobileCenterDemoApp.Services;
+    using Helpers;
+    using Services;
     using OxyPlot;
     using OxyPlot.Axes;
     using OxyPlot.Series;
@@ -76,6 +76,7 @@
 
         public StatisticsViewModel()
         {
+            
             Model = new PlotModel{Title = "Mobile center"};
             CrashCommand = new Command(CrashApp);
             ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType !=  ChartType.Steps );
@@ -86,6 +87,7 @@
             UpdateData(ChartType.Steps);
 
             BorderRadius = PlatformSizes.BorderRadius;
+         
         }
 
         #region Private methods

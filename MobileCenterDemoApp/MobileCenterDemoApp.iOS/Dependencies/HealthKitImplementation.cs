@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,14 +37,14 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         }
 
         public Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end)
-        {
-            return GetDataFromQuery(start, end, HKQuantityTypeIdentifier.DistanceWalkingRunning, HKUnit.Meter);
+        {            
+            return GetDataFromQuery(start, end, HKQuantityTypeIdentifier.DistanceWalkingRunning, HKUnit.CreateMeterUnit(HKMetricPrefix.None));
         }
 
         public async Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
         {
-            double[] basalArray = (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.BasalEnergyBurned, HKUnit.Meter)).ToArray();
-            double[] activeArray = (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.ActiveEnergyBurned, HKUnit.Meter)).ToArray();
+            double[] basalArray = (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.BasalEnergyBurned, HKUnit.Calorie)).ToArray();
+            double[] activeArray = (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.ActiveEnergyBurned, HKUnit.Calorie)).ToArray();
 
             int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
         
@@ -57,7 +57,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         }
 
         public async Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
-        {
+        {     
             return (await GetDataFromQuery(start, end, HKQuantityTypeIdentifier.AppleExerciseTime, HKUnit.Minute)).Select(x => TimeSpan.FromMinutes(x));
         }
 
@@ -71,33 +71,38 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                 HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned),
                 HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime)
             });
-            NSSet writeTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
+			NSSet writeTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
+			{
+				HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
+				HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
+				HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
+				HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned)
+			});
+            try
             {
-                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned)
-            });
-
-            if (HKHealthStore.IsHealthDataAvailable)
-            {
-                Tuple<bool, NSError> success = await _healthStore.RequestAuthorizationToShareAsync(writeTypes, readTypes);
-
-                IsConnected = success.Item1;
-
-                if (IsConnected)
+                if (HKHealthStore.IsHealthDataAvailable)
                 {
-                    await StoreSteps();
-                    OnConnect?.Invoke();
+                    Tuple<bool, NSError> success = await _healthStore.RequestAuthorizationToShareAsync(writeTypes, readTypes);
+
+                    IsConnected = success.Item1;
+
+                    if (IsConnected)
+                    {
+                        OnConnect?.Invoke();
+                    }
+                    else
+                    {
+                        OnError?.Invoke(success.Item2.Description);
+                    }
                 }
                 else
                 {
-                    OnError?.Invoke(success.Item2.Description);
+                    OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
                 }
             }
-            else
+            catch(Exception e)
             {
-                OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
+                OnError?.Invoke(e.Message);
             }
         }
 
@@ -116,48 +121,49 @@ namespace MobileCenterDemoApp.iOS.Dependencies
         }
         
         #endregion IDisposable
-
-        private async Task StoreSteps()
-        {
-            HKQuantity quan = HKQuantity.FromQuantity(HKUnit.Count, 500);
-            var heartRateQuantityType = HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount);
-            var heartRateSample = HKQuantitySample.FromType(heartRateQuantityType, quan, NSDate.Now, NSDate.Now, new HKMetadata());
-            await _healthStore.SaveObjectAsync(heartRateSample);                
-        }
-
+              
         private async Task<IEnumerable<double>> GetDataFromQuery(DateTime start, DateTime end, HKQuantityTypeIdentifier identifier, HKUnit unit)
         {
             List<double> st = new List<double>();
-            bool isConplite = false;
+            bool isComplite = false;
             string errorMessage = string.Empty;
 
-            NSCalendar calendar = NSCalendar.CurrentCalendar;
-            HKQuantityType sampleType = HKQuantityType.Create(identifier);
-            NSPredicate predicate = HKQuery.GetPredicateForSamples(start.ToNsDate(), end.ToNsDate(), HKQueryOptions.None);
+            try
+            {
+                NSCalendar calendar = NSCalendar.CurrentCalendar;
+                HKQuantityType sampleType = HKQuantityType.Create(identifier);
+                NSPredicate predicate = HKQuery.GetPredicateForSamples(start.ToNsDate(), end.ToNsDate(), HKQueryOptions.None);
+                NSDateComponents comp = new NSDateComponents();
+                comp.Day = 1;
 
-            HKSampleQuery query = new HKSampleQuery(sampleType, predicate, 0, new NSSortDescriptor[0],
-                (resultQuery, results, error) =>
-                {
-                    if (error != null)
-                    {
-                        isConplite = true;
-                        errorMessage = error.Description;
-                    }
+                HKSampleQuery query = new HKSampleQuery(sampleType, predicate, 0, new NSSortDescriptor[0]
+                                                              , (queryResult, results, error) =>
+                                                              {
+                                                                  if (error != null)
+                                                                  {
+                                                                      isComplite = true;
+                                                                      errorMessage = error.Description;
+                                                                  }
+                                                                  foreach (HKQuantitySample x in results)
+                                                                  {
+                                                                      st.Add(x.Quantity.GetDoubleValue(unit));
+                                                                  }
+                                                              });
 
-                    foreach (HKQuantitySample sample in results)
-                    {
-                        st.Add(sample.Quantity.GetDoubleValue(HKUnit.Count));
-                    }
-                });
 
-            _healthStore.ExecuteQuery(query);
+                _healthStore.ExecuteQuery(query);
 
+            }
+            catch(Exception e)
+            {
+                OnError?.Invoke(e.Message);
+            }
             return await Task.Run(() =>
             {
-                while (isConplite)
+                int count = 30;
+                while (isComplite && count-- >= 0)
                     Task.Delay(100);
                 return st;
-
             }); ;
         }
     }

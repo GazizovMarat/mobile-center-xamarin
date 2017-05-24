@@ -7,6 +7,7 @@
     using MobileCenterDemoApp.Pages;
     using MobileCenterDemoApp.Helpers;
     using Xamarin.Forms;
+    using MobileCenterDemoApp.Models;
 
     public partial class App : Application
     {

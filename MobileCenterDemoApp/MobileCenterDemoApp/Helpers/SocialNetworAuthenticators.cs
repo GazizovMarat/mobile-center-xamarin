@@ -17,8 +17,8 @@ namespace MobileCenterDemoApp.Helpers
         public static OAuth2Authenticator FacebookAuth => new OAuth2Authenticator(
             clientId: KeysAndSecrets.FacebookClientId,
             scope: "public_profile",
-            authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),           
-            redirectUrl: new Uri("https://localhost/facebook"));
+            authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
+			redirectUrl: new Uri("https://localhost/facebook"));
 
         /// <summary>
         /// OAuth1 authenticator for Twitter login
@@ -29,7 +29,7 @@ namespace MobileCenterDemoApp.Helpers
             requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
-            callbackUrl: new Uri("com.MobileCenterDemoApp://auth")
+            callbackUrl: new Uri("com.mobilecenter://auth")             
         );
 
         /// <summary>

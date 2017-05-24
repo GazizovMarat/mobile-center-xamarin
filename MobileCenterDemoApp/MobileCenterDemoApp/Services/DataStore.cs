@@ -106,7 +106,7 @@
                 throw new NullReferenceException(nameof(FitnessTracker));
 
             if (!FitnessTracker.IsConnected)
-                throw new Exception("Connection closed");
+                return;
 
             if (StatisticsInit && !reload)
                 return;
@@ -114,10 +114,11 @@
             DateTime startDate = DateTime.UtcNow.Date.AddDays(-5);
             DateTime endDate = DateTime.UtcNow.Date.AddDays(1.01);
 
-            FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double) x).ToArray();
+            FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double)x).ToArray();
             FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
             FiveDaysDistance = (await FitnessTracker.DistanceByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => x / 1000).ToArray();
             FiveDaysActiveTime = (await FitnessTracker.ActiveTimeByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
+
 
             #region If statistics less than 5 days
 
@@ -145,6 +146,7 @@
             DataFill?.Invoke();
 
             StatisticsInit = true;
+
 
             Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
                    new Dictionary<string, string>
