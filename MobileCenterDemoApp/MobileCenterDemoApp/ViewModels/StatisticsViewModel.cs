@@ -201,7 +201,7 @@
             foreach (double d in dataArray)
             {
                 
-                lineSeries.Points.Add(DateTimeAxis.CreateDataPoint(date, d));
+                lineSeries.Points.Add(new DataPoint(date.Day, d));
                 date = date.AddDays(1);
             }
 
