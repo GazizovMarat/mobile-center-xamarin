@@ -6,6 +6,9 @@ using UIKit;
 using Xamarin.Auth;
 using Xamarin.Forms;
 using MobileCenterDemoApp.iOS.Dependencies;
+using Twitter;
+using Social;
+using Accounts;
 
 [assembly: Dependency(typeof(TwitterLoginiOS))]
 namespace MobileCenterDemoApp.iOS.Dependencies
@@ -19,10 +22,11 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public async Task<SocialAccount> Login()
         {
+			SocialAccount account = null;
+  
             _isComplite = false;
             OAuth1Authenticator _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
-    
-            SocialAccount account = null;
+               
             _oAuth1.Completed += async (sender, args) =>
             {
                 account = await Helpers.SocialNetworkAuthenticators.OnCompliteTwitterAuth(args);
@@ -35,15 +39,15 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                 window.RootViewController = (UIViewController) _oAuth1.GetUI();
                 window.MakeKeyAndVisible();
 
-                // await user login 
-                return await Task.Run(() =>
-                {
-                    while (!_isComplite)
-                        Task.Delay(100);
+				// await user login 
+				return await Task.Run(() =>
+				{
+					while (!_isComplite)
+						Task.Delay(100);
 
-                    return account;
-                });
-            }
+					return account;
+				});
+			}
         }
     }
 }

@@ -29,7 +29,7 @@ namespace MobileCenterDemoApp.Helpers
             requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
-            callbackUrl: new Uri("com.mobilecenter://auth")             
+            callbackUrl: new Uri("http://mobile.twitter.com")             
         );
 
         /// <summary>

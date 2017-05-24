@@ -11,7 +11,7 @@
     ///     Android - bottom tabbed page
     /// </summary>
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public class MainPage : TabbedPage
+    public class MainPage : BottomTabbedPage
     {
         /// <summary>
         /// User profile page with username and today's statistics

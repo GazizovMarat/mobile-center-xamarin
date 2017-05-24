@@ -36,33 +36,6 @@
 	<string>Update some data</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Share with some data</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.MobileCenterDemoApp.ios</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.mobilecenter</string>
-			</array>
-			<key>CFBundleURLTypes</key>
-			<string>Viewer</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.MobileCenterDemoApp2.ios</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb120712398481198</string>
-			</array>
-			<key>CFBundleURLTypes</key>
-			<string>Editor</string>
-		</dict>
-	</array>
 	<key>CFBundleName</key>
 	<string>MobileCenterDemoApp</string>
 	<key>UIMainStoryboardFile</key>

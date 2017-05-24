@@ -163,6 +163,8 @@
             double[] dataArray = enumerable.ToArray();
 
             PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
+            Model.Axes.Clear();
+
             Model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
@@ -175,10 +177,13 @@
                 IsPanEnabled = false,
                 IsZoomEnabled = false
             });
+
+            double maxValue = dataArray.Max();
+
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
-                Maximum = dataArray.Max(),
+                Maximum = maxValue < 5 ? 5 : maxValue,
                 Position = AxisPosition.Left,
                 IsPanEnabled = false,
                 IsZoomEnabled = false
@@ -192,11 +197,12 @@
                 Color = lineColor               
             };
 
-            var startDate = DateTime.UtcNow.Date.AddDays(-4);
+            var date = DateTime.UtcNow.Date.AddDays(-4);
             foreach (double d in dataArray)
             {
-                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(startDate.Day), d));
-                startDate = startDate.AddDays(1);
+                
+                lineSeries.Points.Add(DateTimeAxis.CreateDataPoint(date, d));
+                date = date.AddDays(1);
             }
 
             model.Series.Add(lineSeries);
