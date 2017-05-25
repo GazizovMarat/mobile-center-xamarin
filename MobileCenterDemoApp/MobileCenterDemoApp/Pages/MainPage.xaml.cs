@@ -67,7 +67,7 @@
             if (DataStore.FitnessTracker.IsConnected)
             {
                 _errorMessage = string.Empty;
-                await DataStore.ReadTodayInformation();
+                DataStore.ReadTodayInformation();
                 return;
             }
 

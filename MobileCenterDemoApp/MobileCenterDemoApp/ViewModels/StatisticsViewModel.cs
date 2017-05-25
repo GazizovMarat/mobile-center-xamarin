@@ -122,7 +122,7 @@
         /// Update chart model
         /// </summary>
         /// <param name="chartType">Chart information type</param>
-        private async void UpdateData(ChartType chartType)
+        private void UpdateData(ChartType chartType)
         {
             if (_isUpdate)
                 return;
@@ -130,7 +130,7 @@
             if (!DataStore.StatisticsInit)
                 return;
 
-            await DataStore.ReadStatisticsInformation();
+            DataStore.ReadStatisticsInformation();
 
             _isUpdate = true;
 
@@ -189,12 +189,11 @@
                 IsZoomEnabled = false
             });
 
-            var lineSeries = new AreaSeries
+            var lineSeries = new LineSeries
             {
                 MarkerType = MarkerType.None,
-                MarkerSize = 4,
-                LineStyle = LineStyle.Solid,
-                Fill = lineColor,
+                MarkerSize = 2,
+                LineStyle = LineStyle.Automatic,
                 Color = lineColor               
             };
 

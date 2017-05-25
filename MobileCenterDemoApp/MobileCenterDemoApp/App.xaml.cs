@@ -8,6 +8,8 @@
     using MobileCenterDemoApp.Helpers;
     using Xamarin.Forms;
     using MobileCenterDemoApp.Models;
+    using System;
+    using System.Threading.Tasks;
 
     public partial class App : Application
     {
@@ -17,6 +19,17 @@
         {
             InitializeComponent();
 
+            
+                MobileCenter.Start($"ios={KeysAndSecrets.MobileCenterAppKeyForIos};android={KeysAndSecrets.MobileCenterAppKeyForAndroid}", typeof(Analytics), typeof(Crashes));
+                MainPage = new MainPage();
+            if(Crashes.HasCrashedInLastSession)
+            {
+                ErrorReport report = null;
+                Task.WaitAll(Task.Run(async () => report = await Crashes.GetLastSessionCrashReportAsync()));
+                return;
+            }
+            return;
+
             if (_alreadyInit)
             {
                 MainPage = DataStore.Account != null
@@ -25,7 +38,7 @@
             }
             else
             {
-                MobileCenter.Start($"ios={KeysAndSecrets.MobileCenterAppKeyForIos};android={KeysAndSecrets.MobileCenterAppKeyForAndroid}", typeof(Analytics), typeof(Crashes));
+                
                 
                 MainPage = new LoginPage();
 

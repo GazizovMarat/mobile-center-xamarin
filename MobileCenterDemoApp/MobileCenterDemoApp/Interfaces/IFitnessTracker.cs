@@ -23,7 +23,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
         /// <returns>Steps count group by days</returns>
-        Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end);
+        void StepsByPeriod(DateTime start, DateTime end, Action<IEnumerable<int>> dataHandler);
 
         /// <summary>
         /// Distanse for period
@@ -31,7 +31,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
         /// <returns>Distanse group by days</returns>
-        Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end);
+        void DistanceByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler);
 
         /// <summary>
         /// Calories for period
@@ -39,7 +39,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
         /// <returns>Calories group by days</returns>
-        Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end);
+        void CaloriesByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler);
 
         /// <summary>
         /// Active time for period
@@ -47,7 +47,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
         /// <returns>Active time group by days</returns>
-        Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end);
+        void ActiveTimeByPeriod(DateTime start, DateTime end, Action<IEnumerable<TimeSpan>> dataHandler);
 
         /// <summary>
         /// Connect to APi

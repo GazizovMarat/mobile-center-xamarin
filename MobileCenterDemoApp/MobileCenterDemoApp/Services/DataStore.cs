@@ -7,10 +7,11 @@
     using MobileCenterDemoApp.Interfaces;
     using MobileCenterDemoApp.Models;
     using Xamarin.Forms;
+    using Helpers;
     using Microsoft.Azure.Mobile.Analytics;
 
     public static class DataStore
-    {        
+    {
         /// <summary>
         /// User account
         /// </summary>
@@ -91,16 +92,16 @@
         /// <summary>
         /// Update data from Fitness API
         /// </summary>
-        public static async Task ReadTodayInformation()
+        public static void ReadTodayInformation()
         {
-            await ReadStatisticsInformation();
+            ReadStatisticsInformation();
         }
 
         /// <summary>
         /// Retrieving data from Fitness API
         /// </summary>
         /// <param name="reload">Reload information</param>
-        public static async Task ReadStatisticsInformation(bool reload = false)
+        public static void ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)
                 throw new NullReferenceException(nameof(FitnessTracker));
@@ -112,13 +113,44 @@
                 return;
 
             DateTime startDate = DateTime.Now.Date.AddDays(-4);
-            DateTime endDate = DateTime.Now.Date.AddDays(1.01);
+            DateTime endDate = DateTime.Now.Date.AddDays(0.999);
 
-            FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double)x).ToArray();
-            FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
-            FiveDaysDistance = (await FitnessTracker.DistanceByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => x / 1000).ToArray();
-            FiveDaysActiveTime = (await FitnessTracker.ActiveTimeByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
+            FitnessTracker.StepsByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysSteps = obj.Select(Convert.ToDouble).ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.DistanceByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysDistance = obj.ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.CaloriesByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysCalories = obj.ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.ActiveTimeByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysActiveTime = obj.ToArray();
+                FinishLoad();
+            });
+        }
 
+        private static void FinishLoad()
+        {
+            if (FiveDaysSteps == null
+                || FiveDaysCalories == null
+                || FiveDaysDistance == null
+                || FiveDaysActiveTime == null)
+            {
+                return;
+            }
+
+            FiveDaysSteps = FiveDaysSteps.RemoveLastElements(1).ToArray();
+            FiveDaysCalories = FiveDaysCalories.RemoveLastElements(1).ToArray();
+            FiveDaysDistance = FiveDaysDistance.RemoveLastElements(1).ToArray();
+            FiveDaysActiveTime = FiveDaysActiveTime.RemoveLastElements(1).ToArray();
 
             #region If statistics less than 5 days
 
@@ -158,9 +190,10 @@
                     {"Error_message", ""}
                    });
 
+            #endregion
+
         }
 
-        #endregion
 
     }
 }

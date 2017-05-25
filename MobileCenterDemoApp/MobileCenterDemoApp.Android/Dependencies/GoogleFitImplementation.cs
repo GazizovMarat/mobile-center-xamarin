@@ -13,6 +13,7 @@ using Java.Util.Concurrent;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using Xamarin.Forms;
+using System.Threading;
 
 [assembly: Dependency(typeof(GoogleFitImplementation))]
 namespace MobileCenterDemoApp.Droid.Dependencies
@@ -28,30 +29,30 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public bool IsConnected => Client != null && Client.IsConnected;
 
-        public async Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
+        public async void StepsByPeriod(DateTime start, DateTime end, Action<IEnumerable<int>> dataHandler)
         {
             DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
             DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
 
-            using (DataReadRequest stepRequest =CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, startUtc, endUtc))
+            using (DataReadRequest stepRequest = CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, startUtc, endUtc))
             using (IResult stepResult = await ReadData(stepRequest))
-                return GetIntFromResult(stepResult);
+                dataHandler?.Invoke(GetIntFromResult(stepResult));
         }
 
-        public async Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end)
+        public async void DistanceByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler)
         {
-			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
-			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
 
             using (DataReadRequest distanceRequest = CreateRequest(DataType.TypeDistanceDelta, DataType.AggregateDistanceDelta, startUtc, endUtc))
             using (IResult distanceResult = await ReadData(distanceRequest))
-                return GetFloatFromResult(distanceResult).Select(x => (double)x);
+                dataHandler?.Invoke(GetFloatFromResult(distanceResult).Select(x => (double)x));
         }
 
-        public async Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
+        public async void CaloriesByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler)
         {
-			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
-			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
 
             using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
@@ -59,13 +60,13 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(caloriesRequest))
-                return GetFloatFromResult(caloriesResult).Select(x => Math.Round(x)).ToArray();
+                dataHandler?.Invoke(GetFloatFromResult(caloriesResult).Select(Convert.ToDouble));
         }
 
-        public async Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
+        public async void ActiveTimeByPeriod(DateTime start, DateTime end, Action<IEnumerable<TimeSpan>> dataHandler)
         {
-			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
-			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
 
             using (DataReadRequest time = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeActivitySegment, DataType.AggregateActivitySummary)
@@ -73,8 +74,8 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(time))
-                return GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x));
-        }
+                dataHandler?.Invoke(GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x)));
+        }       
 
         private async Task<IResult> ReadData(DataReadRequest request) 
             => await FitnessClass.HistoryApi.ReadData(Client, request);
@@ -93,9 +94,18 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
                 await Task.Run(() =>
                 {
-                    // Await connectiong
-                    while (Client.IsConnecting)
-                        Task.Delay(50);
+                    try
+                    {
+                        // Await connectiong
+                        while (Client.IsConnecting)
+                        {
+                            Task.Delay(50);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
                 });
 
                 if (Client.IsConnected)
@@ -177,6 +187,8 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 from p in ds.DataPoints
                 from f in p.DataType.Fields
                 select p.GetValue(f).AsFloat()).Sum();
+
+        
 
         #endregion
     }

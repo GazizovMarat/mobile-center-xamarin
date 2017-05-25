@@ -177,7 +177,7 @@
                 }
                 else
                 {
-                    await DataStore.ReadTodayInformation();
+                    DataStore.ReadTodayInformation();
                     success = true;
                 }
                 DataStore.FitnessTracker.OnError -= ErrorHandle;

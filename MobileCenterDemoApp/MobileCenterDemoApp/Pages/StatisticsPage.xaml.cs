@@ -33,7 +33,7 @@ namespace MobileCenterDemoApp.Pages
 	        bool success;
 	        try
 	        {
-	            await DataStore.ReadStatisticsInformation();
+	            DataStore.ReadStatisticsInformation();
 	            success = true;
 	        }
 	        catch (Exception e)

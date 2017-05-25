@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,35 +36,55 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public bool IsConnected { get; private set; }
 
-        public async Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
+        public void StepsByPeriod(DateTime start, DateTime end, Action<IEnumerable<int>> act)
         {
-            return (await GetDataFromQuery(start, end, StepType, HKUnit.Count))
-                .Select(x => Convert.ToInt32(x));
+            GetDataFromQuery(start, end, StepType, HKUnit.Count, (obj) => act?.Invoke(obj.Select(Convert.ToInt32)));
         }
 
-        public Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end)
-        {            
-            return GetDataFromQuery(start, end, DistanceType, HKUnit.CreateMeterUnit( HKMetricPrefix.None));
+        public void DistanceByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> act)
+        {
+            GetDataFromQuery(start, end, DistanceType, HKUnit.CreateMeterUnit(HKMetricPrefix.None), act);
         }
 
-        public async Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
+        public void CaloriesByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> act)
         {
-            double[] basalArray = (await GetDataFromQuery(start, end, BasalCaloriesType, HKUnit.Kilocalorie)).ToArray();
-            double[] activeArray = (await GetDataFromQuery(start, end, ActiveCaloriesType, HKUnit.Kilocalorie)).ToArray();
+            IEnumerable<double> basal = null;
+            IEnumerable<double> active = null;
 
-            int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
-        
-            double[] result = new double[resultArrayLenght];
+            Action localAct = () =>
+            {
+                if (basal != null && active != null)
+                {
+                    double[] basalArray = basal.ToArray();
+                    double[] activeArray = active.ToArray();
 
-            for (int i = 0; i < resultArrayLenght; i++)
-                result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
+                    int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
 
-            return result;
+                    double[] result = new double[resultArrayLenght];
+
+                    for (int i = 0; i < resultArrayLenght; i++)
+                        result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
+
+                    act?.Invoke(result);
+                }
+            };
+
+            GetDataFromQuery(start, end, BasalCaloriesType, HKUnit.Kilocalorie, (obj) =>
+            {
+                basal = obj;
+                localAct();
+            });
+            GetDataFromQuery(start, end, ActiveCaloriesType, HKUnit.Kilocalorie, (obj) =>
+            {
+                active = obj;
+                localAct();
+            });
+
         }
 
-        public async Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
+        public void ActiveTimeByPeriod(DateTime start, DateTime end, Action<IEnumerable<TimeSpan>> act)
         {
-            return (await GetDataFromQuery(start, end, ActiveTimeType, HKUnit.Minute)).Select(x => TimeSpan.FromMinutes(x));
+            GetDataFromQuery(start, end, ActiveTimeType, HKUnit.Minute, (obj) => act(obj.Select(TimeSpan.FromMinutes).AsEnumerable()));
         }
 
         public async Task Connect()
@@ -101,7 +121,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                     OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 OnError?.Invoke(e.Message);
             }
@@ -109,7 +129,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public void Disconnect()
         {
-           
+
         }
 
         #endregion IFitnessTracker
@@ -123,11 +143,8 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         #endregion IDisposable
 
-        private async Task<IEnumerable<double>> GetDataFromQuery(DateTime start, DateTime end, HKQuantityType quentityType, HKUnit unit)
+        private void GetDataFromQuery(DateTime start, DateTime end, HKQuantityType quentityType, HKUnit unit, Action<IEnumerable<double>> act)
         {
-            List<double> st = new List<double>();
-            bool isComplite = false;
-
             NSCalendar calendar = NSCalendar.CurrentCalendar;
             NSDateComponents interval = new NSDateComponents { Day = 1 };
             NSDate startDate = start.ToNsDate();
@@ -148,17 +165,27 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                         OnError?.Invoke(error.Description);
                         return;
                     }
+                    int daysCount = (end - start).Days + 1;
+
+                    double[] st = new double[daysCount];
 
                     result.EnumerateStatistics(startDate, anchorDate, (statistics, stop) =>
                     {
                         HKQuantity quantity = statistics?.SumQuantity();
 
+                        int index = (statistics.StartDate.ToDateTime() - start).Days;
+
+                        if (index < 0 || index > st.Length)
+                        {
+                            return;
+                        }
+
                         double value = quantity?.GetDoubleValue(unit) ?? 0;
 
-                        st.Add(value);
+                        st[index] = value;
                     });
 
-                    isComplite = true;
+                    act(st.AsEnumerable());
                 }
             };
 
@@ -170,16 +197,6 @@ namespace MobileCenterDemoApp.iOS.Dependencies
             {
                 OnError?.Invoke(e.Message);
             }
-
-            return await Task.Run(() =>
-            {
-                int count = 300;
-                while (isComplite && count-- >= 0)
-                    Task.Delay(100);
-                        
-                return st;
-            });
-
         }
     }
 }
