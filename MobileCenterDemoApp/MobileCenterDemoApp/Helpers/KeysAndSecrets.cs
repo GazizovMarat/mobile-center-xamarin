@@ -18,7 +18,7 @@
         /// <summary>
         /// Facebook client id
         /// </summary>
-        public const string FacebookClientId = "120712398481198";
+        public const string FacebookClientId = "1205810699530357";
 
         /// <summary>
         /// Twiiter consumer key
