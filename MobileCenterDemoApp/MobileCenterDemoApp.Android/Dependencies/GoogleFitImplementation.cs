@@ -30,24 +30,33 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public async Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
         {
-            using (DataReadRequest stepRequest =CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, start, end))
+            DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+            DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+
+            using (DataReadRequest stepRequest =CreateRequest(DataType.TypeStepCountDelta, DataType.AggregateStepCountDelta, startUtc, endUtc))
             using (IResult stepResult = await ReadData(stepRequest))
                 return GetIntFromResult(stepResult);
         }
 
         public async Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end)
         {
-            using (DataReadRequest distanceRequest = CreateRequest(DataType.TypeDistanceDelta, DataType.AggregateDistanceDelta, start, end))
+			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+
+            using (DataReadRequest distanceRequest = CreateRequest(DataType.TypeDistanceDelta, DataType.AggregateDistanceDelta, startUtc, endUtc))
             using (IResult distanceResult = await ReadData(distanceRequest))
                 return GetFloatFromResult(distanceResult).Select(x => (double)x);
         }
 
         public async Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
         {
+			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+
             using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(caloriesRequest))
                 return GetFloatFromResult(caloriesResult).Select(x => Math.Round(x)).ToArray();
@@ -55,10 +64,13 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
         public async Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
         {
+			DateTime startUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+			DateTime endUtc = TimeZoneInfo.ConvertTimeToUtc(start);
+
             using (DataReadRequest time = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeActivitySegment, DataType.AggregateActivitySummary)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(time))
                 return GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x));

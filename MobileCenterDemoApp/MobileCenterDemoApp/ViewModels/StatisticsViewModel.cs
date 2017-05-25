@@ -122,13 +122,15 @@
         /// Update chart model
         /// </summary>
         /// <param name="chartType">Chart information type</param>
-        private void UpdateData(ChartType chartType)
+        private async void UpdateData(ChartType chartType)
         {
             if (_isUpdate)
                 return;
 
             if (!DataStore.StatisticsInit)
                 return;
+
+            await DataStore.ReadStatisticsInformation();
 
             _isUpdate = true;
 
@@ -170,30 +172,29 @@
                 Position = AxisPosition.Bottom,
                 StringFormat = "MM/dd",
                 Selectable = false,
-                Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.AddDays(-4)),
-                Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow),
+                Minimum = DateTime.Now.Day,
+                Maximum = DateTime.Now.Day,
                 MinorIntervalType = DateTimeIntervalType.Days,
                 IntervalType = DateTimeIntervalType.Days,
                 IsPanEnabled = false,
                 IsZoomEnabled = false
             });
 
-            double maxValue = dataArray.Max();
-
             Model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
-                Maximum = maxValue < 5 ? 5 : maxValue,
+                Maximum = dataArray.Max(),
                 Position = AxisPosition.Left,
                 IsPanEnabled = false,
                 IsZoomEnabled = false
             });
 
             var lineSeries = new AreaSeries
-            {                
+            {
                 MarkerType = MarkerType.None,
                 MarkerSize = 4,
                 LineStyle = LineStyle.Solid,
+                Fill = lineColor,
                 Color = lineColor               
             };
 
@@ -201,7 +202,7 @@
             foreach (double d in dataArray)
             {
                 
-                lineSeries.Points.Add(DateTimeAxis.CreateDataPoint(date, d));
+                lineSeries.Points.Add(new DataPoint(date.Day, d));
                 date = date.AddDays(1);
             }
 

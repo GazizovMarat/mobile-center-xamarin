@@ -49,7 +49,7 @@
             Children.Add(_profilePage);
             Children.Add(_statisticsPage);
 
-            CurrentPage = _statisticsPage;
+            CurrentPage = _profilePage;
         }
 
         protected override async void OnAppearing()

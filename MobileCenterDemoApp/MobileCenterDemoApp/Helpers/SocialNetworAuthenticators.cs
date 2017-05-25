@@ -18,7 +18,7 @@ namespace MobileCenterDemoApp.Helpers
             clientId: KeysAndSecrets.FacebookClientId,
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-			redirectUrl: new Uri("https://localhost/facebook"));
+			redirectUrl: new Uri("http://localhost/facebook"));
 
         /// <summary>
         /// OAuth1 authenticator for Twitter login
