@@ -19,7 +19,7 @@
         #region Lazy instances
 
         private static Lazy<IFitnessTracker> _fitnessServiceLazy =
-            new Lazy<IFitnessTracker>(() => DependencyService.Get<IFitnessTracker>(DependencyFetchTarget.NewInstance));
+            new Lazy<IFitnessTracker>(() => DependencyService.Get<IFitnessTracker>(DependencyFetchTarget.GlobalInstance));
 
         #endregion
 
@@ -111,8 +111,8 @@
             if (StatisticsInit && !reload)
                 return;
 
-            DateTime startDate = DateTime.UtcNow.Date.AddDays(-5);
-            DateTime endDate = DateTime.UtcNow.Date.AddDays(1.01);
+            DateTime startDate = DateTime.Now.Date.AddDays(-4);
+            DateTime endDate = DateTime.Now.Date.AddDays(1.01);
 
             FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double)x).ToArray();
             FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();

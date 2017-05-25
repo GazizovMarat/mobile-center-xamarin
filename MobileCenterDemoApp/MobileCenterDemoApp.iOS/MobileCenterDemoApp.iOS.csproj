@@ -39,7 +39,7 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Ainur Latypov (29DHXQJ8UG)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>MobileCenterXamarinAppAkvelonProfile</CodesignProvision>
   </PropertyGroup>
@@ -81,7 +81,7 @@
     <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer: Ainur Latypov (29DHXQJ8UG)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>Xamarin mobile center test</CodesignProvision>
+    <CodesignProvision>Mobile center test</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
