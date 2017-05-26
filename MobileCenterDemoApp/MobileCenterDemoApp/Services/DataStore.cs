@@ -9,6 +9,7 @@
     using Xamarin.Forms;
     using Helpers;
     using Microsoft.Azure.Mobile.Analytics;
+    using System.Runtime.CompilerServices;
 
     public static class DataStore
     {
@@ -97,10 +98,12 @@
             ReadStatisticsInformation();
         }
 
+        private static bool _statisticsInLoad = false;
+
         /// <summary>
         /// Retrieving data from Fitness API
         /// </summary>
-        /// <param name="reload">Reload information</param>
+        /// <param name="reload">Reload information</param>       
         public static void ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)
@@ -109,8 +112,13 @@
             if (!FitnessTracker.IsConnected)
                 return;
 
+            if (_statisticsInLoad)
+                return;
+
             if (StatisticsInit && !reload)
                 return;
+
+            _statisticsInLoad = true;
 
             DateTime startDate = DateTime.Now.Date.AddDays(-4);
             DateTime endDate = DateTime.Now.Date.AddDays(1.01);
@@ -174,6 +182,8 @@
             TodayCalories = Convert.ToInt32(Math.Round(FiveDaysCalories.Last()));
             TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
             TodayActiveTime = FiveDaysActiveTime.Last();
+
+            _statisticsInLoad = false;
 
             StatisticsInit = true;
 

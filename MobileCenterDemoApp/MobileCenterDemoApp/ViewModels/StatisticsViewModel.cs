@@ -205,7 +205,13 @@
                 IsZoomEnabled = false
             });
 
-            var lineSeries = new AreaSeries
+            var lineSeries = new
+#if _ANDROID_
+                AreaSeries
+#else
+                // AreaSeries does not work correctly on iOS
+                LineSeries 
+#endif
             {
                 MarkerType = MarkerType.Cross,
                 MarkerSize = 2,
@@ -223,7 +229,7 @@
 
             Model = model;
 
-            #endregion
+#endregion
 
             _isUpdate = false;
 
@@ -232,7 +238,7 @@
         }
 
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Chart data types
