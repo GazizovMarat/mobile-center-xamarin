@@ -51,9 +51,9 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                     while (!_isComplite)
                         Task.Delay(100);
 
-                    return account;
-                });
-            }
+					return account;
+				});
+			}
         }
     }
 }

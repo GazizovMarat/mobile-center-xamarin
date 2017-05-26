@@ -115,6 +115,7 @@
     <Compile Include="Extentions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <None Include="app.config" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -124,11 +125,14 @@
     <Compile Include="Renderers\ImageCircleRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <BundleResource Include="Resources\burnwithtext.png" />
+    <BundleResource Include="Resources\clockswithtext.png" />
     <Content Include="Resources\Default-568h%402x.png" />
     <Content Include="Resources\Default-Portrait.png" />
     <Content Include="Resources\Default-Portrait%402x.png" />
     <Content Include="Resources\Default.png" />
     <Content Include="Resources\Default%402x.png" />
+    <BundleResource Include="Resources\distancewithtext.png" />
     <Content Include="Resources\Icon-60%402x.png" />
     <Content Include="Resources\Icon-60%403x.png" />
     <Content Include="Resources\Icon-76.png" />

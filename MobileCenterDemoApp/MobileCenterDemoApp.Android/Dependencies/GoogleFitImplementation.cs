@@ -13,6 +13,7 @@ using Java.Util.Concurrent;
 using MobileCenterDemoApp.Droid.Dependencies;
 using MobileCenterDemoApp.Interfaces;
 using Xamarin.Forms;
+using System.Threading;
 
 [assembly: Dependency(typeof(GoogleFitImplementation))]
 namespace MobileCenterDemoApp.Droid.Dependencies
@@ -56,7 +57,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(caloriesRequest))
                 act?.Invoke(GetFloatFromResult(caloriesResult).Select(x => Math.Round(x)));
@@ -70,7 +71,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             using (DataReadRequest time = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeActivitySegment, DataType.AggregateActivitySummary)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(time))
                 act?.Invoke(GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x)));
@@ -93,9 +94,18 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
                 await Task.Run(() =>
                 {
-                    // Await connectiong
-                    while (Client.IsConnecting)
-                        Task.Delay(50);
+                    try
+                    {
+                        // Await connectiong
+                        while (Client.IsConnecting)
+                        {
+                            Task.Delay(50);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
                 });
 
                 if (Client.IsConnected)
@@ -177,6 +187,8 @@ namespace MobileCenterDemoApp.Droid.Dependencies
                 from p in ds.DataPoints
                 from f in p.DataType.Fields
                 select p.GetValue(f).AsFloat()).Sum();
+
+        
 
         #endregion
     }

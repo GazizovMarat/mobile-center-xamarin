@@ -5,12 +5,8 @@ using MobileCenterDemoApp.Services;
 using MobileCenterDemoApp.Pages;
 using Xamarin.Forms;
 
-namespace MobileCenterDemoApp
-{
     public partial class App : Application
     {
-        private const string AppKeyForAndroid = "ca8acbe9-ff0d-4e3f-ad22-fe4a8e8f8fb8";
-        private const string AppKeyForIos = "3a5b14df-1962-41e0-968a-22ecd75d9927";
         private static bool _alreadyInit = false;
 
         public App()
@@ -25,7 +21,9 @@ namespace MobileCenterDemoApp
             }
             else
             {
-                MobileCenter.Start($"ios={AppKeyForIos};android={AppKeyForAndroid}", typeof(Analytics), typeof(Crashes));                
+                MobileCenter.Start($"ios={AppKeyForIos};android={AppKeyForAndroid}", typeof(Analytics), typeof(Crashes), typeof(Push));
+
+                Push.PushNotificationReceived += MobileCenterPush;
 
                 MainPage = new LoginPage();
 

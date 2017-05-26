@@ -12,6 +12,7 @@
         /// </summary>
         public static double ButtonBorderRadius { get; }
 
+
         static PlatformSizes()
         {
             if (Device.RuntimePlatform == Device.Android)
@@ -23,7 +24,5 @@
                 ButtonBorderRadius = 23;
             }
         }
-
-
     }
 }
