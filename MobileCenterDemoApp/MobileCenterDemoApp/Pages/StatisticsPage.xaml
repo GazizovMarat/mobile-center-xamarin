@@ -12,11 +12,13 @@
         <viewModels:StatisticsViewModel />
     </ContentPage.BindingContext>
     <StackLayout>
-        <oxy:PlotView Model="{Binding Model}" VerticalOptions="Start" HorizontalOptions="Fill" HeightRequest="250" />
-        
-         <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End">
+        <oxy:PlotView Model="{Binding Model}" VerticalOptions="Start" HorizontalOptions="Fill" HeightRequest="300"
+        Margin="0,20"/>
+
+        <Grid RowSpacing="1" ColumnSpacing="1" HorizontalOptions="FillAndExpand" VerticalOptions="End" Margin="0,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="15*" />
+                <RowDefinition Height="5*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25*" />
@@ -29,38 +31,48 @@
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End"      
                     BackgroundColor="White"
-                  
-                    Image="stepswithtext.png" 
+                    WidthRequest="Infinity"
+                    Image="steps.png" 
+                    FontSize="Micro"
                     BorderWidth="0" />
+            <Label VerticalOptions="Start" Text="Steps" TextColor="LightBlue" Grid.Row="1" Grid.Column="0" FontSize="Small" HorizontalOptions="Center"/>
             <Button Command="{Binding ShowCaloriesCommand}" 
                     Grid.Row="0" Grid.Column="1" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End"
-     
-                
+                    WidthRequest="Infinity"
                     BackgroundColor="White"      
-                    Image="burnwithtext.png"
+                    FontSize="Micro"
+                    Image="burn.png" 
                     BorderWidth="0" />
+            <Label VerticalOptions="Start" Text="Calories" TextColor="Orange" Grid.Row="1" Grid.Column="1" FontSize="Small" HorizontalOptions="Center"/>
             <Button Command="{Binding ShowDistanceCommand}" 
                     Grid.Row="0" Grid.Column="2" 
                     HorizontalOptions="CenterAndExpand" 
                     VerticalOptions="End" 
-                                    
+                    WidthRequest="Infinity"
                     BackgroundColor="White"
-                    Image="distancewithtext.png" 
+                    Image="distance.png" 
                     BorderWidth="0" />
+            <Label VerticalOptions="Start" Text="Distance" TextColor="DarkViolet" Grid.Row="1" Grid.Column="2" FontSize="Small" HorizontalOptions="Center"/>
             <Button Command="{Binding ShowActiveTimeCommand}" 
                     Grid.Row="0" Grid.Column="3" 
                     HorizontalOptions="Center" 
                     VerticalOptions="End" 
-               
+
+                    WidthRequest="Infinity"                    
                     BackgroundColor="White"
                     FontSize="Micro"
-                    Image="clockswithtext.png" 
+                    Image="clocks.png" 
                     BorderWidth="0" />
-        </Grid> 
-        <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" Text="Crash application" Command="{Binding CrashCommand}" 
-                BackgroundColor="Red" TextColor="White" Margin="0,0,0,10"               
+            <Label VerticalOptions="Start" Text="Active time" TextColor="Green" Grid.Row="1" Grid.Column="3" FontSize="Small" HorizontalOptions="Center"/>
+        </Grid>
+        <Button VerticalOptions="EndAndExpand" HorizontalOptions="Center" 
+                Text="Send crash report" 
+                Command="{Binding CrashCommand}" 
+                BackgroundColor="Red" 
+                TextColor="White"
+                Margin="0,0,0,20"               
                 WidthRequest="250"
                 BorderRadius = "{Binding BorderRadius}"
                 BorderWidth = "0" />

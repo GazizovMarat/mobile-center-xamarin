@@ -20,12 +20,12 @@
             </StackLayout>
             <StackLayout VerticalOptions="EndAndExpand" Margin="0,20,0,40" HorizontalOptions="Center">
                 <Button Command="{Binding LoginViaFacebookCommand}" Text="Login via Facebook" 
-                        BackgroundColor="Blue" Image="facebook.png" TextColor="White"
-                        WidthRequest="250" FontAttributes="Bold"
+                        BackgroundColor="Blue" Image="facebook.png" TextColor="White" 
+                        WidthRequest="250"
                         BorderRadius="{Binding BorderWidth}" />
                 <Button Command="{Binding LoginViaTwitterCommand}" Text="Login via Twitter"
                         BackgroundColor="DeepSkyBlue" Image="twitter.png" TextColor="White" 
-                        WidthRequest="250" FontAttributes="Bold"
+                        WidthRequest="250"
                         BorderRadius="{Binding BorderWidth}" />
 
             </StackLayout>

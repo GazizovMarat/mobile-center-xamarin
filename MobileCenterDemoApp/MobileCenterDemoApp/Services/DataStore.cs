@@ -9,6 +9,7 @@
     using Xamarin.Forms;
     using Helpers;
     using Microsoft.Azure.Mobile.Analytics;
+    using System.Runtime.CompilerServices;
 
     public static class DataStore
     {
@@ -97,10 +98,12 @@
             ReadStatisticsInformation();
         }
 
+        private static bool _statisticsInLoad = false;
+
         /// <summary>
         /// Retrieving data from Fitness API
         /// </summary>
-        /// <param name="reload">Reload information</param>
+        /// <param name="reload">Reload information</param>       
         public static void ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)
@@ -109,11 +112,16 @@
             if (!FitnessTracker.IsConnected)
                 return;
 
+            if (_statisticsInLoad)
+                return;
+
             if (StatisticsInit && !reload)
                 return;
 
+            _statisticsInLoad = true;
+
             DateTime startDate = DateTime.Now.Date.AddDays(-4);
-            DateTime endDate = DateTime.Now.Date.AddDays(0.999);
+            DateTime endDate = DateTime.Now.Date.AddDays(1.01);
 
             FitnessTracker.StepsByPeriod(startDate, endDate, (obj) =>
             {
@@ -149,7 +157,7 @@
 
             FiveDaysSteps = FiveDaysSteps.RemoveLastElements(1).ToArray();
             FiveDaysCalories = FiveDaysCalories.RemoveLastElements(1).ToArray();
-            FiveDaysDistance = FiveDaysDistance.RemoveLastElements(1).ToArray();
+            FiveDaysDistance = FiveDaysDistance.RemoveLastElements(1).Select(x => x / 1000).ToArray();
             FiveDaysActiveTime = FiveDaysActiveTime.RemoveLastElements(1).ToArray();
 
             #region If statistics less than 5 days
@@ -175,25 +183,24 @@
             TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
             TodayActiveTime = FiveDaysActiveTime.Last();
 
-            DataFill?.Invoke();
+            _statisticsInLoad = false;
 
             StatisticsInit = true;
 
+            DataFill?.Invoke();
 
             Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
-                   new Dictionary<string, string>
-                   {
+         new Dictionary<string, string>
+         {
                     {"Page", "Login"},
                     {"Category", "Request"},
                     {"API", FitnessTracker?.ApiName },
                     {"Result", true.ToString()},
                     {"Error_message", ""}
-                   });
+         });
 
             #endregion
 
         }
-
-
     }
 }

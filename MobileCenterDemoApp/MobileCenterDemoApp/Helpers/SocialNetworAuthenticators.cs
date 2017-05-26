@@ -18,7 +18,13 @@ namespace MobileCenterDemoApp.Helpers
             clientId: KeysAndSecrets.FacebookClientId,
             scope: "public_profile",
             authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-			redirectUrl: new Uri("http://localhost/facebook"));
+            redirectUrl: new Uri("https://localhost/facebook"))
+        {
+            ClearCookiesBeforeLogin = false,
+            AllowCancel = true,
+            Title = "Mobile Center",
+            ShowUIErrors = false
+        };
 
         /// <summary>
         /// OAuth1 authenticator for Twitter login
@@ -29,9 +35,15 @@ namespace MobileCenterDemoApp.Helpers
             requestTokenUrl: new Uri("https://api.twitter.com/oauth/request_token"),
             authorizeUrl: new Uri("https://api.twitter.com/oauth/authorize"),
             accessTokenUrl: new Uri("https://api.twitter.com/oauth/access_token"),
-            callbackUrl: new Uri("http://mobile.twitter.com")             
-        );
-
+            callbackUrl: new Uri("http://mobile.twitter.com")
+        )
+        {
+            ClearCookiesBeforeLogin = false,
+            AllowCancel = true,
+            Title = "Mobile Center",
+            ShowUIErrors = false
+        };
+      
         /// <summary>
         /// Event handler for OAuth2Authenticator.OnComplete
         /// </summary>
@@ -45,7 +57,7 @@ namespace MobileCenterDemoApp.Helpers
             }
 
             if (!args.IsAuthenticated)
-            {                
+            {
                 return null;
             }
 

@@ -30,10 +30,9 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             };
             _oAuth1.Error += (sender, args) => OnError?.Invoke(args.Message);
      
-            _authUi = _oAuth1.GetUI(MainActivity.Activity);
+            _authUi = (Intent)_oAuth1.GetUI(MainActivity.Activity);
             MainActivity.Activity.StartActivityForResult(_authUi, -1);
 
-            // await user login 
             return await Task.Run(() =>
             {
                 while (!_isComplite)

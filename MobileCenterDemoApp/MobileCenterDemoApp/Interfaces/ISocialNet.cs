@@ -27,7 +27,7 @@
     /// </summary>
     public interface IFacebook : ISocialNet
     {
-        
+
     }
 
     /// <summary>

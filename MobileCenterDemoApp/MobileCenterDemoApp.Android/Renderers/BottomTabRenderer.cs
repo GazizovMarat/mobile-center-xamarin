@@ -212,6 +212,7 @@ namespace BottomBar.Droid.Renderers
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
+
             int width = r - l;
             int height = b - t;
 

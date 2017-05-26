@@ -3,24 +3,25 @@
     using Xamarin.Forms;
 
     /// <summary>
-    /// Constants which depend on Running Platform
+    /// Contains consts specific for each platform
     /// </summary>
     public static class PlatformSizes
     {
         /// <summary>
-        /// Radius for round buttons
+        /// Border radius for Round buttons
         /// </summary>
-        public static double BorderRadius { get; }
+        public static double ButtonBorderRadius { get; }
+
 
         static PlatformSizes()
         {
-            if(Device.RuntimePlatform == Device.Android)
+            if (Device.RuntimePlatform == Device.Android)
             {
-                BorderRadius = 100;
+                ButtonBorderRadius = 100;
             }
             else if (Device.RuntimePlatform == Device.iOS)
             {
-                BorderRadius = 20;
+                ButtonBorderRadius = 23;
             }
         }
     }

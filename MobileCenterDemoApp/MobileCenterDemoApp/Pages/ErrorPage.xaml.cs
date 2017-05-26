@@ -8,19 +8,19 @@ namespace MobileCenterDemoApp.Pages
     /// Page for showing some error messages
     /// </summary>
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ErrorPage : ContentPage
-	{
-	    public bool ShowHomePage;
+    public partial class ErrorPage : ContentPage
+    {
+        public bool ShowHomePage;
 
         /// <summary>
         /// Page show Error message
         /// </summary>
         /// <param name="message">Error message</param>
 	    public ErrorPage(string message)
-	    {
+        {
             InitializeComponent();
-	        ErrorLabel.Text = message;
-	    }
+            ErrorLabel.Text = message;
+        }
 
         /// <summary>
         /// Home button click handler
@@ -28,10 +28,10 @@ namespace MobileCenterDemoApp.Pages
         /// <param name="sender">Objects sender</param>
         /// <param name="e">Click arguments</param>
 	    private async void HomeClicked(object sender, EventArgs e)
-	    {
-	        ShowHomePage = true;
-	        await Navigation.PopModalAsync();
-	    }
+        {
+            ShowHomePage = true;
+            await Navigation.PopModalAsync();
+        }
 
         /// <summary>
         /// Statistics button click handler
@@ -39,9 +39,9 @@ namespace MobileCenterDemoApp.Pages
         /// <param name="sender">Objects sender</param>
         /// <param name="e">Click arguments</param>
 	    private async void StatisticsClicked(object sender, EventArgs e)
-	    {
-	        ShowHomePage = false;
-	        await Navigation.PopModalAsync();
+        {
+            ShowHomePage = false;
+            await Navigation.PopModalAsync();
         }
-	}
+    }
 }

@@ -22,28 +22,34 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 
         public async Task<SocialAccount> Login()
         {
-			SocialAccount account = null;
+            SocialAccount account = null;
   
             _isComplite = false;
             OAuth1Authenticator _oAuth1 = Helpers.SocialNetworkAuthenticators.TwitterAuth;
-               
+            UIViewController controller = (UIViewController)_oAuth1.GetUI();
+
             _oAuth1.Completed += async (sender, args) =>
             {
                 account = await Helpers.SocialNetworkAuthenticators.OnCompliteTwitterAuth(args);
                 _isComplite = true;
+                controller.DismissViewController(true, null);
             };
-            _oAuth1.Error += (sender, args) => OnError?.Invoke(args.Message);
+            _oAuth1.Error += (sender, args) =>
+            {
+                OnError?.Invoke(args.Message);
+                controller.DismissViewController(true, null);
+            };
 
             using (UIWindow window = new UIWindow(UIScreen.MainScreen.Bounds))
             {
-                window.RootViewController = (UIViewController) _oAuth1.GetUI();
+                window.RootViewController = controller;
                 window.MakeKeyAndVisible();
 
-				// await user login 
-				return await Task.Run(() =>
-				{
-					while (!_isComplite)
-						Task.Delay(100);
+                // await user login 
+                return await Task.Run(() =>
+                {
+                    while (!_isComplite)
+                        Task.Delay(100);
 
 					return account;
 				});

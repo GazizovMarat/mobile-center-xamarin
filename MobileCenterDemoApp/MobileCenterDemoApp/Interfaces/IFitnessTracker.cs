@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace MobileCenterDemoApp.Interfaces
+﻿namespace MobileCenterDemoApp.Interfaces
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public interface IFitnessTracker : IDisposable
     {
         /// <summary>
@@ -22,7 +22,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// </summary>
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
-        /// <returns>Steps count group by days</returns>
+        /// <param name="dataHandler">Callback function for steps count group by days</param>
         void StepsByPeriod(DateTime start, DateTime end, Action<IEnumerable<int>> dataHandler);
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// </summary>
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
-        /// <returns>Distanse group by days</returns>
+        /// <param name="dataHandler">Callback function for distanse group by days</param>
         void DistanceByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler);
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// </summary>
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
-        /// <returns>Calories group by days</returns>
+        /// <param name="dataHandler">Callback function for calories group by days </param>
         void CaloriesByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> dataHandler);
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace MobileCenterDemoApp.Interfaces
         /// </summary>
         /// <param name="start">Start period</param>
         /// <param name="end">End period</param>
-        /// <returns>Active time group by days</returns>
+        /// <param name="dataHandler">Callback function for active time group by days </param>
         void ActiveTimeByPeriod(DateTime start, DateTime end, Action<IEnumerable<TimeSpan>> dataHandler);
 
         /// <summary>

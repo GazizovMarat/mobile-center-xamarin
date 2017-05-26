@@ -58,15 +58,15 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                     double[] basalArray = basal.ToArray();
                     double[] activeArray = active.ToArray();
 
-                    int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
+					int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
 
-                    double[] result = new double[resultArrayLenght];
+					double[] result = new double[resultArrayLenght];
 
-                    for (int i = 0; i < resultArrayLenght; i++)
-                        result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
+					for (int i = 0; i < resultArrayLenght; i++)
+						result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
 
                     act?.Invoke(result);
-                }
+				}                    
             };
 
             GetDataFromQuery(start, end, BasalCaloriesType, HKUnit.Kilocalorie, (obj) =>
@@ -74,11 +74,11 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                 basal = obj;
                 localAct();
             });
-            GetDataFromQuery(start, end, ActiveCaloriesType, HKUnit.Kilocalorie, (obj) =>
-            {
+			GetDataFromQuery(start, end, ActiveCaloriesType, HKUnit.Kilocalorie, (obj) =>
+			{
                 active = obj;
-                localAct();
-            });
+				localAct();
+			});
 
         }
 
@@ -166,26 +166,25 @@ namespace MobileCenterDemoApp.iOS.Dependencies
                         return;
                     }
                     int daysCount = (end - start).Days + 1;
-
                     double[] st = new double[daysCount];
 
-                    result.EnumerateStatistics(startDate, anchorDate, (statistics, stop) =>
-                    {
-                        HKQuantity quantity = statistics?.SumQuantity();
+					result.EnumerateStatistics(startDate, anchorDate, (statistics, stop) =>
+					{
+						HKQuantity quantity = statistics?.SumQuantity();
 
-                        int index = (statistics.StartDate.ToDateTime() - start).Days;
+						int index = (statistics.StartDate.ToDateTime() - start).Days;
 
-                        if (index < 0 || index > st.Length)
-                        {
-                            return;
-                        }
+						if (index < 0 || index > st.Length)
+						{
+							return;
+						}
 
-                        double value = quantity?.GetDoubleValue(unit) ?? 0;
+						double value = quantity?.GetDoubleValue(unit) ?? 0;
 
-                        st[index] = value;
-                    });
+						st[index] = value;
+					});
 
-                    act(st.AsEnumerable());
+					act(st.AsEnumerable());
                 }
             };
 

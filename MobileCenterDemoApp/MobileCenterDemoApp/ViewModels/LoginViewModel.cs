@@ -75,6 +75,11 @@
         /// </summary>
         public Command LoginViaTwitterCommand { get; private set; }
 
+        /// <summary>
+        /// Command for login via Twitter
+        /// </summary>
+        public Command LoginViaTwitterCommand { get; private set; }
+
         public LoginViewModel()
         {
             Title = "Count my steps";
@@ -82,7 +87,7 @@
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
 
-            BorderWidth = PlatformSizes.BorderRadius;
+            BorderWidth = PlatformSizes.ButtonBorderRadius;
 
             if(Device.RuntimePlatform == Device.iOS)
             {
@@ -131,10 +136,12 @@
 
             SocialAccount account = await twitterService.Login();
 
+            SocialAccount account = await twitterService.Login();
+
             Login(account, "Twitter");
         }
 
-        private async void Login(SocialAccount account, string socialNet)
+        private void Login(SocialAccount account, string socialNet)
         {
             Analytics.TrackEvent("Trying to login in Facebook/Twitter",
                 new Dictionary<string, string>

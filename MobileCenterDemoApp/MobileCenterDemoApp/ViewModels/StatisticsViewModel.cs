@@ -74,20 +74,37 @@
         /// </summary>
         private ChartType _currentChartType;
 
+        private bool _firstChartView = false;
+
         public StatisticsViewModel()
         {
-            
-            Model = new PlotModel{Title = "Mobile center"};
+            _currentChartType = ChartType.None;
+
             CrashCommand = new Command(CrashApp);
-            ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType !=  ChartType.Steps );
+            ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType != ChartType.Steps);
             ShowCaloriesCommand = new Command(() => UpdateData(ChartType.Calories), () => _currentChartType != ChartType.Calories);
             ShowDistanceCommand = new Command(() => UpdateData(ChartType.Distance), () => _currentChartType != ChartType.Distance);
             ShowActiveTimeCommand = new Command(() => UpdateData(ChartType.ActiveTime), () => _currentChartType != ChartType.ActiveTime);
 
-            UpdateData(ChartType.Steps);
+            Action firstView = () =>
+            {
+                if (_firstChartView)
+                    return;
 
-            BorderRadius = PlatformSizes.BorderRadius;
-         
+                if (!DataStore.StatisticsInit)
+                    return;
+
+                UpdateData(ChartType.Steps);
+
+                _firstChartView = true;
+            };
+
+            DataStore.ReadStatisticsInformation();
+            DataStore.DataFill += firstView;
+
+            firstView();
+
+            BorderRadius = PlatformSizes.ButtonBorderRadius;
         }
 
         #region Private methods
@@ -164,23 +181,22 @@
 
             double[] dataArray = enumerable.ToArray();
 
-            PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
-            Model.Axes.Clear();
+            PlotModel model = new PlotModel
+            {
+                Title = "DAYLY STATISTICS",
+            };
+            model.Axes.Clear();
 
-            Model.Axes.Add(new DateTimeAxis
+            model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
-                StringFormat = "MM/dd",
+                StringFormat = $"d/M",
                 Selectable = false,
-                Minimum = DateTime.Now.Day,
-                Maximum = DateTime.Now.Day,
-                MinorIntervalType = DateTimeIntervalType.Days,
-                IntervalType = DateTimeIntervalType.Days,
                 IsPanEnabled = false,
                 IsZoomEnabled = false
             });
 
-            Model.Axes.Add(new LinearAxis
+            model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
                 Maximum = dataArray.Max(),
@@ -189,26 +205,31 @@
                 IsZoomEnabled = false
             });
 
-            var lineSeries = new LineSeries
+            var lineSeries = new
+#if _ANDROID_
+                AreaSeries
+#else
+                // AreaSeries does not work correctly on iOS
+                LineSeries 
+#endif
             {
-                MarkerType = MarkerType.None,
+                MarkerType = MarkerType.Cross,
                 MarkerSize = 2,
-                LineStyle = LineStyle.Automatic,
-                Color = lineColor               
+                Color = lineColor
             };
 
-            var date = DateTime.UtcNow.Date.AddDays(-4);
+            var date = DateTime.Now.AddDays(-4);
             foreach (double d in dataArray)
             {
-                
-                lineSeries.Points.Add(new DataPoint(date.Day, d));
+                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date.Date), d));
                 date = date.AddDays(1);
             }
 
             model.Series.Add(lineSeries);
+
             Model = model;
 
-            #endregion
+#endregion
 
             _isUpdate = false;
 
@@ -217,7 +238,7 @@
         }
 
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Chart data types
@@ -242,7 +263,12 @@
             /// <summary>
             /// Activity time
             /// </summary>
-            ActiveTime
+            ActiveTime,
+
+            /// <summary>
+            /// Empty
+            /// </summary>
+            None
         }
     }
 }
