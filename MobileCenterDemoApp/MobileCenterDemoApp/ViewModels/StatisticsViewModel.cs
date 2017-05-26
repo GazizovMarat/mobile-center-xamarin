@@ -1,80 +1,117 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Microsoft.Azure.Mobile.Analytics;
-using Microsoft.Azure.Mobile.Crashes;
-using MobileCenterDemoApp.Helpers;
-using MobileCenterDemoApp.Services;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using Xamarin.Forms;
-
-namespace MobileCenterDemoApp.ViewModels
+﻿namespace MobileCenterDemoApp.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Azure.Mobile.Analytics;
+    using Microsoft.Azure.Mobile.Crashes;
+    using Helpers;
+    using Services;
+    using OxyPlot;
+    using OxyPlot.Axes;
+    using OxyPlot.Series;
+    using Xamarin.Forms;
+
     public class StatisticsViewModel : ViewModelBase
     {
-
         #region Properties
 
         private PlotModel _model;
+
+        /// <summary>
+        /// Model for line chart
+        /// </summary>
         public PlotModel Model
         {
-            get { return _model; }
-            set { SetProperty(ref _model, value); }
-        }
-
-        private int _minValue;
-        public int MinValue
-        {
-            get { return _minValue; }
-            set { SetProperty(ref _minValue, value); }
-        }
-
-        private double _maxValue;
-        public double MaxValue
-        {
-            get { return _maxValue; }
-            set { SetProperty(ref _maxValue, value); }
+            get
+            {
+                return _model;
+            }
+            set
+            {
+                SetProperty(ref _model, value);
+            }
         }
 
         #endregion
 
         #region Commands
 
+        /// <summary>
+        /// Switch to steps statistics command
+        /// </summary>
         public Command ShowStepsCommand { get; }
 
+        /// <summary>
+        /// Switch to calories statistics command
+        /// </summary>
         public Command ShowCaloriesCommand { get; }
 
+        /// <summary>
+        /// Switch to distance statistics command
+        /// </summary>
         public Command ShowDistanceCommand { get; }
 
+        /// <summary>
+        /// Switch to activity time statistics command
+        /// </summary>
         public Command ShowActiveTimeCommand { get; }
 
+        /// <summary>
+        /// Crash application command
+        /// </summary>
         public Command CrashCommand { get; set; }
 
         #endregion
 
+        /// <summary>
+        /// Button border radius
+        /// </summary>
         public double BorderRadius { get; }
 
+        /// <summary>
+        /// Current chart type
+        /// </summary>
         private ChartType _currentChartType;
+
+        private bool _firstChartView = false;
 
         public StatisticsViewModel()
         {
-            Model = new PlotModel{Title = "Mobile center"};
+            _currentChartType = ChartType.None;
+
             CrashCommand = new Command(CrashApp);
-            ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType !=  ChartType.Steps );
+            ShowStepsCommand = new Command(() => UpdateData(ChartType.Steps), () => _currentChartType != ChartType.Steps);
             ShowCaloriesCommand = new Command(() => UpdateData(ChartType.Calories), () => _currentChartType != ChartType.Calories);
             ShowDistanceCommand = new Command(() => UpdateData(ChartType.Distance), () => _currentChartType != ChartType.Distance);
             ShowActiveTimeCommand = new Command(() => UpdateData(ChartType.ActiveTime), () => _currentChartType != ChartType.ActiveTime);
 
-            UpdateData(ChartType.Steps);
+            Action firstView = () =>
+            {
+                if (_firstChartView)
+                    return;
 
-            BorderRadius = PlatformSizes.BorderRadius;
+                if (!DataStore.StatisticsInit)
+                    return;
+
+                UpdateData(ChartType.Steps);
+
+                _firstChartView = true;
+            };
+
+            DataStore.ReadStatisticsInformation();
+            DataStore.DataFill += firstView;
+
+            firstView();
+
+            BorderRadius = PlatformSizes.ButtonBorderRadius;
         }
 
         #region Private methods
 
+        /// <summary>
+        /// Update view
+        /// </summary>
         private void RaiseCanExecute()
         {
             ShowStepsCommand.ChangeCanExecute();
@@ -83,6 +120,9 @@ namespace MobileCenterDemoApp.ViewModels
             ShowActiveTimeCommand.ChangeCanExecute();
         }
 
+        /// <summary>
+        /// Crash application with Mobile Center
+        /// </summary>
         private static void CrashApp()
         {
             Analytics.TrackEvent("Crash application button clicked", new Dictionary<string, string>
@@ -91,12 +131,14 @@ namespace MobileCenterDemoApp.ViewModels
                 {"Category", "Clicks"}
             });
             Crashes.GenerateTestCrash(); // Doesn't work in Release
-
-            throw new Exception("Crash App");
         }
 
         private bool _isUpdate = false;
 
+        /// <summary>
+        /// Update chart model
+        /// </summary>
+        /// <param name="chartType">Chart information type</param>
         private void UpdateData(ChartType chartType)
         {
             if (_isUpdate)
@@ -104,6 +146,8 @@ namespace MobileCenterDemoApp.ViewModels
 
             if (!DataStore.StatisticsInit)
                 return;
+
+            DataStore.ReadStatisticsInformation();
 
             _isUpdate = true;
 
@@ -137,38 +181,46 @@ namespace MobileCenterDemoApp.ViewModels
 
             double[] dataArray = enumerable.ToArray();
 
-            PlotModel model = new PlotModel { Title = "DAYLY STATISTICS" };
+            PlotModel model = new PlotModel
+            {
+                Title = "DAYLY STATISTICS",
+            };
+            model.Axes.Clear();
 
-            Model.Axes.Add(new DateTimeAxis
+            model.Axes.Add(new DateTimeAxis
             {
                 Position = AxisPosition.Bottom,
-                StringFormat = "MMM/dd",
-                Minimum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date.AddDays(-4)),
-                Maximum = DateTimeAxis.ToDouble(DateTime.UtcNow.Date),
+                StringFormat = $"d/M",
+                Selectable = false,
+                IsPanEnabled = false,
+                IsZoomEnabled = false
             });
-            Model.Axes.Add(new LinearAxis
+
+            model.Axes.Add(new LinearAxis
             {
                 Minimum = 0,
                 Maximum = dataArray.Max(),
                 Position = AxisPosition.Left,
+                IsPanEnabled = false,
+                IsZoomEnabled = false
             });
 
             var lineSeries = new AreaSeries
             {
-                MarkerType = MarkerType.None,
-                MarkerSize = 4,
-                LineStyle = LineStyle.Solid,
+                MarkerType = MarkerType.Cross,
+                MarkerSize = 2,
                 Color = lineColor
             };
 
-            var startDate = DateTime.UtcNow.Date.AddDays(-4);
+            var date = DateTime.Now.AddDays(-4);
             foreach (double d in dataArray)
             {
-                lineSeries.Points.Add(new DataPoint(Axis.ToDouble(startDate.Day), d));
-                startDate = startDate.AddDays(1);
+                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(date.Date), d));
+                date = date.AddDays(1);
             }
 
             model.Series.Add(lineSeries);
+
             Model = model;
 
             #endregion
@@ -182,9 +234,35 @@ namespace MobileCenterDemoApp.ViewModels
 
         #endregion
 
+        /// <summary>
+        /// Chart data types
+        /// </summary>
         private enum ChartType
         {
-            Steps, Calories, Distance, ActiveTime
+            /// <summary>
+            /// Steps count 
+            /// </summary>
+            Steps,
+
+            /// <summary>
+            /// Calories count
+            /// </summary>
+            Calories,
+
+            /// <summary>
+            /// Distance
+            /// </summary>
+            Distance,
+
+            /// <summary>
+            /// Activity time
+            /// </summary>
+            ActiveTime,
+
+            /// <summary>
+            /// Empty
+            /// </summary>
+            None
         }
     }
 }

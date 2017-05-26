@@ -11,7 +11,6 @@ using MobileCenterDemoApp.Helpers;
 [assembly: Dependency(typeof(FacebookLoginIOS))]
 namespace MobileCenterDemoApp.iOS.Dependencies
 {
-    // ReSharper disable once InconsistentNaming
     public class FacebookLoginIOS : IFacebook
     {
         private bool _isComplite;
@@ -22,8 +21,7 @@ namespace MobileCenterDemoApp.iOS.Dependencies
             _isComplite = false;
 
             OAuth2Authenticator _oAuth2 = SocialNetworkAuthenticators.FacebookAuth;
-            UIViewController _uiViewController = (UIViewController)_oAuth2.GetUI();
-            
+
             _oAuth2.Completed += async (sender, args) =>
             {
                 _account = await SocialNetworkAuthenticators.OnCompliteFacebookAuth(args);
@@ -33,15 +31,18 @@ namespace MobileCenterDemoApp.iOS.Dependencies
             
             using (var window = new UIWindow(UIScreen.MainScreen.Bounds))
             {
-                window.RootViewController = _uiViewController;
+                window.RootViewController = (UIViewController)_oAuth2.GetUI();
                 window.MakeKeyAndVisible();
-                await Task.Run(() =>
+
+                // await user login 
+                return await Task.Run(() =>
                 {
                     while (!_isComplite)
                         Task.Delay(100);
+
+                    return _account;
                 });
             }
-            return _account;
         }
 
         public event Action<string> OnError;

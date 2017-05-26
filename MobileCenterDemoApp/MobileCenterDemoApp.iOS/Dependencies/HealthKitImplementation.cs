@@ -13,123 +13,189 @@ namespace MobileCenterDemoApp.iOS.Dependencies
 {
     public class HealthKitImplementation : IFitnessTracker
     {
-
-        private HKHealthStore _healthStore;
+        private readonly HKHealthStore _healthStore;
 
         public HealthKitImplementation()
         {
-            return;
             _healthStore = new HKHealthStore();
-            var types = new[]
+        }
+
+        private readonly HKQuantityType StepType = HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount);
+        private readonly HKQuantityType BasalCaloriesType = HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned);
+        private readonly HKQuantityType ActiveCaloriesType = HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned);
+        private readonly HKQuantityType DistanceType = HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning);
+        private readonly HKQuantityType ActiveTimeType = HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime);
+
+        #region IFitnessTracker
+
+        public event Action<string> OnError;
+
+        public event Action OnConnect;
+
+        public string ApiName => "HealthKit";
+
+        public bool IsConnected { get; private set; }
+
+        public void StepsByPeriod(DateTime start, DateTime end, Action<IEnumerable<int>> act)
+        {
+            GetDataFromQuery(start, end, StepType, HKUnit.Count, (obj) => act?.Invoke(obj.Select(Convert.ToInt32)));
+        }
+
+        public void DistanceByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> act)
+        {
+            GetDataFromQuery(start, end, DistanceType, HKUnit.CreateMeterUnit(HKMetricPrefix.None), act);
+        }
+
+        public void CaloriesByPeriod(DateTime start, DateTime end, Action<IEnumerable<double>> act)
+        {
+            IEnumerable<double> basal = null;
+            IEnumerable<double> active = null;
+
+            Action localAct = () =>
             {
-                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime)
-            };
-
-        }
-
-        public void Dispose()
-        {
-            
-        }
-
-        public string ApiName { get; } = "HealthKit";
-        public bool IsConnected { get; private set; } = true;
-
-        public Task<IEnumerable<int>> StepsByPeriod(DateTime start, DateTime end)
-        {
-            return Task.FromResult((GetDataFromQuery(start, end, HKQuantityTypeIdentifier.StepCount, HKUnit.Count)).Select(x => Convert.ToInt32(x)));
-        }
-
-        public Task<IEnumerable<double>> DistanceByPeriod(DateTime start, DateTime end)
-        {
-            return Task.FromResult(GetDataFromQuery(start, end, HKQuantityTypeIdentifier.DistanceWalkingRunning, HKUnit.Meter));
-        }
-
-        public Task<IEnumerable<double>> CaloriesByPeriod(DateTime start, DateTime end)
-        {
-            double[] basalArray = GetDataFromQuery(start, end, HKQuantityTypeIdentifier.BasalEnergyBurned, HKUnit.Meter).ToArray();
-            double[] activeArray = GetDataFromQuery(start, end, HKQuantityTypeIdentifier.ActiveEnergyBurned, HKUnit.Meter).ToArray();
-
-            int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
-        
-            double[] result = new double[resultArrayLenght];
-
-            for (int i = 0; i < resultArrayLenght; i++)
-                result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
-
-            return Task.FromResult<IEnumerable<double>>(result);
-        }
-
-        public Task<IEnumerable<TimeSpan>> ActiveTimeByPeriod(DateTime start, DateTime end)
-        {
-            return Task.FromResult(GetDataFromQuery(start, end, HKQuantityTypeIdentifier.AppleExerciseTime, HKUnit.Minute).Select(x => TimeSpan.FromMinutes(x)));
-        }
-
-        private IEnumerable<double> GetDataFromQuery(DateTime start, DateTime end, HKQuantityTypeIdentifier identifier, HKUnit unit)
-        {
-            return new[] { 0D, 0, 0, 1, 1 };
-            List<double> st = new List<double>();
-            HKStatisticsCollectionQuery query = new HKStatisticsCollectionQuery(
-                HKQuantityType.Create(identifier),
-                null,
-                HKStatisticsOptions.CumulativeSum,
-                DateTime.Now.Date.AddDays(1).AddSeconds(-1).ToNsDate(),
-                new NSDateComponents { Day = 1 })
-            {
-                InitialResultsHandler = (collectionQuery, result, error) =>
+                if (basal != null && active != null)
                 {
-                    NSDate startDate = start.ToNsDate();
-                    NSDate endDate = end.ToNsDate();
+                    double[] basalArray = basal.ToArray();
+                    double[] activeArray = active.ToArray();
 
-                    result.EnumerateStatistics(startDate, endDate, (statistics, stop) =>
-                    {
-                        HKQuantity quantity = statistics.SumQuantity();
-                        double value = quantity.GetDoubleValue(unit);
-                        st.Add(value);
-                    });
-                }
+					int resultArrayLenght = basalArray.Length < activeArray.Length ? activeArray.Length : basalArray.Length;
+
+					double[] result = new double[resultArrayLenght];
+
+					for (int i = 0; i < resultArrayLenght; i++)
+						result[i] = (basalArray.Length > i ? basalArray[i] : 0) + (basalArray.Length > i ? activeArray[i] : 0);
+
+                    act?.Invoke(result);
+				}                    
             };
 
-            _healthStore.ExecuteQuery(query);
+            GetDataFromQuery(start, end, BasalCaloriesType, HKUnit.Kilocalorie, (obj) =>
+            {
+                basal = obj;
+                localAct();
+            });
+			GetDataFromQuery(start, end, ActiveCaloriesType, HKUnit.Kilocalorie, (obj) =>
+			{
+                active = obj;
+				localAct();
+			});
 
-            return st;
+        }
+
+        public void ActiveTimeByPeriod(DateTime start, DateTime end, Action<IEnumerable<TimeSpan>> act)
+        {
+            GetDataFromQuery(start, end, ActiveTimeType, HKUnit.Minute, (obj) => act(obj.Select(TimeSpan.FromMinutes).AsEnumerable()));
         }
 
         public async Task Connect()
         {
-            return;
-            var types = new[]
+
+            NSSet readTypes = NSSet.MakeNSObjectSet(new HKObjectType[]
             {
-                HKQuantityType.Create(HKQuantityTypeIdentifier.StepCount),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.DistanceWalkingRunning),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.BasalEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.ActiveEnergyBurned),
-                HKQuantityType.Create(HKQuantityTypeIdentifier.AppleExerciseTime)
-            };
+                StepType,
+                DistanceType,
+                BasalCaloriesType,
+                ActiveCaloriesType,
+                ActiveTimeType
+            });
 
-            NSSet<HKQuantityType> readTypes = new NSSet<HKQuantityType>((HKQuantityType[])types.Clone());
-            NSSet<HKSampleType> writeTypes = new NSSet<HKSampleType>((HKQuantityType[])types.Clone());
+            try
+            {
+                if (HKHealthStore.IsHealthDataAvailable)
+                {
+                    Tuple<bool, NSError> success = await _healthStore.RequestAuthorizationToShareAsync(new NSSet(), readTypes);
 
-            Tuple<bool, NSError> result = await _healthStore.RequestAuthorizationToShareAsync(writeTypes, readTypes);
+                    IsConnected = success.Item1;
 
-            IsConnected = result.Item1;
-
-            if (IsConnected)
-                OnConnect?.Invoke();
-            else
-                OnError?.Invoke(result.Item2.Description);           
+                    if (IsConnected)
+                    {
+                        OnConnect?.Invoke();
+                    }
+                    else
+                    {
+                        OnError?.Invoke(success.Item2.Description);
+                    }
+                }
+                else
+                {
+                    OnError?.Invoke("Is_Health_Data_not_Available".ToUpper());
+                }
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e.Message);
+            }
         }
 
         public void Disconnect()
         {
-            
+
         }
 
-        public event Action<string> OnError;
-        public event Action OnConnect;
+        #endregion IFitnessTracker
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _healthStore.Dispose();
+        }
+
+        #endregion IDisposable
+
+        private void GetDataFromQuery(DateTime start, DateTime end, HKQuantityType quentityType, HKUnit unit, Action<IEnumerable<double>> act)
+        {
+            NSCalendar calendar = NSCalendar.CurrentCalendar;
+            NSDateComponents interval = new NSDateComponents { Day = 1 };
+            NSDate startDate = start.ToNsDate();
+            NSDate anchorDate = end.ToNsDate();
+
+            HKStatisticsCollectionQuery query = new HKStatisticsCollectionQuery(
+                quentityType,
+                null,
+                HKStatisticsOptions.CumulativeSum,
+                anchorDate,
+                interval
+            )
+            {
+                InitialResultsHandler = (localQuery, result, error) =>
+                {
+                    if (error != null)
+                    {
+                        OnError?.Invoke(error.Description);
+                        return;
+                    }
+                    int daysCount = (end - start).Days + 1;
+                    double[] st = new double[daysCount];
+
+					result.EnumerateStatistics(startDate, anchorDate, (statistics, stop) =>
+					{
+						HKQuantity quantity = statistics?.SumQuantity();
+
+						int index = (statistics.StartDate.ToDateTime() - start).Days;
+
+						if (index < 0 || index > st.Length)
+						{
+							return;
+						}
+
+						double value = quantity?.GetDoubleValue(unit) ?? 0;
+
+						st[index] = value;
+					});
+
+					act(st.AsEnumerable());
+                }
+            };
+
+            try
+            {
+                _healthStore.ExecuteQuery(query);
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e.Message);
+            }
+        }
     }
 }

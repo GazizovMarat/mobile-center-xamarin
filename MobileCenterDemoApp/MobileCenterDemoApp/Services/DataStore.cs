@@ -1,93 +1,156 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MobileCenterDemoApp.Interfaces;
-using MobileCenterDemoApp.Models;
-using Xamarin.Forms;
-using Microsoft.Azure.Mobile.Analytics;
-// ReSharper disable FieldCanBeMadeReadOnly.Local
-
-namespace MobileCenterDemoApp.Services
+﻿namespace MobileCenterDemoApp.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using MobileCenterDemoApp.Interfaces;
+    using MobileCenterDemoApp.Models;
+    using Xamarin.Forms;
+    using Helpers;
+    using Microsoft.Azure.Mobile.Analytics;
+
     public static class DataStore
-    {        
+    {
+        /// <summary>
+        /// User account
+        /// </summary>
         public static SocialAccount Account { get; set; }
 
         #region Lazy instances
 
-        private static Lazy<IFacebook> _facebookServiceLazy =
-            new Lazy<IFacebook>(() => DependencyService.Get<IFacebook>(DependencyFetchTarget.NewInstance));
-        private static Lazy<ITwitter> _twitterServiceLazy =
-            new Lazy<ITwitter>(() => DependencyService.Get<ITwitter>(DependencyFetchTarget.NewInstance));
         private static Lazy<IFitnessTracker> _fitnessServiceLazy =
-            new Lazy<IFitnessTracker>(() => DependencyService.Get<IFitnessTracker>(DependencyFetchTarget.NewInstance));
+            new Lazy<IFitnessTracker>(() => DependencyService.Get<IFitnessTracker>(DependencyFetchTarget.GlobalInstance));
 
         #endregion
 
         #region Services
 
-        public static IFacebook FacebookService => _facebookServiceLazy.Value;
-        public static ITwitter TwitterService => _twitterServiceLazy.Value;
+        /// <summary>
+        /// Fitness service API
+        /// </summary>
         public static IFitnessTracker FitnessTracker => _fitnessServiceLazy.Value;
 
         #endregion
 
         #region Fitness data
 
+        /// <summary>
+        /// Raise when fitness data updated
+        /// </summary>
         public static event Action DataFill;
 
+        /// <summary>
+        /// Total today steps 
+        /// </summary>
         public static int TodaySteps { get; private set; }
+
+        /// <summary>
+        /// Total today calories 
+        /// </summary>
         public static int TodayCalories { get; private set; }
+
+        /// <summary>
+        /// Total today distance 
+        /// </summary>
         public static double TodayDistance { get; private set; }
+
+        /// <summary>
+        /// Total today activity time 
+        /// </summary>
         public static TimeSpan TodayActiveTime { get; private set; }
 
+        /// <summary>
+        /// Steps statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysSteps { get; private set; }
+
+        /// <summary>
+        /// Calories statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysCalories { get; private set; }
+
+        /// <summary>
+        /// Distance statistics for last 5 days
+        /// </summary>
         public static double[] FiveDaysDistance { get; private set; }
+
+        /// <summary>
+        /// Activity time statistics for last 5 days
+        /// </summary>
         public static TimeSpan[] FiveDaysActiveTime { get; private set; }
 
+        /// <summary>
+        /// Retrieving data from API
+        /// </summary>
         public static bool StatisticsInit { get; private set; }
 
         #endregion
 
         #region Retrieve fitness data
 
-        public static async Task ReadTodayInformation()
+        /// <summary>
+        /// Update data from Fitness API
+        /// </summary>
+        public static void ReadTodayInformation()
         {
-            if (FitnessTracker == null)
-                throw new NullReferenceException(nameof(FitnessTracker));
-
-            if (!FitnessTracker.IsConnected)
-                throw new Exception("Connection closed");
-            
-            await ReadStatisticsInformation();
-            TodaySteps = Convert.ToInt32(Math.Round(FiveDaysSteps.Last()));
-            TodayCalories = Convert.ToInt32(Math.Round(FiveDaysCalories.Last()));
-            TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
-            TodayActiveTime = FiveDaysActiveTime.Last();
-
-            DataFill?.Invoke();
+            ReadStatisticsInformation();
         }
 
-        public static async Task ReadStatisticsInformation(bool reload = false)
+        /// <summary>
+        /// Retrieving data from Fitness API
+        /// </summary>
+        /// <param name="reload">Reload information</param>
+        public static void ReadStatisticsInformation(bool reload = false)
         {
             if (FitnessTracker == null)
                 throw new NullReferenceException(nameof(FitnessTracker));
 
             if (!FitnessTracker.IsConnected)
-                throw new Exception("Connection closed");
+                return;
 
             if (StatisticsInit && !reload)
                 return;
 
-            DateTime startDate = DateTime.UtcNow.Date.AddDays(-5);
-            DateTime endDate = DateTime.UtcNow.Date.AddDays(1.01);
+            DateTime startDate = DateTime.Now.Date.AddDays(-4);
+            DateTime endDate = DateTime.Now.Date.AddDays(1.01);
 
-            FiveDaysSteps = (await FitnessTracker.StepsByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => (double) x).ToArray();
-            FiveDaysCalories = (await FitnessTracker.CaloriesByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
-            FiveDaysDistance = (await FitnessTracker.DistanceByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().Select(x => x / 1000).ToArray();
-            FiveDaysActiveTime = (await FitnessTracker.ActiveTimeByPeriod(startDate, endDate)).Reverse().Skip(1).Reverse().ToArray();
+            FitnessTracker.StepsByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysSteps = obj.Select(Convert.ToDouble).ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.DistanceByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysDistance = obj.ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.CaloriesByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysCalories = obj.ToArray();
+                FinishLoad();
+            });
+            FitnessTracker.ActiveTimeByPeriod(startDate, endDate, (obj) =>
+            {
+                FiveDaysActiveTime = obj.ToArray();
+                FinishLoad();
+            });
+        }
+
+        private static void FinishLoad()
+        {
+            if (FiveDaysSteps == null
+                || FiveDaysCalories == null
+                || FiveDaysDistance == null
+                || FiveDaysActiveTime == null)
+            {
+                return;
+            }
+
+            FiveDaysSteps = FiveDaysSteps.RemoveLastElements(1).ToArray();
+            FiveDaysCalories = FiveDaysCalories.RemoveLastElements(1).ToArray();
+            FiveDaysDistance = FiveDaysDistance.RemoveLastElements(1).Select(x => x / 1000).ToArray();
+            FiveDaysActiveTime = FiveDaysActiveTime.RemoveLastElements(1).ToArray();
 
             #region If statistics less than 5 days
 
@@ -112,23 +175,22 @@ namespace MobileCenterDemoApp.Services
             TodayDistance = Math.Round(FiveDaysDistance.Last(), 2);
             TodayActiveTime = FiveDaysActiveTime.Last();
 
-            DataFill?.Invoke();
-
             StatisticsInit = true;
 
+            DataFill?.Invoke();
+
             Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
-                   new Dictionary<string, string>
-                   {
+         new Dictionary<string, string>
+         {
                     {"Page", "Login"},
                     {"Category", "Request"},
                     {"API", FitnessTracker?.ApiName },
                     {"Result", true.ToString()},
                     {"Error_message", ""}
-                   });
+         });
+
+            #endregion
 
         }
-
-        #endregion
-
     }
 }

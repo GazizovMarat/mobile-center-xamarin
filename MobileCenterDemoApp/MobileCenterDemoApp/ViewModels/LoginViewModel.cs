@@ -1,55 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Azure.Mobile.Analytics;
-using MobileCenterDemoApp.Helpers;
-using MobileCenterDemoApp.Models;
-using MobileCenterDemoApp.Services;
-using Xamarin.Forms;
-using MobileCenterDemoApp.Pages;
-// ReSharper disable ExplicitCallerInfoArgument
-
-namespace MobileCenterDemoApp.ViewModels
+﻿namespace MobileCenterDemoApp.ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Azure.Mobile.Analytics;
+    using MobileCenterDemoApp.Helpers;
+    using MobileCenterDemoApp.Models;
+    using MobileCenterDemoApp.Services;
+    using Xamarin.Forms;
+    using MobileCenterDemoApp.Pages;
+    using MobileCenterDemoApp.Interfaces;
+
     public class LoginViewModel : ViewModelBase
     {
+        
+        private string _errorMessage;
+
         #region Properties
 
+        /// <summary>
+        /// Show header with mobile center logo
+        /// </summary>
         public bool ShowHeader
-            => string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
-        public bool ShowError
-            => !string.IsNullOrEmpty(ErrorMessage) && !ShowWait;
-
-        private bool _showWait;
-        public bool ShowWait
         {
-            get { return _showWait; }
-            set
+            get
             {
-                SetProperty(ref _showWait, value);
-                OnPropertyChanged(nameof(ShowHeader));
-                OnPropertyChanged(nameof(ShowError));
+                return string.IsNullOrEmpty(ErrorMessage);
             }
         }
 
-        private string _errorMessage;
+        /// <summary>
+        /// Show error image with description
+        /// </summary>
+        public bool ShowError
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(ErrorMessage);
+            }
+        }
+        
+        /// <summary>
+        /// Error description
+        /// </summary>
         public string ErrorMessage
         {
-            get { return _errorMessage; }
+            get
+            {
+                return _errorMessage;
+            }
             set
             {
                 SetProperty(ref _errorMessage, value);
+
+                // Update show flags
                 OnPropertyChanged(nameof(ShowHeader));
                 OnPropertyChanged(nameof(ShowError));
             }
-
         }
 
+        /// <summary>
+        /// Button border width
+        /// </summary>
         public double BorderWidth { get; }
 
         #endregion
 
-        public Command LoginViaFacebookCommand { get; set; }
-        public Command LoginViaTwitterCommand { get; set; }
+        /// <summary>
+        /// Command for login via Facebook
+        /// </summary>
+        public Command LoginViaFacebookCommand { get; private set; }
+
+        /// <summary>
+        /// Command for login via Twitter
+        /// </summary>
+        public Command LoginViaTwitterCommand { get; private set; }
 
         public LoginViewModel()
         {
@@ -58,11 +82,19 @@ namespace MobileCenterDemoApp.ViewModels
             LoginViaFacebookCommand = new Command(LoginViaFacebook);
             LoginViaTwitterCommand = new Command(LoginViaTwitter);
 
-            BorderWidth = PlatformSizes.BorderRadius;
+            BorderWidth = PlatformSizes.ButtonBorderRadius;
+
+            if(Device.RuntimePlatform == Device.iOS)
+            {
+                BorderWidth = 23;
+            }
         }
 
         #region Auth
 
+        /// <summary>
+        /// Login in Facebook (LoginViaFacebookCommand handler)
+        /// </summary>
         private async void LoginViaFacebook()
         {
             Analytics.TrackEvent("Facebook login button clicked",
@@ -72,13 +104,18 @@ namespace MobileCenterDemoApp.ViewModels
                     {"Category", "Clicks"}
                 });
 
-            DataStore.FacebookService.OnError += error => AuthError("Facebook", error);
+            IFacebook facebookService = DependencyService.Get<IFacebook>(DependencyFetchTarget.GlobalInstance);
 
-            SocialAccount account = await DataStore.FacebookService.Login();
+            facebookService.OnError += error => AuthError("Facebook", error);
+
+            SocialAccount account = await facebookService.Login();
 
             Login(account, "Facebook");
         }
 
+        /// <summary>
+        /// Login in Twitter (LoginViaTwitterCommand handler)
+        /// </summary>
         private async void LoginViaTwitter()
         {
             Analytics.TrackEvent("Twitter login button clicked",
@@ -88,14 +125,16 @@ namespace MobileCenterDemoApp.ViewModels
                     {"Category", "Clicks"}
                 });
 
-            DataStore.TwitterService.OnError += error => AuthError("Twitter", error);
+            ITwitter twitterService = DependencyService.Get<ITwitter>(DependencyFetchTarget.GlobalInstance);
 
-            SocialAccount account = await DataStore.TwitterService.Login();
+            twitterService.OnError += error => AuthError("Twitter", error);
+
+            SocialAccount account = await twitterService.Login();
 
             Login(account, "Twitter");
         }
 
-        private async void Login(SocialAccount account, string socialNet)
+        private void Login(SocialAccount account, string socialNet)
         {
             Analytics.TrackEvent("Trying to login in Facebook/Twitter",
                 new Dictionary<string, string>
@@ -105,7 +144,7 @@ namespace MobileCenterDemoApp.ViewModels
                     {"API", "Social network"},
                     {"Social network", socialNet},
                     {"Result", (account != null).ToString()},
-                    {"Error message", account == null ? "Cancel by user" : ""}
+                    {"Error message", account == null ? "Cancel by user" : string.Empty }
                 });
 
             if (account == null)
@@ -116,12 +155,13 @@ namespace MobileCenterDemoApp.ViewModels
 
             DataStore.Account = account;
 
-            #region Init and retrive data from Google Fit/ HealthKit
+            #region Init and retrive data from Google Fit / HealthKit
 
-            string error = "";
+            string error = string.Empty;
             bool success;
 
-            Action<string> ErrorHandle = (errorMessage) =>
+            Action<string> ErrorHandle =
+                (errorMessage) =>
             {
                 success = false;
                 error = errorMessage;
@@ -133,11 +173,11 @@ namespace MobileCenterDemoApp.ViewModels
                 if (!DataStore.FitnessTracker.IsConnected)
                 {
                     success = false;
-                    error = "Connection failed";
+                    error = $"Connection to {DataStore.FitnessTracker.ApiName} failed";
                 }
                 else
                 {
-                    await DataStore.ReadTodayInformation();
+                    DataStore.ReadTodayInformation();
                     success = true;
                 }
                 DataStore.FitnessTracker.OnError -= ErrorHandle;
@@ -148,7 +188,7 @@ namespace MobileCenterDemoApp.ViewModels
                 error = e.Message;
             }
 
-            string fitnessApi =  Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit";
+            string fitnessApi = Device.RuntimePlatform == Device.Android ? "Google fit" : "HealthKit";
 
             Analytics.TrackEvent("Trying to retrieve data from HealthKit/Google Fit API.",
                 new Dictionary<string, string>
@@ -165,6 +205,11 @@ namespace MobileCenterDemoApp.ViewModels
             App.SwitchMainPage(new MainPage(error));
         }
 
+        /// <summary>
+        /// Send information to Mobile center if login failure
+        /// </summary>
+        /// <param name="socialNet"></param>
+        /// <param name="message"></param>
         private void AuthError(string socialNet, string message)
         {
             Analytics.TrackEvent("Trying to login in Facebook/Twitter",

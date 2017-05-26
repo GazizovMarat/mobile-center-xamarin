@@ -210,24 +210,8 @@ namespace BottomBar.Droid.Renderers
             _frameLayout.AddView(Platform.GetRenderer(view).ViewGroup);
         }
 
-        private int _iconTopPadding;
-
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-            //for (int i = 0; i < _bottomBar.ItemContainer.ChildCount; i++)
-            //{
-            //    var bottomBarTab = _bottomBar.ItemContainer.GetChildAt(i);
-            //    var tabIcon = bottomBarTab.FindViewById<Android.Support.V7.Widget.AppCompatImageView>(BottomNavigationBar.Resource.Id.bb_bottom_bar_icon);
-            //    tabIcon.SetScaleType(ImageView.ScaleType.FitCenter);
-            //    tabIcon.ScaleX = 1.3f;
-            //    tabIcon.ScaleY = 1.3f;
-            //    tabIcon.ImageAlpha = i == _bottomBar.CurrentTabPosition ? 255 : 155;
-            //    if (_iconTopPadding == 0)
-            //        _iconTopPadding = _bottomBar.ItemContainer.MeasuredHeight / 2 - tabIcon.MeasuredHeight / 2;
-            //    tabIcon.SetPadding(0, _iconTopPadding, 0, 0);
-            //}
-
-            //base.OnLayout(changed, l, t, r, b);
 
             int width = r - l;
             int height = b - t;

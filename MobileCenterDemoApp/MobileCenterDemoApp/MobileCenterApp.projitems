@@ -12,7 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Components\CircleImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\BottomTabbedPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Extentions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\KeysAndSecrets.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\PlatformSizes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SocialNetworAuthenticators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFitnessTracker.cs" />

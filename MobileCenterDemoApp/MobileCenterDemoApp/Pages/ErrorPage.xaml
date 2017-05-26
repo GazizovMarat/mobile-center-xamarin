@@ -31,7 +31,6 @@
                     BackgroundColor="White"
                     WidthRequest="Infinity"
                     Image="mainicon1.png" Text="Home" />
-
             <Button Clicked="StatisticsClicked"
                     Grid.Row="4" Grid.Column="1" 
                     HorizontalOptions="Center" 
@@ -42,6 +41,4 @@
                     Image="statisticsicon1.png" Text="Statistics" />
         </Grid>
     </StackLayout>
-    
-   
 </ContentPage>

@@ -12,13 +12,20 @@ namespace MobileCenterDemoApp.Helpers
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
         private INavigation _navigation;
+        private string _title;
+
+        /// <summary>
+        /// Navigation for Page navigating
+        /// </summary>
         public INavigation Navigation
         {
             get { return _navigation; }
             set { SetProperty(ref _navigation, value); }
         }
 
-        private string _title;
+        /// <summary>
+        /// Page Title
+        /// </summary>
         public string Title
         {
             get { return _title; }
