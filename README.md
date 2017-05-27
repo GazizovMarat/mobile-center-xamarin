@@ -15,6 +15,4 @@ Demo mobile application for mobile center
   * Replace proguard files in Android-sdk (.\android-sdk\tools\proguard)
 
 * Download xamarin components and add references in projects
-  * [OxyPlot](https://components.xamarin.com/view/oxyplot) - Chart component
-  * [Json.Net](https://components.xamarin.com/view/json.net)
-  * [Xamarin.Auth](https://components.xamarin.com/view/xamarin.auth)
+  * [Xamarin.Auth](https://components.xamarin.com/view/xamarin.auth) v. 1.2.3.1
