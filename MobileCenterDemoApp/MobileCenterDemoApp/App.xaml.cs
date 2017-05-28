@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Mobile;
 using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Azure.Mobile.Crashes;
+using MobileCenterDemoApp.Helpers;
 using MobileCenterDemoApp.Services;
 using MobileCenterDemoApp.Pages;
 using Xamarin.Forms;
@@ -21,10 +22,8 @@ using Xamarin.Forms;
             }
             else
             {
-                MobileCenter.Start($"ios={AppKeyForIos};android={AppKeyForAndroid}", typeof(Analytics), typeof(Crashes), typeof(Push));
-
-                Push.PushNotificationReceived += MobileCenterPush;
-
+                MobileCenter.Start($"ios={KeysAndSecrets.MobileCenterAppKeyForIos};android={KeysAndSecrets.MobileCenterAppKeyForAndroid}", typeof(Analytics), typeof(Crashes));
+                
                 MainPage = new LoginPage();
 
                 _alreadyInit = true;
