@@ -57,7 +57,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             using (DataReadRequest caloriesRequest = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeCaloriesExpended, DataType.AggregateCaloriesExpended)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(caloriesRequest))
                 act?.Invoke(GetFloatFromResult(caloriesResult).Select(x => Math.Round(x)));
@@ -71,7 +71,7 @@ namespace MobileCenterDemoApp.Droid.Dependencies
             using (DataReadRequest time = new DataReadRequest.Builder()
                 .Aggregate(DataType.TypeActivitySegment, DataType.AggregateActivitySummary)
                 .BucketByTime(1, TimeUnit.Days)
-                .SetTimeRange(TimeUtility.DatetimeInMillis(startUtc), TimeUtility.DatetimeInMillis(endUtc), TimeUnit.Milliseconds)
+                .SetTimeRange(TimeUtility.DatetimeInMillis(start), TimeUtility.DatetimeInMillis(end), TimeUnit.Milliseconds)
                 .Build())
             using (DataReadResult caloriesResult = (DataReadResult)await ReadData(time))
                 act?.Invoke(GetIntFromResult(caloriesResult, new string[] { "duration" }).Select(x => TimeSpan.FromMinutes(x)));
@@ -94,17 +94,10 @@ namespace MobileCenterDemoApp.Droid.Dependencies
 
                 await Task.Run(() =>
                 {
-                    try
+                    // Await connectiong
+                    while (Client.IsConnecting)
                     {
-                        // Await connectiong
-                        while (Client.IsConnecting)
-                        {
-                            Task.Delay(50);
-                        }
-                    }
-                    catch(Exception e)
-                    {
-
+                        Task.Delay(50);
                     }
                 });
 

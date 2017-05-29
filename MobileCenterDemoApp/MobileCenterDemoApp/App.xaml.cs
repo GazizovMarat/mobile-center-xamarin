@@ -6,6 +6,8 @@ using MobileCenterDemoApp.Services;
 using MobileCenterDemoApp.Pages;
 using Xamarin.Forms;
 
+namespace MobileCenterDemoApp
+{
     public partial class App : Application
     {
         private static bool _alreadyInit = false;

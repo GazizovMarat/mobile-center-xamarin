@@ -16,7 +16,7 @@ namespace MobileCenterDemoApp.Pages
 
 	    private bool _firstAppear = true;
 
-	    protected override async void OnAppearing()
+	    protected override void OnAppearing()
 	    {
 	        if(!_firstAppear)
                 return;

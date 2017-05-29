@@ -75,11 +75,6 @@
         /// </summary>
         public Command LoginViaTwitterCommand { get; private set; }
 
-        /// <summary>
-        /// Command for login via Twitter
-        /// </summary>
-        public Command LoginViaTwitterCommand { get; private set; }
-
         public LoginViewModel()
         {
             Title = "Count my steps";
@@ -133,8 +128,6 @@
             ITwitter twitterService = DependencyService.Get<ITwitter>(DependencyFetchTarget.GlobalInstance);
 
             twitterService.OnError += error => AuthError("Twitter", error);
-
-            SocialAccount account = await twitterService.Login();
 
             SocialAccount account = await twitterService.Login();
 
