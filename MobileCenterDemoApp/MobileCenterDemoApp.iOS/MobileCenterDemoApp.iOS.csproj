@@ -236,7 +236,6 @@
     <BundleResource Include="Resources\mainicon1.png" />
     <BundleResource Include="Resources\statisticsicon.png" />
     <BundleResource Include="Resources\statisticsicon1.png" />
-    <BundleResource Include="Resources\stepswithtext.png" />
     <Content Include="Resources\vector-smart-object%403x.png" />
     <BundleResource Include="Resources\burn.png" />
     <BundleResource Include="Resources\clocks.png" />
