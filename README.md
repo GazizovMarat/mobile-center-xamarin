@@ -17,4 +17,4 @@ Demo mobile application for mobile center
 ## Setting up enviroment for iOS
 * Install XCode
 * [Install Visual Studio for MAC](https://www.visualstudio.com/vs/visual-studio-mac/)
- * With Xamarin
+  * With Xamarin
