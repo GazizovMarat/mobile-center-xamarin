@@ -86,8 +86,17 @@ Global
 		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Release|iPhone.Build.0 = Release|iPhone
 		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Ad-Hoc|Any CPU.Build.0 = Ad-Hoc|iPhone
+		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.AppStore|Any CPU.Build.0 = AppStore|iPhone
+		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Debug|Any CPU.Build.0 = Debug|iPhone
+		{C9437263-E6F4-44EE-A72E-266C6C7BC886}.Release|Any CPU.Build.0 = Release|iPhone
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 	EndGlobalSection
 EndGlobal
