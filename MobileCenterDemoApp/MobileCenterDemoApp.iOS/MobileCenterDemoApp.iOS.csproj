@@ -39,9 +39,9 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
-    <CodesignKey>iPhone Developer: Ainur Latypov (29DHXQJ8UG)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>MobileCenterXamarinAppAkvelonProfile</CodesignProvision>
+    <CodesignProvision></CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -69,7 +69,7 @@
     <IOSDebugOverWiFi>False</IOSDebugOverWiFi>
     <IOSDebuggerPort>10000</IOSDebuggerPort>
     <IpaMetadata>Entitlements.plist</IpaMetadata>
-    <CodesignProvision>Xamarin mobile center test</CodesignProvision>
+    <CodesignProvision>MobileCenterXamarinAppAkvelonProfile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -79,9 +79,8 @@
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer: Ainur Latypov (29DHXQJ8UG)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>Mobile center test</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -115,7 +114,6 @@
     <Compile Include="Extentions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <None Include="app.config" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -239,6 +237,7 @@
     <BundleResource Include="Resources\mainicon1.png" />
     <BundleResource Include="Resources\statisticsicon.png" />
     <BundleResource Include="Resources\statisticsicon1.png" />
+    <BundleResource Include="Resources\stepswithtext.png" />
     <Content Include="Resources\vector-smart-object%403x.png" />
     <BundleResource Include="Resources\burn.png" />
     <BundleResource Include="Resources\clocks.png" />
@@ -267,7 +266,9 @@
   <ItemGroup>
     <Content Include="Resources\icon.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Renderers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\MobileCenterDemoApp\MobileCenterApp.projitems" Label="Shared" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
