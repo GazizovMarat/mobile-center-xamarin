@@ -1,7 +1,7 @@
 # Mobile center xamarin demo app
 Demo mobile application for mobile center
 
-## Setting up enviroment
+## Setting up enviroment for Android
 * Install Visual Studio 2017
   * Select toolset **"Mobile development with .Net"**  
 * Install Android SDK 
@@ -14,5 +14,7 @@ Demo mobile application for mobile center
   * Download latest version of [Proguard](https://sourceforge.net/projects/proguard/files/proguard/)
   * Replace proguard files in Android-sdk (.\android-sdk\tools\proguard)
 
-* Download xamarin components and add references in projects
-  * [Xamarin.Auth](https://components.xamarin.com/view/xamarin.auth) v. 1.2.3.1
+## Setting up enviroment for iOS
+* Install XCode
+* [Install Visual Studio for MAC](https://www.visualstudio.com/vs/visual-studio-mac/)
+ * With Xamarin
