@@ -12,11 +12,9 @@ namespace MobileCenterDemoApp.UITests
         {
             if (platform == Platform.Android)
             {
-                return ConfigureApp
-                    .Android
-                    .ApkFile("../../../MobileCenterDemoApp/MobileCenterDemoApp.Android/bin/Debug/" +
-                    "com.mobilecenterdemoapp.xamarin-Signed.apk")
-                    .DeviceSerial("91b7d68a")
+                              
+                return ConfigureApp.Android
+                    .InstalledApp("com.mobilecenterdemoapp.xamarin")
                     .StartApp();
             }
 
@@ -24,6 +22,7 @@ namespace MobileCenterDemoApp.UITests
             {
                 return ConfigureApp
                     .iOS
+                    .InstalledApp("com.mobilecenterdemoapp.xamarin")
                     .StartApp();
             }
 
