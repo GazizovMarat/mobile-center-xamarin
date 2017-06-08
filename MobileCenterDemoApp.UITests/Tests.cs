@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using Xamarin.UITest;
 using System.Linq;
-using System;
 
 namespace MobileCenterDemoApp.UITests
 {
@@ -9,27 +9,27 @@ namespace MobileCenterDemoApp.UITests
     [TestFixture(Platform.iOS)]
     public class Tests
     {
-        IApp app;
-        Platform platform;
+        IApp _app;
+        readonly Platform _platform;
 
-        string _platformButtonName;
+        readonly string _platformButtonName;
 
         public Tests(Platform platform)
         {
-            this.platform = platform;
+            _platform = platform;
             _platformButtonName = "Button";
         }
 
         [SetUp]
         public void BeforeEachTest()
         {
-            app = AppInitializer.StartApp(platform);            
+            _app = AppInitializer.StartApp(_platform);            
         }
 
         [Test]
         public void CheckFacebookButton()
         {
-            var facebookButtons = app.Query("Login via Facebook");
+            var facebookButtons = _app.Query("Login via Facebook");
             Assert.IsNotEmpty(facebookButtons);
 
             var facebookbutton = facebookButtons.FirstOrDefault(x => x.Class.Contains(_platformButtonName));
@@ -39,12 +39,19 @@ namespace MobileCenterDemoApp.UITests
         [Test]
         public void CheckTwitterButton()
         {
-            var twitterButtons = app.Query("Login via Twitter");
+            var twitterButtons = _app.Query("Login via Twitter");
             Assert.IsNotEmpty(twitterButtons);
 
             var twitterButton = twitterButtons.FirstOrDefault(x => x.Class.Contains(_platformButtonName));
             Assert.NotNull(twitterButton);                                            
         }
+
+        [Test]
+        public void CheckLoginPage()
+        {
+            _app.Tap("Login via Twitter");
+            _app.WaitForElement(x => x.WebView(), timeout: TimeSpan.FromSeconds(20));
+            Assert.IsNotEmpty(_app.Query(x => x.WebView()));
+        }
     }
 }
-
