@@ -24,7 +24,11 @@ namespace MobileCenterDemoApp.iOS
 
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
-			global::Xamarin.Forms.Forms.Init ();
+            // Uncomment next line for using Xamarin.UITests 
+            //  but Do not forget comment line for Release version
+            // Xamarin.Calabash.Start();
+
+            global::Xamarin.Forms.Forms.Init ();
 
             OxyPlot.Xamarin.Forms.Platform.iOS.PlotViewRenderer.Init();
 

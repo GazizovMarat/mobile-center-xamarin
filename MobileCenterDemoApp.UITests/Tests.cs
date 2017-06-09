@@ -1,23 +1,18 @@
-﻿using System;
-using NUnit.Framework;
-using Xamarin.UITest;
-using System.Linq;
-
-namespace MobileCenterDemoApp.UITests
+﻿namespace MobileCenterDemoApp.UITests
 {
+    using NUnit.Framework;
+    using Xamarin.UITest;
+
     [TestFixture(Platform.Android)]    
     [TestFixture(Platform.iOS)]
     public class Tests
     {
-        IApp _app;
-        readonly Platform _platform;
-
-        readonly string _platformButtonName;
+        private IApp _app;
+        private readonly Platform _platform;
 
         public Tests(Platform platform)
         {
             _platform = platform;
-            _platformButtonName = "Button";
         }
 
         [SetUp]
@@ -29,29 +24,39 @@ namespace MobileCenterDemoApp.UITests
         [Test]
         public void CheckFacebookButton()
         {
-            var facebookButtons = _app.Query("Login via Facebook");
-            Assert.IsNotEmpty(facebookButtons);
+            const string buttonName = "Login via Facebook";
 
-            var facebookbutton = facebookButtons.FirstOrDefault(x => x.Class.Contains(_platformButtonName));
-            Assert.NotNull(facebookbutton);
+            _app.WaitForElement(x => x.Button());
+
+            var button = _app.Query(x => x.Button(buttonName));
+            
+            Assert.IsNotEmpty(button);
         }
 
         [Test]
         public void CheckTwitterButton()
         {
-            var twitterButtons = _app.Query("Login via Twitter");
-            Assert.IsNotEmpty(twitterButtons);
+            const string buttonName = "Login via Twitter";
 
-            var twitterButton = twitterButtons.FirstOrDefault(x => x.Class.Contains(_platformButtonName));
-            Assert.NotNull(twitterButton);                                            
+            _app.WaitForElement(x => x.Button());
+
+            var button = _app.Query(x => x.Button(buttonName));
+
+            Assert.IsNotEmpty(button);
         }
 
         [Test]
         public void CheckLoginPage()
         {
-            _app.Tap("Login via Twitter");
-            _app.WaitForElement(x => x.WebView(), timeout: TimeSpan.FromSeconds(20));
-            Assert.IsNotEmpty(_app.Query(x => x.WebView()));
+            const string buttonName = "Login via Facebook";
+
+            _app.WaitForElement(x => x.Button());
+
+            _app.Tap(x => x.Button(buttonName));
+
+            var webViews = _app.Query(x => x.WebView());
+
+            Assert.IsNotEmpty(webViews);
         }
     }
 }
