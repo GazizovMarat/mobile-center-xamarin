@@ -1,6 +1,8 @@
 ﻿namespace MobileCenterDemoApp.UITests
 {
     using NUnit.Framework;
+    using System;
+    using System.Linq;
     using Xamarin.UITest;
 
     [TestFixture(Platform.Android)]    
@@ -54,9 +56,19 @@
 
             _app.Tap(x => x.Button(buttonName));
 
-            var webViews = _app.Query(x => x.WebView());
+            _app.WaitForElement(x => x.Css("TITLE"), timeout: TimeSpan.FromSeconds(100));
 
-            Assert.IsNotEmpty(webViews);
+            var webTitles = _app.Query(x => x.Css("TITLE"));
+            Assert.IsNotEmpty(webTitles);
+
+            var webTitle = webTitles.First();            
+            Assert.IsTrue(webTitle.TextContent.Contains("Log in to Facebook | Facebook"));
+
+
+            _app.WaitForElement(x => x.Css("input"), timeout: TimeSpan.FromSeconds(50));
+
+            var inputViewElement = _app.Query(x => x.Css("input"));
+            Assert.IsNotEmpty(inputViewElement);
         }
     }
 }
