@@ -21,7 +21,7 @@
             }
             else if (Device.RuntimePlatform == Device.iOS)
             {
-                ButtonBorderRadius = 25;
+                ButtonBorderRadius = 28;
             }
         }
     }
