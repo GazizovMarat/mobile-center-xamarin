@@ -86,8 +86,8 @@ namespace MobileCenterDemoApp.Helpers
             request = new OAuth2Request("GET", new Uri($"{FacebookGraphUrl}/v2.9/{account.UserId}/picture"),
                 new Dictionary<string, string>
                 {
-                        {"height", 400.ToString() },
-                        {"width", 400.ToString() }
+                        {"height", "400" },
+                        {"width", "400" }
                 }, args.Account);
             response = await request.GetResponseAsync();
             account.ImageSource = ImageSource.FromStream(response.GetResponseStream);
